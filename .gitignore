@@ -1,0 +1,12 @@
+# Ignore Python bytecode
+__pycache__/
+*.pyc
+
+# Ignore test database
+instance/test.db
+
+# Ignore VS Code settings (optional)
+#.vscode/
+
+# Ignore environment files (optional)
+.env

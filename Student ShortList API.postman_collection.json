@@ -1,0 +1,804 @@
+{
+	"info": {
+		"_postman_id": "df32f4ed-af31-47ec-a377-5d10b54552bc",
+		"name": "Student ShortList API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42003084"
+	},
+	"item": [
+		{
+			"name": "Bad Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test('Response status code is 200', function () {\r",
+							"    pm.expect(pm.response.code).to.equal(401);\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Response time is in an acceptable range\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(500); // assuming an acceptable range is below 500ms\r",
+							"});\r",
+							"\r",
+							"let responseJson = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Signup failed due to username taken\", function () {\r",
+							"    pm.expect(responseJson.message).to.eql(\"bad username or password given\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"username\":\"name\",\r\n\t\"password\":\"nowork\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/login",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sign Up",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Response status code is 200', function () {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"})\r",
+							"\r",
+							"pm.test('Response has the required field - access_token', function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    pm.environment.set('access_token', responseData.access_token);\r",
+							"    pm.expect(responseData.access_token).to.exist;\r",
+							"})\r",
+							"\r",
+							"pm.test('Access token is a non-empty string', function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    pm.expect(responseData.access_token).to.be.a('string').and.to.have.lengthOf.at.least(1, 'Value should not be empty');\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Response time is in an acceptable range\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(500); // assuming an acceptable range is below 500ms\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\":\"tim\",\n\t\"password\":\"timpass\",\n    \"type\":\"employer\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/signup",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"signup"
+					]
+				},
+				"description": "Signs up a user"
+			},
+			"response": []
+		},
+		{
+			"name": "(Staff) Add Student to Shortlist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is in an acceptable range\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(500); // assuming an acceptable range is below 500ms\r",
+							"});\r",
+							"\r",
+							"pm.test('Response has the required fields', function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"        pm.expect(responseData).to.have.property('id');\r",
+							"        pm.expect(responseData).to.have.property('student_id');\r",
+							"        pm.expect(responseData).to.have.property('title');\r",
+							"        pm.expect(responseData).to.have.property('position_id');\r",
+							"        pm.expect(responseData).to.have.property('staff_id');\r",
+							"        pm.expect(responseData).to.have.property('status');\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"student_id\": \"1\",\n    \"position_id\": \"2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/shortlist",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"shortlist"
+					]
+				},
+				"description": "Lets an authed user create a todo"
+			},
+			"response": []
+		},
+		{
+			"name": "(Employer) Show all Positions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response time is in an acceptable range\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500); // assuming an acceptable range is below 500ms",
+							"});",
+							"",
+							"pm.test('Response has the required fields', function () {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    responseData.forEach(function (position) {",
+							"        pm.expect(position).to.have.property('id');",
+							"        pm.expect(position).to.have.property('title');",
+							"        pm.expect(position).to.have.property('number_of_positions');",
+							"        pm.expect(position).to.have.property('status');",
+							"        pm.expect(position).to.have.property('employer_id');",
+							"    });",
+							"})",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"title\": \"Dentist\",\n    \"number\": \"3\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/positions/all",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"positions",
+						"all"
+					]
+				},
+				"description": "Lets an authed user create a todo"
+			},
+			"response": []
+		},
+		{
+			"name": "(Student) View Shortlist for Student",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response time is in an acceptable range\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500); // assuming an acceptable range is below 500ms",
+							"});",
+							"",
+							"pm.test('Response has the required fields', function () {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    responseData.forEach(function (shortlist) {",
+							"        pm.expect(shortlist).to.have.property('id');",
+							"        pm.expect(shortlist).to.have.property('title');",
+							"        pm.expect(shortlist).to.have.property('student_id');",
+							"        pm.expect(shortlist).to.have.property('position_id');",
+							"        pm.expect(shortlist).to.have.property('staff_id');",
+							"        pm.expect(shortlist).to.have.property('status');",
+							"    });",
+							"})",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/shortlist/student/1",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"shortlist",
+						"student",
+						"1"
+					]
+				},
+				"description": "Lets an authed user create a todo"
+			},
+			"response": []
+		},
+		{
+			"name": "Login Student",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test('Response status code is 200', function () {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"})\r",
+							"\r",
+							"pm.test('Response has the required field - access_token', function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    pm.environment.set('access_token', responseData.access_token);\r",
+							"    pm.expect(responseData.access_token).to.exist;\r",
+							"})\r",
+							"\r",
+							"pm.test('Access token is a non-empty string', function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    pm.expect(responseData.access_token).to.be.a('string').and.to.have.lengthOf.at.least(1, 'Value should not be empty');\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Response time is in an acceptable range\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"username\":\"bob\",\r\n\t\"password\":\"bobpass\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/login",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "(!Employer) Bad Show Positions from Employer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"",
+							"pm.test(\"Response time is in an acceptable range\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500); // assuming an acceptable range is below 500ms",
+							"});",
+							"",
+							"pm.test(\"Unauthorized user\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql(\"Unauthorized user\");",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/employer/positions",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"employer",
+						"positions"
+					]
+				},
+				"description": "Lets an authed user create a todo"
+			},
+			"response": []
+		},
+		{
+			"name": "(Employer) Create Position",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Response time is in an acceptable range\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500); // assuming an acceptable range is below 500ms",
+							"});",
+							"",
+							"pm.test('Response has the required fields', function () {",
+							"    const responseData = pm.response.json();",
+							"        pm.expect(responseData).to.have.property('employer_id');",
+							"        pm.expect(responseData).to.have.property('id');",
+							"        pm.expect(responseData).to.have.property('number_of_positions');",
+							"        pm.expect(responseData).to.have.property('title');",
+							"        pm.expect(responseData).to.have.property('status');",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"title\": \"Dentist\",\n    \"number\": \"3\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/positions/create",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"positions",
+						"create"
+					]
+				},
+				"description": "Lets an authed user create a todo"
+			},
+			"response": []
+		},
+		{
+			"name": "(Employer) Show Positions from Employer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response time is in an acceptable range\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500); // assuming an acceptable range is below 500ms",
+							"});",
+							"",
+							"pm.test('Response has the required fields', function () {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    responseData.forEach(function (position) {",
+							"        pm.expect(position).to.have.property('id');",
+							"        pm.expect(position).to.have.property('title');",
+							"        pm.expect(position).to.have.property('number_of_positions');",
+							"        pm.expect(position).to.have.property('status');",
+							"        pm.expect(position).to.have.property('employer_id');",
+							"    });",
+							"})",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/employer/positions",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"employer",
+						"positions"
+					]
+				},
+				"description": "Lets an authed user create a todo"
+			},
+			"response": []
+		},
+		{
+			"name": "(Employer) Make Decision on Student",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response time is in an acceptable range\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500); // assuming an acceptable range is below 500ms",
+							"});",
+							"",
+							"pm.test('Response has the required fields', function () {",
+							"    const shortlist = pm.response.json();",
+							"        pm.expect(shortlist).to.have.property('id');",
+							"        pm.expect(shortlist).to.have.property('position_id');",
+							"        pm.expect(shortlist).to.have.property('staff_id');",
+							"        pm.expect(shortlist).to.have.property('status');",
+							"        pm.expect(shortlist).to.have.property('student_id');",
+							"        pm.expect(shortlist).to.have.property('title');",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"student_id\": \"1\",\n    \"position_id\": \"1\",\n    \"decision\": \"accepted\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/shortlist",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"shortlist"
+					]
+				},
+				"description": "Lets an authed user create a todo"
+			},
+			"response": []
+		},
+		{
+			"name": "(Employer) Get Shortlist of Position",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response time is in an acceptable range\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500); // assuming an acceptable range is below 500ms",
+							"});",
+							"",
+							"pm.test('Response has the required fields', function () {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    responseData.forEach(function (shortlist) {",
+							"        pm.expect(shortlist).to.have.property('id');",
+							"        pm.expect(shortlist).to.have.property('title');",
+							"        pm.expect(shortlist).to.have.property('student_id');",
+							"        pm.expect(shortlist).to.have.property('position_id');",
+							"        pm.expect(shortlist).to.have.property('staff_id');",
+							"        pm.expect(shortlist).to.have.property('status');",
+							"    });",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/shortlist/position/1",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"shortlist",
+						"position",
+						"1"
+					]
+				},
+				"description": "Lets an authed user create a todo"
+			},
+			"response": []
+		}
+	]
+}

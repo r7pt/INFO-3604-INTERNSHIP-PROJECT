@@ -1,3 +1,4 @@
+
 import click, pytest, sys
 from flask.cli import with_appcontext, AppGroup
 
@@ -6,7 +7,7 @@ from App.models import User
 from App.main import create_app
 from App.controllers import ( create_user, get_all_users_json, get_all_users, initialize, open_position, add_student_to_shortlist, decide_shortlist, get_shortlist_by_student, get_shortlist_by_position, get_positions_by_employer)
 
-
+'''
 # This commands file allow you to create convenient CLI commands for testing controllers
 
 app = create_app()
@@ -19,7 +20,6 @@ def init():
     print('database intialized')
 
 '''
-User Commands
 '''
 
 # Commands can be organized using groups
@@ -137,7 +137,7 @@ def get_positions_by_employer_command(employer_id):
 app.cli.add_command(user_cli) # add the group to the cli
 
 '''
-Test Commands
+
 '''
 
 test = AppGroup('test', help='Testing commands') 
@@ -154,3 +154,4 @@ def user_tests_command(type):
     
 
 app.cli.add_command(test)
+'''

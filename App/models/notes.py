@@ -18,13 +18,14 @@ class Notes(db.Model):
     staff= db.relationship('Staff',foreign_keys=['staff_id'],backref="created_by")
     student = db.relationship('Student',foreign_keys=['student_id'],backref="notes")
     parent =db.relationship("Notes",remote_side=['note_id'],backref="children")
-    meeting = db.relationship("Meeting", foreign_keys=['meeting_id'],backref="notes")
+    meeting = db.relationship("Meeting", foreign_keys=['meeting_id'],backref="meeting_notes")
 
 
 
-    def __init__(self,student_id,staff_id,description,parent_id=None):
+    def __init__(self,student_id,staff_id,meeting_id,description,parent_id=None):
         self.student_id=student_id
         self.staff_id=staff_id
+        self.meeting_id=meeting_id
         self.description=description
         self.parent_id=parent_id
 
@@ -34,9 +35,10 @@ class Notes(db.Model):
         return note
 
     def get_meeting(note_id):
-        note=Notes.query.get(note_id)
-        if not note:
-            print("no note found with id",note_id)
+        try:
+            note=Notes.query.get(note_id)
+            if not note:
+                print("no note found with id",note_id)
                 return[]
             meeting = note.meeting
             return meeting
@@ -64,7 +66,7 @@ class Notes(db.Model):
                 print("no note found with ",note_id)
                 return None
 
-            note=Notes(pervious_note.student_id,staff_id,description,pervious_note.note_id)
+            note=Notes(pervious_note.student_id,staff_id,pervious_note.meeting_id,description,pervious_note.note_id)
             db.session.add(note)
             db.session.commit()
 

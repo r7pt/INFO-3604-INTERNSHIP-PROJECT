@@ -1,8 +1,8 @@
 from App.database import db
 from datetime import date
-from email_validator import validate_email, EmailNotValidError
 from sqlalchemy_imageattach.entity import Image, image_attachment
 from App.models.user import user
+import re
 
 class Email(db.Model):
     email_id = db.Column(db.Integer,primary_key=True)
@@ -19,9 +19,9 @@ class Email(db.Model):
     recipient= db.relationship("User",backref="received_emails",foreign_keys=[recipient_id],lazy=True)
     __tablename__ = 'email'
 
-    def __init__(self,student_email,company_email,subject,description,graphic,attachment):
-        self.student_email= student_email,
-        self.company_email=company_email,
+    def __init__(self,sender_id,recipient_id,subject,description,graphic,attachment):
+        self.sender_id= sender_id,
+        self.recipient_id=recipient_id,
         self.subject = subject,
         self.description=description,
         self.graphic=graphic,
@@ -34,77 +34,85 @@ class Email(db.Model):
             return []
         return emails
 
-    #get all email sent by company
-    def get_company_sent_emails(self,company_id):
+    #get all emails by user
+    def get_all_emails_by_user(self,user_id):
+        user = User.query.get(user_id)
+        if not user:
+            print("user not found with id", user_id)
+            return []
+        emails =[]
+        if user.role != "student":
+            emails.extend(user.sent_emails)
+        emails.extend(user.received_emails)
+        return emails
+        
+    #get all email sent by 
+    def get_all_emails_sent_by_user(self,user_id):
         try:
-            #email = Email.query.join(User, Email.sender_id == user.user_id).filter(user.user_id==company_id).all()
-            user = User.query.get(company_id)
+            user = User.query.get(user_id)
             if not user:
-                print("no company found")
+                print("no user found with ",user_id)
                 return[]
+            if user.role == "student":
+                print(user.full_name," is not authorized to send emails")
+                return []
             emails = user.sent_emails
             if not emails :
+                 print(user.full_name," has zero emails")
                 return []
             return emails
         except Exception as e:
             print("Error retrieving  emails:",e)
             return []
 
-    #get all emails sent by staff
-    def get_staff_sent email(self,staff_id):
+    #get all email recieved by
+    def get_all_emails_recieved_by_user(self,user_id):
         try:
-            staff_user = User.query.get(staff_id)
-            if not staff_user:
-                print("staff not found")
+            user = User.query.get(user_id)
+            if not user:
+                print("no user found with ",user_id)
                 return[]
-            emails = staff.sent_emails
-            if not emails:
-                print("staff has sent zero emails")
+            emails = user.received_emails
+            if not emails :
+                 print(user.full_name," has zero emails")
                 return []
             return emails
-        except Exception as e 
-            print("exception", e)
+        except Exception as e:
+            print("Error retrieving  emails:",e)
             return []
 
-    #get all emails sent to company
-    def get_company_receival_emails(self,company_id)
+    #find keyword in header
+    def search_email_header(self,keyword):
         try:
-            company = User.query.get(company_id)
-            if not company:
-                print("company not found")
-            emails = company.received_emails
-            if not emails:
-                print("company has recieved zero emails")
-                return []
-            return emails
-        except Exception as e 
-            print("exception", e)
-            return []
-    
-    #get all email sent to student
-    def get_all_student_emails(self,student_id)
-        try:
-            student = User.query.get(student_id)
-            if not student:
-                print("student not found")
-            emails = student.received_emails
-            if not emails:
-                print("student has recieved zero emails")
-                return []
-            return emails
-        except Exception as e 
-            print("exception", e)
-            return []
-  
-# get inbox
+            search_results= []
+            count = 0
+            emails= get_all_emails()
+            pattern = re.compile(keyword,re.IGNORECASE)
 
-  #get email by header
+            for header in emails:
+                if pattern.search(pattern,header) :
+                    search_results.append(email)
+                    count=+1
+            if not search_results:
+                print("zero matches found")
+            return search_results,count
+        except Exception as e:
+            print("an error occurred",e)
+            return []
+                
+    #sent mail
+
+    #update status for queuing
+
+    #reply email
     
+    #shedule email
+
 
     def get_json(self)
         email = {
-            'student_email'= self.student_email,
-            'company_email'=self.company_email,
+            'sender_id'= self.sender_id,
+            'recipient_id'=self.recipient_id,
             'subject'=self.subject,
             'description'=self.description,
             'graphic'=self.graphic,
@@ -113,4 +121,4 @@ class Email(db.Model):
         return email
     
     def __repr__(self):
-        return f'<Email {self.email_id}: {self.student_id} {self.company_id} {self.description}>'
+        return f'<Email {self.email_id}: {self.sender_id}-{self.recipient_id}-{self.description}>'

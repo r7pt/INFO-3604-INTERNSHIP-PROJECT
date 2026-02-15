@@ -1,6 +1,10 @@
 from App.database import db
 from App.models.user import User
 from App.models.shortlist import Shortlist
+from App.models.email import Email
+from App.models.meeting import Meeting
+from App.models.notes import Notes
+
 
 Class(User) Staff:
     __tablename__ = 'staff'
@@ -19,6 +23,53 @@ Class(User) Staff:
 
     def __repr__(self):
         return f'<Staff {self.staffID}: {self.first_name}: {self.last_name}: {self.department}>'
+
+    def send_email(self,recipient_id,subject,description,graphic,attachment):
+        try:
+            email = Email(self.staffID,recipient_id,subject,description,graphic,attachment)
+            db.session.add(email)
+            db.session.commit()
+            return email
+        except Exception as e:
+            print("an error occurred ", e)
+            return None
+
+    def shortlist_student(self, student_id, project_id, match_reason, match_score):
+        try :
+            shortlist = Shortlist(self.staff_id, student_id, project_id, match_reason, match_score)
+            db.session.add(shortlist)
+            db.session.commit()
+            return shortlist
+        except Exception as e:
+            print("an error occurred ", e)
+            return None
+
+    def create_meeting(self, student_id, project_id, match_reason, match_score):
+        try :
+            meeting = Meeting(self.staff_id, student_id, project_id, match_reason, match_score)
+            db.session.add(meeting)
+            db.session.commit()
+            return Meeting
+        except Exception as e:
+            print("an error occurred ", e)
+            return None
+
+    def create_note(self,student_id,description,parent_id):
+        try :
+            note = Notes(self.staff_id, student_id, project_id, match_reason, match_score)
+            db.session.add(note)
+            db.session.commit()
+            return note
+        except Exception as e:
+            print("an error occurred ", e)
+            return None
+
+    def get_staff_by_id(staff_id):
+        staff = Staff.query.get(staff_id)
+        if not staff :
+            return None
+        return staff
+        
 
     def get_json(self):
         base_json = super().get_json()

@@ -1,6 +1,7 @@
 from App.database import db
 from App.models.user import User
-from App.models.user import Student
+from App.models.student import Student
+from App.models.staff import Staff
 from sqlalchemy.ext.hybrid import hybrid_property
 from datetime import date
 
@@ -11,7 +12,6 @@ class Notes(db.Model):
     description = db.Column(db.String,nullable=False)
     parent_id = db.Column(db.Integer,db.ForeignKey=("notes.note_id"),nullable=True)
     created_at= db.Column(db.DateTime,default=db.DateTime.utcnow,nullable=False)
-
 
     staff= db.relationship('Staff',foreign_keys=['staff_id'],backref="created_by")
     student = db.relationship('Student',foreign_keys=['student_id'],backref="notes")
@@ -29,7 +29,6 @@ class Notes(db.Model):
     def get_note_by_id(note_id):
         note= Notes.query.get(note_id)
         return note
-
 
     def get_all_student_notes(student_id):
         try:

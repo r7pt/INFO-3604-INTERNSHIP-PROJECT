@@ -5,24 +5,28 @@ import phonenumbers
 
 class Student_application(db.Model):
     application_id = db.Column(db.Integer,primary_key=True)
-    student_id = db.Column(db.Integer,db.ForeignKey("student.id"),unique = True,nullable=False)
     first_name = db.Column(db.String,nullable=False)
     last_name =db.Column(db.String,nullable=False)
-    email = db.Column(db.String,nullable=False)
+    email = db.Column(db.String,unique=True,nullable=False)
     contact_number = db.Column(db.String(7),nullable=False)
     covid_19_vaccination = db.Column(db.Boolean,nullable=False)
-    summer_requirment =db.Column(db.bool,nullable=False)
+    summer_requirment =db.Column(db.Boolean,nullable=False)
     program =db.Column(db.String,nullable=False)
     cover_letter =db.Column(db.String,nullable=False)
     internship_credits = db.Column(db.Integer,nullable=False)
     citizenship = db.Column(db.String,nullable=False)
     profile_picture = db.Column(db.String,nullable=False)
-    returning_intern = db.Column(db.bool,nullable=False)
+    returning_intern = db.Column(db.Boolean,nullable=False)
     year_of_study= db.Column(db.Integer,nullable=False)
     created_on = db.Column(db.Date,nullable=False,default =date.utcnow)
     resume = db.Column(db.String,nullable=False)
     transcript = db.Column(db.String,nullable =False)
-    
+    status = db.Column(db.String,nullable=False,default="pending")
+
+    transcript_summary = db.relationship("Transcript_summary",uselist=False,back_populates="student_application",lazy=True)
+    __tablename__ ="student_application"
+
+
     def __init__ (self,student_id,first_name,last_name,email,contact_number,covid_19_vaccination,summer_requirment,program,cover_letter,internship_credits,citizenship,profile_picture,returning_intern,year_of_study,resume,transcript):
         self.first_name = first_name
         self.student_id = student_id
@@ -40,7 +44,38 @@ class Student_application(db.Model):
         self.year_of_study=year_of_study
         self.resume=resume
         self.transcript=transcript
+        self.status=status
 
+    def set_status(self,status):
+        self.status=status
+
+    def get_application_by_id(student_id):
+        try:
+            application = Student_application.query.get(student_id)
+            if not application:
+                print("there is no student application with ",student_id)
+                return None
+            return application
+        except Exception as e:
+            print("An error has occurred ", e)
+            return None
+
+    @staticmethod
+    def get_transcript_summary(application_id):
+        try:
+            application =Application.query.get(application_id)
+            if not application:
+                print("there is no application with ",application_id)
+                return None
+            transcript_summary = application.transcript_summary
+            if not transcript_summary:
+                print("an error occurred with transcript")
+                return None
+            return transcript_summary
+        except Exception as e:
+            print("an error occurred ", e)
+            return None
+            
     def _validate_contact_number(self,contact_number):
         contact_Number_Object = phonenumbers.parse(contact_number)
         if phonenumbers.is_valid_number(contact_Number_Object):
@@ -72,12 +107,13 @@ class Student_application(db.Model):
             'year_of_study':self.year_of_study,
             'resume':self.resume,
             'transcript':self.transcript
+            'status':self.status
         }
 
         return student_application_json
 
     def __repr__(self):
-        return f'<Student_application {self.application_id}: {self.student_id} {self.first_name}  {self.last_name} '    
+        return f'<Student_application {self.application_id}: {self.student_id}-{self.first_name} -{self.last_name} -{self.status}'    
 
 
 

@@ -6,20 +6,23 @@ from App.models.meeting import Meeting
 from App.models.notes import Notes
 
 
-Class(User) Staff:
+class Staff(User):
     __tablename__ = 'staff'
-    staffID = db.Column(db.Integer,db.ForeignKey(user.id),primary_key= true)
+    staffID = db.Column(db.Integer,db.ForeignKey(User.id),primary_key= True)
     first_name= db.Column(db.String,nullable= False)
     last_name= db.Column(db.String,nullable= False)
     department = db.Column(db.String,nullable= False)
-    password = db.Column (db.String, nullable= False)
 
-    def __init__(self,password,first_name,last_name,department,role = "staff"):
+    __mapper_args__ = {
+        "polymorphic_identity": "staff",
+    }
+
+    def __init__(self,email,password,first_name,last_name,department,role = "staff"):
         super().__init__(email,password,role)
         self.first_name =first_name
         self.last_name = last_name
         self.department =department
-        self.set_password(password)
+        
 
     def __repr__(self):
         return f'<Staff {self.staffID}: {self.first_name}: {self.last_name}: {self.department}>'
@@ -78,7 +81,7 @@ Class(User) Staff:
             'last_name':self.last_name,
             'department':self.department
         }
-        return (**base_jason,**student_json)
+        return (student_json)
 
     def set_password(self,password):
         self.password = generate_password_hash(password)

@@ -1,0 +1,72 @@
+from App.models import Student_application,Student, WeeklyReport, Project, Shortlist
+from App.database import db
+from datetime import datetime, date
+import os
+
+#getters,stu id,name,all,
+#get_application thing 
+#create application
+#delete application
+#sanitzantion,vaildation
+
+
+def get_application(application_id):
+    return db.session.get(application)
+
+def get_application_by_student_id(student_id):
+    application = Student_application.get_application_by_id(student_id)
+    return application
+
+def get_applicationby_email(email):
+    try:
+        application =  Student_application.query.filter_by(email=email).first()
+        if not application:
+            print("No application found with student email : ",email)
+            return None
+        return application
+    except Exception as e:
+        print( "the following error occurred : ",e)
+        return None
+
+def get_all_application():
+    try:
+        applications = Student_application.query.all()
+        if not applications:
+            print("there are no application")
+            return None
+        return applications
+    except Exception as e :
+        print("the following error occured : ",e )
+        return None
+
+#def get_application_date(date):
+    
+def get_application_resume(student_id):
+    try:
+        application = get_application_by_student_id(student_id)
+        resume = application.resume
+        return resume
+    except Exception as e: 
+        print("the following error occured : ",e )
+        return None
+
+def get_application_transcript(student_id):
+    try:
+        application = get_application_by_student_id(student_id)
+        transcript = application.transcript
+        return transcript
+    except Exception as e: 
+        print("the following error occured : ",e )
+        return None
+
+def create_application(student_id,first_name,last_name,email,contact_number,covid_19_vaccination,summer_requirment,program,cover_letter,
+internship_credits,citizenship,profile_picture,returning_intern,year_of_study,resume,transcript):
+
+    try:
+
+
+
+
+
+
+

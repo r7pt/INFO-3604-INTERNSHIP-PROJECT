@@ -60,6 +60,21 @@ class Student_application(db.Model):
             print("An error has occurred ", e)
             return None
 
+    def get_full_name(self):
+        return f'{self.first_name} {self.last_name}'
+
+    def get_email(self):
+        return f'{self.email}'
+
+    def get_student_id(self):
+        return f'{self.student_id}'
+
+    def get_contact(self):
+        return f'{self.contact_number}'
+
+    def get_program(self):
+        return f'{self.program}'
+
     @staticmethod
     def get_transcript_summary(application_id):
         try:

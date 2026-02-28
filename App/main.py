@@ -9,6 +9,7 @@ from App.database import init_db
 from App.config import load_config
 
 
+
 from App.controllers import (
     setup_jwt,
     add_auth_context
@@ -29,6 +30,7 @@ def create_app(overrides={}):
     add_auth_context(app)
     photos = UploadSet('photos', TEXT + DOCUMENTS + IMAGES)
     configure_uploads(app, photos)
+    app,config['MAX_CONTENT_LENGTH']=5*1024*1024 #5MD file size limit
     add_views(app)
     init_db(app)
     jwt = setup_jwt(app)

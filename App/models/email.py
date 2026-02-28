@@ -58,7 +58,7 @@ class Email(db.Model):
                 return []
             emails = user.sent_emails
             if not emails :
-                 print(user.full_name," has zero emails")
+                print(user.full_name," has zero emails")
                 return []
             return emails
         except Exception as e:
@@ -74,7 +74,7 @@ class Email(db.Model):
                 return[]
             emails = user.received_emails
             if not emails :
-                 print(user.full_name," has zero emails")
+                print(user.full_name," has zero emails")
                 return []
             return emails
         except Exception as e:
@@ -112,10 +112,12 @@ class Email(db.Model):
             if not new_email:
                 print("an error occurred with new email")
                 return None
-
             db.session.add(new_email)
             db.session.commit()
             return new_email
+        except Exception as e:
+            print("the following error occured : ",e)
+            return None
 
     def get_json(self):
         email = {

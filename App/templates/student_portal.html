@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Portal Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .card { border: 1px solid #ddd; padding: 16px; border-radius: 8px; }
+    label { display:block; margin-top: 10px; font-size: 14px; }
+    input, textarea { width: 100%; padding: 8px; margin-top: 6px; }
+    button { margin-top: 12px; padding: 10px 12px; cursor: pointer; }
+    pre { background: #111; color:#eee; padding: 12px; border-radius: 8px; overflow:auto; }
+    .row { display:flex; gap: 8px; align-items: center; }
+    .row > * { flex: 1; }
+    .small { font-size: 12px; color:#666; }
+    .projects { margin-top: 12px; }
+    .project { border: 1px solid #eee; padding: 10px; border-radius: 8px; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Student Portal Demo</h1>
+  <p class="small">This page calls your backend endpoints under <code>/api/student/*</code>. Token is stored in localStorage.</p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Register</h3>
+      <label>Email</label>
+      <input id="reg_email" placeholder="test@my.uwi.edu" />
+      <label>Password</label>
+      <input id="reg_password" type="password" placeholder="test123" />
+      <label>First Name</label>
+      <input id="reg_first" placeholder="Test" />
+      <label>Last Name</label>
+      <input id="reg_last" placeholder="Student" />
+      <label>Student ID</label>
+      <input id="reg_sid" placeholder="816000001" />
+      <label>Degree</label>
+      <input id="reg_degree" placeholder="BSc Computer Science" />
+      <button onclick="registerStudent()">Register</button>
+    </div>
+
+    <div class="card">
+      <h3>Login</h3>
+      <label>Email</label>
+      <input id="login_email" placeholder="test@my.uwi.edu" />
+      <label>Password</label>
+      <input id="login_password" type="password" placeholder="test123" />
+      <button onclick="loginStudent()">Login</button>
+
+      <div style="margin-top:16px;">
+        <h4>Token</h4>
+        <textarea id="token_box" rows="4" placeholder="Token will appear here"></textarea>
+        <div class="row">
+          <button onclick="saveToken()">Save Token</button>
+          <button onclick="clearToken()">Clear Token</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Profile / Status</h3>
+      <div class="row">
+        <button onclick="getMe()">GET /me</button>
+        <button onclick="getStatus()">GET /status</button>
+      </div>
+      <div style="margin-top:16px;">
+        <h4>Uploads</h4>
+        <label>Resume (PDF)</label>
+        <input id="resume_file" type="file" accept="application/pdf" />
+        <button onclick="uploadResume()">Upload Resume</button>
+
+        <label>Transcript (PDF)</label>
+        <input id="transcript_file" type="file" accept="application/pdf" />
+        <button onclick="uploadTranscript()">Upload Transcript</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Projects + Apply</h3>
+      <button onclick="loadProjects()">GET /projects</button>
+      <div class="projects" id="projects_list"></div>
+    </div>
+  </div>
+
+  <h3>Output</h3>
+  <pre id="output">Ready.</pre>
+
+<script>
+  const out = document.getElementById('output');
+  const tokenBox = document.getElementById('token_box');
+
+  function log(obj) {
+    out.textContent = typeof obj === 'string' ? obj : JSON.stringify(obj, null, 2);
+  }
+
+  function getToken() {
+    return localStorage.getItem('student_token') || '';
+  }
+
+  function setToken(t) {
+    localStorage.setItem('student_token', t || '');
+    tokenBox.value = t || '';
+  }
+
+  function authHeaders() {
+    const t = getToken();
+    return t ? { 'Authorization': `Bearer ${t}` } : {};
+  }
+
+  async function api(path, options = {}) {
+    const res = await fetch(path, options);
+    const ct = res.headers.get('content-type') || '';
+    let data;
+    if (ct.includes('application/json')) data = await res.json();
+    else data = await res.text();
+    if (!res.ok) throw { status: res.status, data };
+    return data;
+  }
+
+  // Initialize token box from storage
+  tokenBox.value = getToken();
+
+  function saveToken() {
+    setToken(tokenBox.value.trim());
+    log('Token saved.');
+  }
+
+  function clearToken() {
+    setToken('');
+    log('Token cleared.');
+  }
+
+  async function registerStudent() {
+    try {
+      const payload = {
+        email: document.getElementById('reg_email').value.trim(),
+        password: document.getElementById('reg_password').value,
+        first_name: document.getElementById('reg_first').value.trim(),
+        last_name: document.getElementById('reg_last').value.trim(),
+        student_id: document.getElementById('reg_sid').value.trim(),
+        degree: document.getElementById('reg_degree').value.trim()
+      };
+      const data = await api('/api/student/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (data.access_token) setToken(data.access_token);
+      log(data);
+    } catch (e) {
+      log(e);
+    }
+  }
+
+  async function loginStudent() {
+    try {
+      const payload = {
+        email: document.getElementById('login_email').value.trim(),
+        password: document.getElementById('login_password').value
+      };
+      const data = await api('/api/student/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (data.access_token) setToken(data.access_token);
+      log(data);
+    } catch (e) {
+      log(e);
+    }
+  }
+
+  async function getMe() {
+    try {
+      const data = await api('/api/student/me', {
+        method: 'GET',
+        headers: { ...authHeaders() }
+      });
+      log(data);
+    } catch (e) {
+      log(e);
+    }
+  }
+
+  async function getStatus() {
+    try {
+      const data = await api('/api/student/status', {
+        method: 'GET',
+        headers: { ...authHeaders() }
+      });
+      log(data);
+    } catch (e) {
+      log(e);
+    }
+  }
+
+  async function uploadResume() {
+    try {
+      const f = document.getElementById('resume_file').files[0];
+      if (!f) return log('Choose a resume PDF first.');
+      const fd = new FormData();
+      fd.append('file', f);
+
+      const data = await api('/api/student/upload/resume', {
+        method: 'POST',
+        headers: { ...authHeaders() },
+        body: fd
+      });
+      log(data);
+    } catch (e) {
+      log(e);
+    }
+  }
+
+  async function uploadTranscript() {
+    try {
+      const f = document.getElementById('transcript_file').files[0];
+      if (!f) return log('Choose a transcript PDF first.');
+      const fd = new FormData();
+      fd.append('file', f);
+
+      const data = await api('/api/student/upload/transcript', {
+        method: 'POST',
+        headers: { ...authHeaders() },
+        body: fd
+      });
+      log(data);
+    } catch (e) {
+      log(e);
+    }
+  }
+
+  async function loadProjects() {
+    try {
+      const data = await api('/api/student/projects', { method: 'GET' });
+      const list = document.getElementById('projects_list');
+      list.innerHTML = '';
+
+      (data.projects || []).forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'project';
+        div.innerHTML = `
+          <div><b>${p.project_name}</b></div>
+          <div class="small">Project ID: ${p.id}</div>
+          <div class="row">
+            <button onclick="applyToProject(${p.id})">Apply</button>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+
+      log(data);
+    } catch (e) {
+      log(e);
+    }
+  }
+
+  async function applyToProject(projectId) {
+    try {
+      const data = await api('/api/student/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({ project_id: projectId })
+      });
+      log(data);
+    } catch (e) {
+      log(e);
+    }
+  }
+</script>
+</body>
+</html>

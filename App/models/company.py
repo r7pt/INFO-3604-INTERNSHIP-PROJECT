@@ -2,7 +2,7 @@ from App.database import db
 from datetime import datetime
 
 class Company(db.Model):
-    tablename = 'company'
+    __tablename__ = 'company'
 
     id = db.Column(db.Integer, primary_key=True)
     company_name = db.Column(db.String(256), nullable=False)
@@ -14,8 +14,9 @@ class Company(db.Model):
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     projects = db.relationship('Project', backref='company', lazy=True)
+    student_evaluations = db.relationship('StudentEvaluation', back_populates='company', lazy=True)
 
-    def init(self, company_name, website, category, email):
+    def __init__(self, company_name, website=None, category=None, email=None):
         self.company_name = company_name
         self.website = website
         self.category = category
@@ -30,5 +31,5 @@ class Company(db.Model):
             'email': self.email
         }
 
-    def repr(self):
+    def __repr__(self):
         return f"<Company {self.id}: {self.company_name}>"

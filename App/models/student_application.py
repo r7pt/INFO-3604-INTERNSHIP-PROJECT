@@ -10,7 +10,7 @@ class Student_application(db.Model):
     email = db.Column(db.String,unique=True,nullable=False)
     contact_number = db.Column(db.String(7),nullable=False)
     covid_19_vaccination = db.Column(db.Boolean,nullable=False)
-    summer_requirment =db.Column(db.Boolean,nullable=False)
+    summer_requirment =db.Column(db.String,nullable=False)
     program =db.Column(db.String,nullable=False)
     cover_letter =db.Column(db.String,nullable=False)
     internship_credits = db.Column(db.Integer,nullable=False)
@@ -22,6 +22,7 @@ class Student_application(db.Model):
     resume = db.Column(db.String,nullable=False)
     transcript = db.Column(db.String,nullable =False)
     status = db.Column(db.String,nullable=False,default="pending")
+    created_at= db.Column(db.DateTime,default=db.DateTime.utcnow,nullable=False)
 
     transcript_summary = db.relationship("Transcript_summary",uselist=False,back_populates="student_application",lazy=True)
     __tablename__ ="student_application"
@@ -49,9 +50,12 @@ class Student_application(db.Model):
     def set_status(self,status):
         self.status=status
 
+    def get_created_date(self):
+        return self.created_at
+
     def get_application_by_id(student_id):
         try:
-            application = Student_application.query.get(student_id)
+            application = Student_application.query.get(student_id=student_id).first()
             if not application:
                 print("there is no student application with ",student_id)
                 return None

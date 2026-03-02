@@ -26,11 +26,19 @@ def setup_jwt(app):
         identity = jwt_data.get("sub")
         if identity is None:
             return None
-        return User.query.filter_by(id=identity).first()
+        try:
+            user_id = int(identity)
+        except Exception:
+            return None
+        return User.query.filter_by(id=user_id).first()
 
     @jwt.additional_claims_loader
     def _add_claims(identity):
-        user = User.query.filter_by(id=identity).first()
+        try:
+            user_id = int(identity)
+        except Exception:
+            return {}
+        user = User.query.filter_by(id=user_id).first()
         if not user:
             return {}
         return {"role": user.role}
@@ -66,13 +74,15 @@ def _json_error(message, status=400, extra=None):
 
 
 def _issue_tokens(user):
+    user_identity = str(user.id)
+
     access = create_access_token(
-        identity=user.id,
+        identity=user_identity,
         additional_claims={"role": user.role},
         expires_delta=ACCESS_EXPIRES
     )
     refresh = create_refresh_token(
-        identity=user.id,
+        identity=user_identity,
         additional_claims={"role": user.role},
         expires_delta=REFRESH_EXPIRES
     )
@@ -187,7 +197,12 @@ def whoami():
     if identity is None:
         return _json_error("Not authenticated", 401)
 
-    user = User.query.filter_by(id=identity).first()
+    try:
+        user_id = int(identity)
+    except Exception:
+        return _json_error("Not authenticated", 401)
+
+    user = User.query.filter_by(id=user_id).first()
     if not user:
         return _json_error("User not found", 404)
 

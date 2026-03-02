@@ -22,6 +22,11 @@ class Project(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    shortlists = db.relationship('Shortlist', back_populates='project', lazy=True)
+    weekly_reports = db.relationship('WeeklyReport', back_populates='project', lazy=True)
+    meetings = db.relationship('Meeting', back_populates='project', lazy=True)
+    student_evaluations = db.relationship('StudentEvaluation', back_populates='project', lazy=True)
+
     def __init__(
         self,
         project_name,

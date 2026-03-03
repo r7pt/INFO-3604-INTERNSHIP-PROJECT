@@ -1,513 +1,384 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>UWI Internship Portal</title>
+  <title>Sign In · UWI Internship Portal</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --gold: #C9A84C;
-      --gold-light: #E8C97A;
-      --dark: #0D1117;
-      --dark2: #161B22;
-      --dark3: #21262D;
-      --text: #E6EDF3;
-      --text-muted: #8B949E;
-      --green: #3FB950;
-      --blue: #58A6FF;
+      --gold: #D4A017;
+      --gold-light: #F0C040;
+      --dark: #F0F4FF;
+      --dark2: #FFFFFF;
+      --dark3: #E8EFFE;
+      --text: #0F1B3D;
+      --text-muted: #6B7A99;
+      --error: #DC2626;
+      --success: #16A34A;
     }
 
     body {
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       background: var(--dark);
       color: var(--text);
       min-height: 100vh;
-      overflow-x: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* Animated background */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(201,168,76,0.12) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(88,166,255,0.08) 0%, transparent 60%);
+        radial-gradient(ellipse 60% 60% at 10% 0%, rgba(37,99,235,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 90% 100%, rgba(212,160,23,0.06) 0%, transparent 60%);
       pointer-events: none;
-      z-index: 0;
     }
 
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 48px;
-      background: rgba(13,17,23,0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(201,168,76,0.15);
-    }
-
-    .nav-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.3rem;
-      color: var(--gold);
-      letter-spacing: 0.02em;
-    }
-
-    .nav-logo span {
-      color: var(--text);
-      font-weight: 300;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 22px;
-      border-radius: 6px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.2s ease;
-      border: none;
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--text-muted);
-      border: 1px solid rgba(139,148,158,0.3);
-    }
-    .btn-ghost:hover {
-      color: var(--text);
-      border-color: rgba(201,168,76,0.4);
-      background: rgba(201,168,76,0.05);
-    }
-
-    .btn-gold {
-      background: var(--gold);
-      color: var(--dark);
-      font-weight: 600;
-    }
-    .btn-gold:hover {
-      background: var(--gold-light);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 20px rgba(201,168,76,0.3);
-    }
-
-    .btn-outline-gold {
-      background: transparent;
-      color: var(--gold);
-      border: 1.5px solid var(--gold);
-    }
-    .btn-outline-gold:hover {
-      background: rgba(201,168,76,0.1);
-      transform: translateY(-1px);
-    }
-
-    /* Hero */
-    .hero {
+    .container {
       position: relative;
       z-index: 1;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 120px 24px 80px;
+      width: 100%;
+      max-width: 440px;
+      padding: 24px;
     }
 
-    .hero-badge {
+    .back-link {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 6px 16px;
-      border-radius: 999px;
-      border: 1px solid rgba(201,168,76,0.3);
-      background: rgba(201,168,76,0.08);
-      font-size: 0.8rem;
-      color: var(--gold);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      gap: 6px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
       margin-bottom: 32px;
-      animation: fadeUp 0.6s ease both;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--gold); }
+
+    .card {
+      background: var(--dark2);
+      border: 1px solid rgba(139,148,158,0.15);
+      border-radius: 16px;
+      padding: 40px 36px;
+      animation: fadeUp 0.5s ease both;
     }
 
-    .hero-badge::before {
-      content: '';
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--gold);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.4); }
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: var(--gold);
+      margin-bottom: 28px;
+      display: block;
     }
 
     h1 {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(2.8rem, 7vw, 5.5rem);
-      font-weight: 900;
-      line-height: 1.08;
-      letter-spacing: -0.02em;
-      margin-bottom: 24px;
-      animation: fadeUp 0.6s 0.1s ease both;
-    }
-
-    h1 .accent {
-      color: var(--gold);
-      display: block;
-    }
-
-    .hero-sub {
-      font-size: 1.15rem;
-      color: var(--text-muted);
-      max-width: 520px;
-      line-height: 1.7;
-      margin-bottom: 56px;
-      font-weight: 300;
-      animation: fadeUp 0.6s 0.2s ease both;
-    }
-
-    /* Portal cards */
-    .portal-cards {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      flex-wrap: wrap;
-      animation: fadeUp 0.6s 0.3s ease both;
-      margin-bottom: 64px;
-    }
-
-    .portal-card {
-      background: var(--dark2);
-      border: 1px solid rgba(139,148,158,0.15);
-      border-radius: 16px;
-      padding: 32px 28px;
-      width: 240px;
-      text-align: left;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      text-decoration: none;
-      color: inherit;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .portal-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(201,168,76,0.06) 0%, transparent 60%);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .portal-card:hover {
-      border-color: rgba(201,168,76,0.4);
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
-    }
-
-    .portal-card:hover::before { opacity: 1; }
-
-    .card-icon {
-      width: 48px; height: 48px;
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem;
-      margin-bottom: 20px;
-    }
-
-    .card-icon.student { background: rgba(63,185,80,0.15); }
-    .card-icon.company { background: rgba(88,166,255,0.15); }
-    .card-icon.staff   { background: rgba(201,168,76,0.15); }
-
-    .card-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.2rem;
+      font-size: 1.8rem;
       font-weight: 700;
       margin-bottom: 8px;
     }
 
-    .card-desc {
-      font-size: 0.85rem;
+    .subtitle {
       color: var(--text-muted);
-      line-height: 1.6;
-      margin-bottom: 20px;
+      font-size: 0.9rem;
+      margin-bottom: 32px;
+      font-weight: 300;
     }
 
-    .card-actions {
+    
+    .role-tabs {
       display: flex;
-      gap: 8px;
+      gap: 4px;
+      background: var(--dark3);
+      border-radius: 8px;
+      padding: 4px;
+      margin-bottom: 28px;
     }
 
-    .card-btn {
+    .role-tab {
       flex: 1;
-      padding: 8px 12px;
-      border-radius: 6px;
+      padding: 8px 4px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: 'DM Sans', sans-serif;
       font-size: 0.82rem;
       font-weight: 500;
-      text-align: center;
-      text-decoration: none;
-      transition: all 0.2s;
+      border-radius: 6px;
       cursor: pointer;
-      border: none;
-      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
     }
 
-    .card-btn-primary {
+    .role-tab.active {
+      background: var(--dark2);
+      color: var(--gold);
+      border: 1px solid rgba(201,168,76,0.25);
+    }
+
+    
+    .field { margin-bottom: 18px; }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 7px;
+      letter-spacing: 0.03em;
+    }
+
+    input {
+      width: 100%;
+      padding: 11px 14px;
+      background: var(--dark3);
+      border: 1px solid rgba(139,148,158,0.2);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    input::placeholder { color: rgba(139,148,158,0.5); }
+
+    .submit-btn {
+      width: 100%;
+      padding: 13px;
       background: var(--gold);
       color: var(--dark);
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
     }
-    .card-btn-primary:hover {
+
+    .submit-btn:hover {
       background: var(--gold-light);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(201,168,76,0.25);
     }
 
-    .card-btn-secondary {
-      background: var(--dark3);
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .divider {
+      text-align: center;
       color: var(--text-muted);
-      border: 1px solid rgba(139,148,158,0.2);
-    }
-    .card-btn-secondary:hover {
-      color: var(--text);
-      border-color: rgba(201,168,76,0.3);
+      font-size: 0.82rem;
+      margin: 20px 0;
+      position: relative;
     }
 
-    /* Stats bar */
-    .stats-bar {
-      display: flex;
-      gap: 48px;
-      justify-content: center;
-      flex-wrap: wrap;
-      padding: 32px 48px;
-      border-top: 1px solid rgba(139,148,158,0.1);
-      border-bottom: 1px solid rgba(139,148,158,0.1);
-      background: rgba(22,27,34,0.6);
-      animation: fadeUp 0.6s 0.4s ease both;
+    .divider::before, .divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: calc(50% - 20px);
+      height: 1px;
+      background: rgba(139,148,158,0.15);
+    }
+    .divider::before { left: 0; }
+    .divider::after  { right: 0; }
+
+    .register-link {
+      text-align: center;
+      font-size: 0.87rem;
+      color: var(--text-muted);
     }
 
-    .stat { text-align: center; }
-    .stat-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 2rem;
-      font-weight: 700;
+    .register-link a {
       color: var(--gold);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .register-link a:hover { text-decoration: underline; }
+
+    
+    .alert {
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 18px;
+      display: none;
+    }
+
+    .alert.error {
+      background: rgba(248,81,73,0.1);
+      border: 1px solid rgba(248,81,73,0.3);
+      color: var(--error);
       display: block;
     }
-    .stat-label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
+
+    .alert.success {
+      background: rgba(63,185,80,0.1);
+      border: 1px solid rgba(63,185,80,0.3);
+      color: var(--success);
+      display: block;
     }
-
-    /* Process section */
-    .section {
-      position: relative;
-      z-index: 1;
-      max-width: 1000px;
-      margin: 80px auto;
-      padding: 0 24px;
-    }
-
-    .section-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--gold);
-      margin-bottom: 12px;
-    }
-
-    .section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.2rem;
-      font-weight: 700;
-      margin-bottom: 48px;
-    }
-
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 24px;
-    }
-
-    .step {
-      background: var(--dark2);
-      border: 1px solid rgba(139,148,158,0.1);
-      border-radius: 12px;
-      padding: 28px 24px;
-      position: relative;
-      transition: border-color 0.3s;
-    }
-
-    .step:hover { border-color: rgba(201,168,76,0.3); }
-
-    .step-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.5rem;
-      font-weight: 900;
-      color: rgba(201,168,76,0.2);
-      line-height: 1;
-      margin-bottom: 16px;
-    }
-
-    .step-title {
-      font-weight: 600;
-      margin-bottom: 8px;
-      font-size: 0.95rem;
-    }
-
-    .step-desc {
-      font-size: 0.83rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-
-    /* Footer */
-    footer {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 40px 24px;
-      border-top: 1px solid rgba(139,148,158,0.1);
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
-
-    footer strong { color: var(--gold); }
 
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(13,17,23,0.3);
+      border-top-color: var(--dark);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
-  <nav>
-    <div class="nav-logo">UWI <span>Internship Portal</span></div>
-    <div class="nav-links">
-      <a href="/login" class="btn btn-ghost">Sign In</a>
-      <a href="/register/student" class="btn btn-gold">Apply Now</a>
-    </div>
-  </nav>
+  <div class="container">
+    <a href="/" class="back-link">← Back to Home</a>
 
-  <section class="hero">
-    <div class="hero-badge">Department of Computing &amp; Information Technology</div>
+    <div class="card">
+      <span class="logo">UWI Internship Portal</span>
+      <h1>Welcome back</h1>
+      <p class="subtitle">Sign in to your account to continue</p>
 
-    <h1>
-      Launch Your Career
-      <span class="accent">With Purpose.</span>
-    </h1>
+      
+      <div class="role-tabs">
+        <button class="role-tab active" onclick="setRole('student', this)">🎓 Student</button>
+        <button class="role-tab" onclick="setRole('company', this)">🏢 Company</button>
+        <button class="role-tab" onclick="setRole('staff', this)">⚙️ Staff</button>
+      </div>
 
-    <p class="hero-sub">
-      The UWI Internship Portal connects talented students with industry partners — 
-      streamlining every step from application to placement.
-    </p>
+      <div id="alert" class="alert"></div>
 
-    <div class="portal-cards">
-      <a href="/register/student" class="portal-card">
-        <div class="card-icon student">🎓</div>
-        <div class="card-title">Students</div>
-        <div class="card-desc">Apply for internships, upload documents, and track your placement status.</div>
-        <div class="card-actions">
-          <a href="/register/student" class="card-btn card-btn-primary">Register</a>
-          <a href="/login" class="card-btn card-btn-secondary">Sign In</a>
-        </div>
-      </a>
+      <div class="field">
+        <label>Email Address</label>
+        <input id="email" type="email" placeholder="Enter your email" autocomplete="email"/>
+      </div>
 
-      <a href="/register/company" class="portal-card">
-        <div class="card-icon company">🏢</div>
-        <div class="card-title">Companies</div>
-        <div class="card-desc">Post internship positions, review applicants, and hire top talent.</div>
-        <div class="card-actions">
-          <a href="/register/company" class="card-btn card-btn-primary">Register</a>
-          <a href="/login" class="card-btn card-btn-secondary">Sign In</a>
-        </div>
-      </a>
+      <div class="field">
+        <label>Password</label>
+        <input id="password" type="password" placeholder="Enter your password" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter') doLogin()"/>
+      </div>
 
-      <a href="/login" class="portal-card">
-        <div class="card-icon staff">⚙️</div>
-        <div class="card-title">Staff</div>
-        <div class="card-desc">Manage the internship programme, match students, and oversee placements.</div>
-        <div class="card-actions">
-          <a href="/login" class="card-btn card-btn-primary">Sign In</a>
-        </div>
-      </a>
-    </div>
-  </section>
+      <button class="submit-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
 
-  <div class="stats-bar">
-    <div class="stat">
-      <span class="stat-num">3</span>
-      <span class="stat-label">User Roles</span>
-    </div>
-    <div class="stat">
-      <span class="stat-num">100%</span>
-      <span class="stat-label">UWI Only</span>
-    </div>
-    <div class="stat">
-      <span class="stat-num">PDF</span>
-      <span class="stat-label">Secure Uploads</span>
-    </div>
-    <div class="stat">
-      <span class="stat-num">JWT</span>
-      <span class="stat-label">Auth Protected</span>
+      <div class="divider">or</div>
+
+      <div class="register-link" id="registerLinks">
+        Don't have an account? <a href="/register/student">Register as Student</a>
+      </div>
     </div>
   </div>
 
-  <section class="section">
-    <div class="section-label">How It Works</div>
-    <div class="section-title">Student Workflow</div>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">01</div>
-        <div class="step-title">Register &amp; Login</div>
-        <div class="step-desc">Create your account using your UWI student email address.</div>
-      </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <div class="step-title">Upload Documents</div>
-        <div class="step-desc">Upload your CV and official transcript in PDF format.</div>
-      </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <div class="step-title">Apply to Projects</div>
-        <div class="step-desc">Browse available internship positions and submit your application.</div>
-      </div>
-      <div class="step">
-        <div class="step-num">04</div>
-        <div class="step-title">Track Status</div>
-        <div class="step-desc">Monitor your application status from applied through to hired.</div>
-      </div>
-      <div class="step">
-        <div class="step-num">05</div>
-        <div class="step-title">Submit Reports</div>
-        <div class="step-desc">Once hired, upload weekly progress reports to your supervisor.</div>
-      </div>
-    </div>
-  </section>
+<script>
+  let currentRole = 'student';
 
-  <footer>
-    <p>© 2026 <strong>UWI Internship Portal</strong> · Department of Computing &amp; Information Technology</p>
-  </footer>
+  const roleEndpoints = {
+    student: '/api/student/login',
+    company: '/api/company/login',
+    staff:   '/api/staff/login'
+  };
 
+  const roleRedirects = {
+    student: '/student/dashboard',
+    company: '/company/dashboard',
+    staff:   '/staff/dashboard'
+  };
+
+  const registerLinksHTML = {
+    student: `Don't have an account? <a href="/register/student">Register as Student</a>`,
+    company: `Don't have an account? <a href="/register/company">Register your Company</a>`,
+    staff:   `Contact your administrator to get access.`
+  };
+
+  function setRole(role, btn) {
+    currentRole = role;
+    document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('registerLinks').innerHTML = registerLinksHTML[role];
+    clearAlert();
+  }
+
+  function showAlert(msg, type) {
+    const el = document.getElementById('alert');
+    el.textContent = msg;
+    el.className = `alert ${type}`;
+  }
+
+  function clearAlert() {
+    const el = document.getElementById('alert');
+    el.className = 'alert';
+    el.textContent = '';
+  }
+
+  async function doLogin() {
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn      = document.getElementById('loginBtn');
+
+    if (!email || !password) {
+      showAlert('Please enter your email and password.', 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Signing in…';
+    clearAlert();
+
+    try {
+      const res = await fetch(roleEndpoints[currentRole], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showAlert(data.error || 'Invalid credentials. Please try again.', 'error');
+        return;
+      }
+
+  
+      if (data.access_token) {
+        localStorage.setItem(`${currentRole}_token`, data.access_token);
+        localStorage.setItem('current_role', currentRole);
+      }
+
+      showAlert('Login successful! Redirecting…', 'success');
+      setTimeout(() => {
+        window.location.href = roleRedirects[currentRole];
+      }, 800);
+
+    } catch (err) {
+      showAlert('Could not connect to the server. Is Flask running?', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Sign In';
+    }
+  }
+</script>
 </body>
 </html>

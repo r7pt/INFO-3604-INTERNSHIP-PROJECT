@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register · UWI Internship Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #C9A84C; --gold-light: #E8C97A;
+      --dark: #0D1117; --dark2: #161B22; --dark3: #21262D;
+      --text: #E6EDF3; --text-muted: #8B949E;
+      --error: #F85149; --success: #3FB950;
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--dark); color: var(--text);
+      min-height: 100vh; display: flex;
+      align-items: flex-start; justify-content: center;
+      padding: 40px 24px;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 60% at 10% 0%, rgba(201,168,76,0.1) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 90% 100%, rgba(88,166,255,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .container { position: relative; z-index: 1; width: 100%; max-width: 520px; }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--text-muted); text-decoration: none;
+      font-size: 0.85rem; margin-bottom: 28px; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--gold); }
+    .card {
+      background: var(--dark2);
+      border: 1px solid rgba(139,148,158,0.15);
+      border-radius: 16px; padding: 40px 36px;
+      animation: fadeUp 0.5s ease both;
+    }
+    .logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--gold); margin-bottom: 20px; display: block; }
+    h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; margin-bottom: 6px; }
+    .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 28px; font-weight: 300; }
+
+    .type-tabs { display: flex; gap: 4px; background: var(--dark3); border-radius: 8px; padding: 4px; margin-bottom: 28px; }
+    .type-tab {
+      flex: 1; padding: 9px 4px; border: none; background: transparent;
+      color: var(--text-muted); font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem; font-weight: 500; border-radius: 6px; cursor: pointer; transition: all 0.2s;
+    }
+    .type-tab.active { background: var(--dark2); color: var(--gold); border: 1px solid rgba(201,168,76,0.25); }
+
+    .form-section { display: none; }
+    .form-section.active { display: block; }
+
+    .field { margin-bottom: 16px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    label { display: block; font-size: 0.82rem; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.03em; }
+    input, select {
+      width: 100%; padding: 11px 14px;
+      background: var(--dark3); border: 1px solid rgba(139,148,158,0.2);
+      border-radius: 8px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+    }
+    select option { background: var(--dark3); }
+    input:focus, select:focus {
+      border-color: rgba(201,168,76,0.5);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.08);
+    }
+    input::placeholder { color: rgba(139,148,158,0.5); }
+
+    .section-divider {
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--gold); margin: 24px 0 16px; padding-bottom: 8px;
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+    }
+
+    .submit-btn {
+      width: 100%; padding: 13px; background: var(--gold); color: var(--dark);
+      border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; margin-top: 8px;
+    }
+    .submit-btn:hover { background: var(--gold-light); transform: translateY(-1px); box-shadow: 0 4px 20px rgba(201,168,76,0.25); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .login-link { text-align: center; font-size: 0.87rem; color: var(--text-muted); margin-top: 20px; }
+    .login-link a { color: var(--gold); text-decoration: none; font-weight: 500; }
+    .login-link a:hover { text-decoration: underline; }
+
+    .alert { padding: 12px 14px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 16px; display: none; }
+    .alert.error { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: var(--error); display: block; }
+    .alert.success { background: rgba(63,185,80,0.1); border: 1px solid rgba(63,185,80,0.3); color: var(--success); display: block; }
+
+    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(13,17,23,0.3); border-top-color: var(--dark); border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+<div class="container">
+  <a href="/" class="back-link">← Back to Home</a>
+
+  <div class="card">
+    <span class="logo">UWI Internship Portal</span>
+    <h1>Create Account</h1>
+    <p class="subtitle">Join the internship programme</p>
+
+    <div class="type-tabs">
+      <button class="type-tab active" onclick="setType('student', this)">🎓 Student</button>
+      <button class="type-tab" onclick="setType('company', this)">🏢 Company</button>
+    </div>
+
+    <div id="alert" class="alert"></div>
+
+    <div id="student-form" class="form-section active">
+      <div class="field-row">
+        <div>
+          <label>First Name *</label>
+          <input id="s_first" placeholder="John"/>
+        </div>
+        <div>
+          <label>Last Name *</label>
+          <input id="s_last" placeholder="Doe"/>
+        </div>
+      </div>
+      <div class="field">
+        <label>UWI Email Address *</label>
+        <input id="s_email" type="email" placeholder="816xxxxxx@my.uwi.edu"/>
+      </div>
+      <div class="field">
+        <label>Password *</label>
+        <input id="s_password" type="password" placeholder="Choose a strong password"/>
+      </div>
+      <div class="field-row">
+        <div>
+          <label>Student ID *</label>
+          <input id="s_sid" placeholder="816000001"/>
+        </div>
+        <div>
+          <label>Year of Study</label>
+          <select id="s_year">
+            <option value="">Select year</option>
+            <option value="1">Year 1</option>
+            <option value="2">Year 2</option>
+            <option value="3">Year 3</option>
+            <option value="4">Year 4</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Degree Programme *</label>
+        <input id="s_degree" placeholder="BSc Computer Science"/>
+      </div>
+      <div class="field-row">
+        <div>
+          <label>Phone</label>
+          <input id="s_phone" placeholder="+1 868 000 0000"/>
+        </div>
+        <div>
+          <label>Gender</label>
+          <select id="s_gender">
+            <option value="">Prefer not to say</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+      <button class="submit-btn" id="s_btn" onclick="registerStudent()">Create Student Account</button>
+    </div>
+
+    <div id="company-form" class="form-section">
+      <div class="field">
+        <label>Company Name *</label>
+        <input id="c_name" placeholder="Acme Corporation"/>
+      </div>
+      <div class="field">
+        <label>Company Email *</label>
+        <input id="c_email" type="email" placeholder="hr@company.com"/>
+      </div>
+      <div class="field">
+        <label>Password *</label>
+        <input id="c_password" type="password" placeholder="Choose a strong password"/>
+      </div>
+      <div class="field">
+        <label>Industry / Category</label>
+        <select id="c_category">
+          <option value="">Select industry</option>
+          <option>Information Technology</option>
+          <option>Finance & Banking</option>
+          <option>Telecommunications</option>
+          <option>Energy & Utilities</option>
+          <option>Healthcare</option>
+          <option>Government</option>
+          <option>Media & Entertainment</option>
+          <option>Education</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Website</label>
+        <input id="c_website" placeholder="https://company.com"/>
+      </div>
+      <button class="submit-btn" id="c_btn" onclick="registerCompany()">Register Company</button>
+    </div>
+
+    <p class="login-link">Already have an account? <a href="/login">Sign in</a></p>
+  </div>
+</div>
+
+<script>
+  let currentType = 'student';
+
+  function setType(type, btn) {
+    currentType = type;
+    document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('student-form').classList.toggle('active', type === 'student');
+    document.getElementById('company-form').classList.toggle('active', type === 'company');
+    clearAlert();
+  }
+
+  function showAlert(msg, type) {
+    const el = document.getElementById('alert');
+    el.textContent = msg;
+    el.className = `alert ${type}`;
+  }
+
+  function clearAlert() {
+    const el = document.getElementById('alert');
+    el.className = 'alert';
+    el.textContent = '';
+  }
+
+  async function registerStudent() {
+    const btn = document.getElementById('s_btn');
+    const payload = {
+      email:          document.getElementById('s_email').value.trim(),
+      password:       document.getElementById('s_password').value,
+      first_name:     document.getElementById('s_first').value.trim(),
+      last_name:      document.getElementById('s_last').value.trim(),
+      student_id:     document.getElementById('s_sid').value.trim(),
+      degree:         document.getElementById('s_degree').value.trim(),
+      phone:          document.getElementById('s_phone').value.trim() || undefined,
+      gender:         document.getElementById('s_gender').value || undefined,
+      year_of_study:  document.getElementById('s_year').value ? parseInt(document.getElementById('s_year').value) : undefined,
+    };
+
+    const required = ['email','password','first_name','last_name','student_id','degree'];
+    if (required.some(k => !payload[k])) {
+      showAlert('Please fill in all required fields (*).', 'error'); return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Registering…';
+    clearAlert();
+
+    try {
+      const res = await fetch('/api/student/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) { showAlert(data.error || 'Registration failed.', 'error'); return; }
+      if (data.access_token) localStorage.setItem('student_token', data.access_token);
+      showAlert('Account created! Redirecting to portal…', 'success');
+      setTimeout(() => window.location.href = '/student', 1000);
+    } catch {
+      showAlert('Could not connect to server.', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Create Student Account';
+    }
+  }
+
+  async function registerCompany() {
+    const btn = document.getElementById('c_btn');
+    const payload = {
+      company_name: document.getElementById('c_name').value.trim(),
+      email:        document.getElementById('c_email').value.trim(),
+      password:     document.getElementById('c_password').value,
+      category:     document.getElementById('c_category').value || undefined,
+      website:      document.getElementById('c_website').value.trim() || undefined,
+    };
+
+    if (!payload.company_name || !payload.email || !payload.password) {
+      showAlert('Please fill in all required fields (*).', 'error'); return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Registering…';
+    clearAlert();
+
+    try {
+      const res = await fetch('/api/company/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) { showAlert(data.error || 'Registration failed.', 'error'); return; }
+      if (data.access_token) localStorage.setItem('company_token', data.access_token);
+      showAlert('Company registered! Redirecting…', 'success');
+      setTimeout(() => window.location.href = '/company/dashboard', 1000);
+    } catch {
+      showAlert('Could not connect to server.', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Register Company';
+    }
+  }
+</script>
+</body>
+</html>

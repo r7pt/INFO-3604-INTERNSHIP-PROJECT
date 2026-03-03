@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UWI Internship Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C97A;
+      --dark: #0D1117;
+      --dark2: #161B22;
+      --dark3: #21262D;
+      --text: #E6EDF3;
+      --text-muted: #8B949E;
+      --green: #3FB950;
+      --blue: #58A6FF;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(201,168,76,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(88,166,255,0.08) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 48px;
+      background: rgba(13,17,23,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--gold);
+      letter-spacing: 0.02em;
+    }
+
+    .nav-logo span {
+      color: var(--text);
+      font-weight: 300;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid rgba(139,148,158,0.3);
+    }
+    .btn-ghost:hover {
+      color: var(--text);
+      border-color: rgba(201,168,76,0.4);
+      background: rgba(201,168,76,0.05);
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: var(--dark);
+      font-weight: 600;
+    }
+    .btn-gold:hover {
+      background: var(--gold-light);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(201,168,76,0.3);
+    }
+
+    .btn-outline-gold {
+      background: transparent;
+      color: var(--gold);
+      border: 1.5px solid var(--gold);
+    }
+    .btn-outline-gold:hover {
+      background: rgba(201,168,76,0.1);
+      transform: translateY(-1px);
+    }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(201,168,76,0.3);
+      background: rgba(201,168,76,0.08);
+      font-size: 0.8rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.4); }
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    h1 .accent {
+      color: var(--gold);
+      display: block;
+    }
+
+    .hero-sub {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 520px;
+      line-height: 1.7;
+      margin-bottom: 56px;
+      font-weight: 300;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    /* Portal cards */
+    .portal-cards {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeUp 0.6s 0.3s ease both;
+      margin-bottom: 64px;
+    }
+
+    .portal-card {
+      background: var(--dark2);
+      border: 1px solid rgba(139,148,158,0.15);
+      border-radius: 16px;
+      padding: 32px 28px;
+      width: 240px;
+      text-align: left;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .portal-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(201,168,76,0.06) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .portal-card:hover {
+      border-color: rgba(201,168,76,0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+
+    .portal-card:hover::before { opacity: 1; }
+
+    .card-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+
+    .card-icon.student { background: rgba(63,185,80,0.15); }
+    .card-icon.company { background: rgba(88,166,255,0.15); }
+    .card-icon.staff   { background: rgba(201,168,76,0.15); }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .card-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .card-btn-primary {
+      background: var(--gold);
+      color: var(--dark);
+    }
+    .card-btn-primary:hover {
+      background: var(--gold-light);
+    }
+
+    .card-btn-secondary {
+      background: var(--dark3);
+      color: var(--text-muted);
+      border: 1px solid rgba(139,148,158,0.2);
+    }
+    .card-btn-secondary:hover {
+      color: var(--text);
+      border-color: rgba(201,168,76,0.3);
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      display: flex;
+      gap: 48px;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 32px 48px;
+      border-top: 1px solid rgba(139,148,158,0.1);
+      border-bottom: 1px solid rgba(139,148,158,0.1);
+      background: rgba(22,27,34,0.6);
+      animation: fadeUp 0.6s 0.4s ease both;
+    }
+
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gold);
+      display: block;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* Process section */
+    .section {
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      margin: 80px auto;
+      padding: 0 24px;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 48px;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+    }
+
+    .step {
+      background: var(--dark2);
+      border: 1px solid rgba(139,148,158,0.1);
+      border-radius: 12px;
+      padding: 28px 24px;
+      position: relative;
+      transition: border-color 0.3s;
+    }
+
+    .step:hover { border-color: rgba(201,168,76,0.3); }
+
+    .step-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: rgba(201,168,76,0.2);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .step-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .step-desc {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 40px 24px;
+      border-top: 1px solid rgba(139,148,158,0.1);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    footer strong { color: var(--gold); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-logo">UWI <span>Internship Portal</span></div>
+    <div class="nav-links">
+      <a href="/login" class="btn btn-ghost">Sign In</a>
+      <a href="/register/student" class="btn btn-gold">Apply Now</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-badge">Department of Computing &amp; Information Technology</div>
+
+    <h1>
+      Launch Your Career
+      <span class="accent">With Purpose.</span>
+    </h1>
+
+    <p class="hero-sub">
+      The UWI Internship Portal connects talented students with industry partners — 
+      streamlining every step from application to placement.
+    </p>
+
+    <div class="portal-cards">
+      <a href="/register/student" class="portal-card">
+        <div class="card-icon student">🎓</div>
+        <div class="card-title">Students</div>
+        <div class="card-desc">Apply for internships, upload documents, and track your placement status.</div>
+        <div class="card-actions">
+          <a href="/register/student" class="card-btn card-btn-primary">Register</a>
+          <a href="/login" class="card-btn card-btn-secondary">Sign In</a>
+        </div>
+      </a>
+
+      <a href="/register/company" class="portal-card">
+        <div class="card-icon company">🏢</div>
+        <div class="card-title">Companies</div>
+        <div class="card-desc">Post internship positions, review applicants, and hire top talent.</div>
+        <div class="card-actions">
+          <a href="/register/company" class="card-btn card-btn-primary">Register</a>
+          <a href="/login" class="card-btn card-btn-secondary">Sign In</a>
+        </div>
+      </a>
+
+      <a href="/login" class="portal-card">
+        <div class="card-icon staff">⚙️</div>
+        <div class="card-title">Staff</div>
+        <div class="card-desc">Manage the internship programme, match students, and oversee placements.</div>
+        <div class="card-actions">
+          <a href="/login" class="card-btn card-btn-primary">Sign In</a>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <span class="stat-num">3</span>
+      <span class="stat-label">User Roles</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">100%</span>
+      <span class="stat-label">UWI Only</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">PDF</span>
+      <span class="stat-label">Secure Uploads</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">JWT</span>
+      <span class="stat-label">Auth Protected</span>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section-label">How It Works</div>
+    <div class="section-title">Student Workflow</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-title">Register &amp; Login</div>
+        <div class="step-desc">Create your account using your UWI student email address.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-title">Upload Documents</div>
+        <div class="step-desc">Upload your CV and official transcript in PDF format.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-title">Apply to Projects</div>
+        <div class="step-desc">Browse available internship positions and submit your application.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-title">Track Status</div>
+        <div class="step-desc">Monitor your application status from applied through to hired.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">05</div>
+        <div class="step-title">Submit Reports</div>
+        <div class="step-desc">Once hired, upload weekly progress reports to your supervisor.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 <strong>UWI Internship Portal</strong> · Department of Computing &amp; Information Technology</p>
+  </footer>
+
+</body>
+</html>

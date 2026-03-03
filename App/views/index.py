@@ -3,13 +3,17 @@ from flask import Blueprint, jsonify, render_template
 index_views = Blueprint('index_views', __name__)
 
 @index_views.get('/')
+
 def home():
-    try:
-        return render_template('index.html')
-    except Exception:
-        return jsonify({'message': 'Internship Platform API', 'status': 'ok'}), 200
+    return render_template('index.html')
+
+@index_views.get('/login')
+
+def login_page():
+    return render_template('login.html')
 
 @index_views.get('/health')
+
 def health():
     return jsonify({'status': 'ok'}), 200
 

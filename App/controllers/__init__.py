@@ -32,3 +32,14 @@ from .student import (
 )
 
 from .document import DocumentController
+
+from .project import (
+    get_project,
+    get_all_projects,
+    get_all_projects_json,
+    get_company_projects,
+    get_company_projects_json,
+    create_project,
+    update_project,
+    delete_project
+)

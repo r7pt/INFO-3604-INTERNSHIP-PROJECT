@@ -43,6 +43,7 @@ from .project import (
     update_project,
     delete_project
 )
+)
 
 from .evaluation import (
     get_evaluation,

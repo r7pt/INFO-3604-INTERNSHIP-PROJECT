@@ -11,6 +11,13 @@ from App.controllers.document import DocumentController
 from App.models.project import Project
 from App.models.weeklyreport import WeeklyReport
 
+from App.models.student_application import Student_application
+from App.models.shortlist import Shortlist
+from App.controllers.shortlist import *
+from App.models.Meeting import Meeting
+from App.models.weekly_report import WeeklyReport
+from App.controllers.weekly_report import *
+
 student_views = Blueprint('student_views', __name__, url_prefix='/api/student')
 
 
@@ -165,7 +172,7 @@ def api_weekly_reports_list():
 @jwt_required()
 def api_weekly_reports_create():
     if current_user is None:
-        return _json_error('Not authenticated', 401)
+        return _json_errEor('Not authenticated', 401)
     if getattr(current_user, 'role', None) != 'student':
         return _json_error('Forbidden', 403)
 
@@ -223,3 +230,38 @@ def api_weekly_reports_create():
         return _json_error('Failed to create weekly report', 500)
 
     return jsonify({'message': 'Weekly report uploaded', 'weekly_report': report.get_json()}), 201
+
+
+@student_views.get('/dashboard')
+@jwt_required()
+def student_dashboard():
+    if current_user is None:
+        return _json_errEor('Not authenticated', 401)
+    if getattr(current_user, 'role', None) != 'student':
+        return _json_error('Forbidden', 403)
+    try:
+        student_id= getattr(current_user, 'id', None) 
+        application = get_application_by_student_id(current_user.id)
+        if application.status :
+            application_submitted = 1
+        else:
+            application_submitted = "not submitted"
+        shortlists = get_shortlists_by_student(current_user.id)
+        accepted_projects = [for shortlist in shortlists if shortlist.status  = 'accepted']
+        num_accepted_projects = len(accepted_projects)
+        upcoming_interviews= [for shortlist in shortlists if shortlist.interview_date != None and shortlist.interview_date < datetime.utcnow]
+        num_upcoming_interviews = len(interviews)
+        num_skills = len(application.skills)
+        weekly_reports = get_report_by_student(current_user.id)
+        upcoming_weekly_reports=  [for weekly_report in weekly_reports if weekly_report.due_date <= datetime.utcnow]
+        upcoming_meetings = Meeting.query.filter_by(student_id = current_user.id and due_date <=datetime.utcnow).order_by(WeeklyReport.due_date.asc()).all()
+        important_deadlines.append(upcoming_interviews,upcoming_meetings,upcoming_weekly_reports)
+        return jsonify(application_submitted,num_upcoming_interviews,num_accepted_projects,num_skills,important_deadlines),200
+    except Exception as e:
+        flash("an error occurred")
+        print("the foolowing error occured while getting dashboard", e)
+        return return _json_error('Failed to get dashboard', 500)
+    
+
+    
+

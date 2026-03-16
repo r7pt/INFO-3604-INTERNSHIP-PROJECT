@@ -20,6 +20,7 @@ class Student_application(db.Model):
     year_of_study= db.Column(db.Integer,nullable=False)
     created_on = db.Column(db.Date,nullable=False,default =date.utcnow)
     resume = db.Column(db.String,nullable=False)
+    skills =db.db.Column(db.String,nullable=True)
     transcript = db.Column(db.String,nullable =False)
     status = db.Column(db.String,nullable=False,default="pending")
     created_at= db.Column(db.DateTime,default=db.DateTime.utcnow,nullable=False)
@@ -28,7 +29,7 @@ class Student_application(db.Model):
     __tablename__ ="student_application"
 
 
-    def __init__ (self,student_id,first_name,last_name,email,contact_number,covid_19_vaccination,summer_requirment,program,cover_letter,internship_credits,citizenship,profile_picture,returning_intern,year_of_study,resume,transcript):
+    def __init__ (self,student_id,first_name,last_name,email,contact_number,covid_19_vaccination,summer_requirment,program,cover_letter,internship_credits,citizenship,profile_picture,returning_intern,year_of_study,resume,skills=None,transcript):
         self.first_name = first_name
         self.student_id = student_id
         self.last_name=last_name
@@ -44,6 +45,7 @@ class Student_application(db.Model):
         self.returning_intern =returning_intern
         self.year_of_study=year_of_study
         self.resume=resume
+        self.skills=skills
         self.transcript=transcript
         self.status=status
 

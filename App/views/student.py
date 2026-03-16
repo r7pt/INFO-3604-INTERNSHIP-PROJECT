@@ -1,11 +1,5 @@
-import os
-from datetime import datetime
-
 from flask import Blueprint, jsonify, request, current_app
-from werkzeug.utils import secure_filename
-
 from flask_jwt_extended import jwt_required, current_user
-
 from App.database import db
 from App.controllers.auth import register_student, login
 from App.controllers.student import (
@@ -13,6 +7,7 @@ from App.controllers.student import (
     upload_student_transcript,
     get_student_application_status
 )
+from App.controllers.document import DocumentController
 from App.models.project import Project
 from App.models.weeklyreport import WeeklyReport
 
@@ -31,35 +26,6 @@ def _json_error(message, status=400, extra=None):
     if extra:
         payload.update(extra)
     return jsonify(payload), status
-
-
-def _ensure_upload_path(student_id, category):
-    base_dir = os.path.join(current_app.instance_path, 'uploads', str(student_id), category)
-    os.makedirs(base_dir, exist_ok=True)
-    return base_dir
-
-
-def _save_pdf(file_storage, student_id, category, filename_prefix=None):
-    if file_storage is None:
-        return None, _json_error('Missing file', 400)
-
-    original = file_storage.filename or ''
-    safe_name = secure_filename(original)
-
-    if not safe_name.lower().endswith('.pdf'):
-        return None, _json_error('Only PDF files are allowed', 400)
-
-    prefix = filename_prefix or category
-    ts = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
-    final_name = f"{prefix}_{ts}_{safe_name}"
-
-    target_dir = _ensure_upload_path(student_id, category)
-    abs_path = os.path.join(target_dir, final_name)
-    file_storage.save(abs_path)
-
-    rel_path = os.path.relpath(abs_path, current_app.root_path)
-    rel_path = rel_path.replace('\\', '/')
-    return rel_path, None
 
 
 @student_views.post('/register')
@@ -99,6 +65,7 @@ def api_status():
     status = get_student_application_status(current_user.id)
     if status is None:
         return _json_error('Student not found', 404)
+
     return jsonify({'status': status}), 200
 
 
@@ -111,9 +78,17 @@ def api_upload_resume():
         return _json_error('Forbidden', 403)
 
     file_obj = request.files.get('file')
-    rel_path, err = _save_pdf(file_obj, current_user.id, 'resume')
-    if err:
-        return err
+
+    try:
+        rel_path = DocumentController.save_student_resume(
+            file_storage=file_obj,
+            student_id=current_user.id,
+            old_relative_path=getattr(current_user, 'resume_path', None)
+        )
+    except ValueError as e:
+        return _json_error(str(e), 400)
+    except Exception:
+        return _json_error('Failed to save resume file', 500)
 
     student = upload_student_resume(current_user.id, rel_path)
     if student is None:
@@ -131,9 +106,17 @@ def api_upload_transcript():
         return _json_error('Forbidden', 403)
 
     file_obj = request.files.get('file')
-    rel_path, err = _save_pdf(file_obj, current_user.id, 'transcript')
-    if err:
-        return err
+
+    try:
+        rel_path = DocumentController.save_student_transcript(
+            file_storage=file_obj,
+            student_id=current_user.id,
+            old_relative_path=getattr(current_user, 'transcript_path', None)
+        )
+    except ValueError as e:
+        return _json_error(str(e), 400)
+    except Exception:
+        return _json_error('Failed to save transcript file', 500)
 
     student = upload_student_transcript(current_user.id, rel_path)
     if student is None:
@@ -152,6 +135,7 @@ def api_apply():
 
     data = request.get_json(silent=True) or {}
     project_id = data.get('project_id')
+
     if project_id is None:
         return _json_error('project_id is required', 400)
 
@@ -165,7 +149,11 @@ def api_apply():
     current_user.current_internship_status = 'applied'
     db.session.commit()
 
-    return jsonify({'message': 'Application submitted', 'project_id': project.id, 'status': current_user.current_internship_status}), 200
+    return jsonify({
+        'message': 'Application submitted',
+        'project_id': project.id,
+        'status': current_user.current_internship_status
+    }), 200
 
 
 @student_views.get('/weekly-reports')
@@ -204,9 +192,16 @@ def api_weekly_reports_create():
     if project is None:
         return _json_error('Project not found', 404)
 
-    rel_path, err = _save_pdf(file_obj, current_user.id, 'weekly_reports', filename_prefix=f"week{week_number}")
-    if err:
-        return err
+    try:
+        rel_path = DocumentController.save_weekly_report(
+            file_storage=file_obj,
+            student_id=current_user.id,
+            week_number=week_number
+        )
+    except ValueError as e:
+        return _json_error(str(e), 400)
+    except Exception:
+        return _json_error('Failed to save weekly report file', 500)
 
     title = request.form.get('title')
     description = request.form.get('description')

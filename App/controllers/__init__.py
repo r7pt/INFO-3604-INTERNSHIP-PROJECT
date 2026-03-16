@@ -30,3 +30,5 @@ from .student import (
     filter_students,
     get_students_by_status
 )
+
+from .document import DocumentController

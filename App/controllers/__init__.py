@@ -43,3 +43,15 @@ from .project import (
     update_project,
     delete_project
 )
+)
+
+from .evaluation import (
+    get_evaluation,
+    get_company_evaluations,
+    get_company_evaluations_json,
+    get_project_evaluations,
+    get_student_evaluations,
+    create_evaluation,
+    update_evaluation,
+    delete_evaluation
+)

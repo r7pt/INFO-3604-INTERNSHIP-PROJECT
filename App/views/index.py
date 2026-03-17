@@ -29,3 +29,8 @@ def student_portal():
 @index_views.get('/company/dashboard')
 def company_dashboard():
     return render_template('company_dashboard.html')
+
+@index_views.get('/staff')
+@index_views.get('/staff/dashboard')
+def staff_dashboard():
+    return render_template('staff_dashboard.html')

@@ -9,12 +9,17 @@ class Company(db.Model):
     website = db.Column(db.String(256))
     category = db.Column(db.String(256))
     email = db.Column(db.String(256), nullable=False, unique=True, index=True)
+    password_hash = db.Column(db.String(256), nullable=False, default='')
 
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     projects = db.relationship('Project', backref='company', lazy=True)
     student_evaluations = db.relationship('StudentEvaluation', back_populates='company', lazy=True)
+
+    def check_password(self, password):
+        from werkzeug.security import check_password_hash
+        return check_password_hash(self.password_hash, password)
 
     def __init__(self, company_name, website=None, category=None, email=None):
         self.company_name = company_name

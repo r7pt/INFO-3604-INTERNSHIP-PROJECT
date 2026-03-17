@@ -26,6 +26,25 @@ def setup_jwt(app):
         identity = jwt_data.get("sub")
         if identity is None:
             return None
+
+       
+        if isinstance(identity, str) and identity.startswith("company:"):
+            try:
+                from App.models.company import Company
+                company_id = int(identity.split(":")[1])
+                return Company.query.get(company_id)
+            except Exception:
+                return None
+
+        
+        if isinstance(identity, str) and identity.startswith("staff:"):
+            try:
+                from App.models.staff import Staff
+                staff_id = int(identity.split(":")[1])
+                return Staff.query.get(staff_id)
+            except Exception:
+                return None
+
         try:
             user_id = int(identity)
         except Exception:
@@ -34,6 +53,13 @@ def setup_jwt(app):
 
     @jwt.additional_claims_loader
     def _add_claims(identity):
+        if isinstance(identity, str) and identity.startswith("company:"):
+            return {"role": "company"}
+
+        if isinstance(identity, str) and identity.startswith("staff:"):
+            return {"role": "staff"}
+
+       
         try:
             user_id = int(identity)
         except Exception:
@@ -123,13 +149,10 @@ def register_student(payload=None):
 
         if data.get("phone") is not None:
             student.phone = str(data["phone"]).strip()
-
         if data.get("gender") is not None:
             student.gender = str(data["gender"]).strip()
-
         if data.get("gpa") is not None:
             student.gpa = float(data["gpa"])
-
         if data.get("year_of_study") is not None:
             student.year_of_study = int(data["year_of_study"])
 
@@ -156,7 +179,7 @@ def register_student(payload=None):
 def login(payload=None):
     data = payload if payload is not None else (request.get_json(silent=True) or {})
 
-    email = (data.get("email") or data.get("username") or "").strip().lower()
+    email    = (data.get("email") or data.get("username") or "").strip().lower()
     password = data.get("password") or ""
 
     if not email or not password:

@@ -1,5 +1,7 @@
 from flask import Blueprint, jsonify, request, current_app
 from flask_jwt_extended import jwt_required, current_user
+from datetime import datetime
+
 from App.database import db
 from App.controllers.auth import register_student, login
 from App.controllers.student import (
@@ -10,13 +12,8 @@ from App.controllers.student import (
 from App.controllers.document import DocumentController
 from App.models.project import Project
 from App.models.weeklyreport import WeeklyReport
-
-from App.models.student_application import Student_application
 from App.models.shortlist import Shortlist
-from App.controllers.shortlist import *
 from App.models.Meeting import Meeting
-from App.models.weekly_report import WeeklyReport
-from App.controllers.weekly_report import *
 
 student_views = Blueprint('student_views', __name__, url_prefix='/api/student')
 
@@ -164,7 +161,9 @@ def api_weekly_reports_list():
     if getattr(current_user, 'role', None) != 'student':
         return _json_error('Forbidden', 403)
 
-    reports = WeeklyReport.query.filter_by(student_id=current_user.id).order_by(WeeklyReport.week_number.asc()).all()
+    reports = WeeklyReport.query.filter_by(
+        student_id=current_user.id
+    ).order_by(WeeklyReport.week_number.asc()).all()
     return jsonify({'weekly_reports': [r.get_json() for r in reports]}), 200
 
 
@@ -172,17 +171,17 @@ def api_weekly_reports_list():
 @jwt_required()
 def api_weekly_reports_create():
     if current_user is None:
-        return _json_errEor('Not authenticated', 401)
+        return _json_error('Not authenticated', 401)
     if getattr(current_user, 'role', None) != 'student':
         return _json_error('Forbidden', 403)
 
-    file_obj = request.files.get('file')
-    project_id = request.form.get('project_id')
+    file_obj    = request.files.get('file')
+    project_id  = request.form.get('project_id')
     week_number = request.form.get('week_number')
 
     if not project_id or not week_number:
         data = request.get_json(silent=True) or {}
-        project_id = project_id or data.get('project_id')
+        project_id  = project_id  or data.get('project_id')
         week_number = week_number or data.get('week_number')
 
     if not project_id or not week_number:
@@ -203,7 +202,7 @@ def api_weekly_reports_create():
     except Exception:
         return _json_error('Failed to save weekly report file', 500)
 
-    title = request.form.get('title')
+    title       = request.form.get('title')
     description = request.form.get('description')
     hours_worked = request.form.get('hours_worked')
 
@@ -212,6 +211,8 @@ def api_weekly_reports_create():
             hours_worked = float(hours_worked)
         except ValueError:
             return _json_error('hours_worked must be a number', 400)
+    else:
+        hours_worked = None
 
     try:
         report = WeeklyReport(
@@ -236,32 +237,53 @@ def api_weekly_reports_create():
 @jwt_required()
 def student_dashboard():
     if current_user is None:
-        return _json_errEor('Not authenticated', 401)
+        return _json_error('Not authenticated', 401)
     if getattr(current_user, 'role', None) != 'student':
         return _json_error('Forbidden', 403)
+
     try:
-        student_id= getattr(current_user, 'id', None) 
-        application = get_application_by_student_id(current_user.id)
-        if application.status :
-            application_submitted = 1
-        else:
-            application_submitted = "not submitted"
-        shortlists = get_shortlists_by_student(current_user.id)
-        accepted_projects = [for shortlist in shortlists if shortlist.status  = 'accepted']
-        num_accepted_projects = len(accepted_projects)
-        upcoming_interviews= [for shortlist in shortlists if shortlist.interview_date != None and shortlist.interview_date < datetime.utcnow]
-        num_upcoming_interviews = len(interviews)
-        num_skills = len(application.skills)
-        weekly_reports = get_report_by_student(current_user.id)
-        upcoming_weekly_reports=  [for weekly_report in weekly_reports if weekly_report.due_date <= datetime.utcnow]
-        upcoming_meetings = Meeting.query.filter_by(student_id = current_user.id and due_date <=datetime.utcnow).order_by(WeeklyReport.due_date.asc()).all()
-        important_deadlines.append(upcoming_interviews,upcoming_meetings,upcoming_weekly_reports)
-        return jsonify(application_submitted,num_upcoming_interviews,num_accepted_projects,num_skills,important_deadlines),200
+        now = datetime.utcnow()
+
+        # Application status
+        status = get_student_application_status(current_user.id)
+        application_submitted = status is not None and status.get('current_internship_status') != 'not_applied'
+
+        # Shortlists
+        shortlists = Shortlist.query.filter_by(student_id=current_user.id).all()
+        accepted_projects   = [s for s in shortlists if s.status == 'accepted']
+        upcoming_interviews = [
+            s for s in shortlists
+            if s.interview_date is not None and s.interview_date >= now
+        ]
+
+        # Weekly reports
+        weekly_reports = WeeklyReport.query.filter_by(
+            student_id=current_user.id
+        ).order_by(WeeklyReport.due_date.asc()).all()
+        upcoming_weekly_reports = [
+            r for r in weekly_reports
+            if r.due_date is not None and r.due_date >= now
+        ]
+
+        # Upcoming meetings
+        upcoming_meetings = Meeting.query.filter(
+            Meeting.student_id == current_user.id,
+            Meeting.meeting_date >= now
+        ).order_by(Meeting.meeting_date.asc()).all()
+
+        # Build combined deadlines list
+        important_deadlines = []
+        important_deadlines.extend([s.get_json() for s in upcoming_interviews])
+        important_deadlines.extend([m.get_json() for m in upcoming_meetings])
+        important_deadlines.extend([r.get_json() for r in upcoming_weekly_reports])
+
+        return jsonify({
+            'application_submitted':    application_submitted,
+            'num_upcoming_interviews':  len(upcoming_interviews),
+            'num_accepted_projects':    len(accepted_projects),
+            'important_deadlines':      important_deadlines,
+        }), 200
+
     except Exception as e:
-        flash("an error occurred")
-        print("the foolowing error occured while getting dashboard", e)
-        return return _json_error('Failed to get dashboard', 500)
-    
-
-    
-
+        print(f"Error getting dashboard: {e}")
+        return _json_error('Failed to get dashboard', 500)

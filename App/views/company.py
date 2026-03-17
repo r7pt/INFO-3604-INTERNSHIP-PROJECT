@@ -1,14 +1,12 @@
 import os
 from datetime import datetime
 from flask import Blueprint, jsonify, request, current_app
-from werkzeug.utils import secure_filename
-from flask_jwt_extended import jwt_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import jwt_required, current_user, create_access_token, create_refresh_token
 from App.database import db
 from App.models.company import Company
 from App.models.project import Project
 from App.models.shortlist import Shortlist
-from App.models.studentevaluation import StudentEvaluation
-from App.controllers.auth import login
 from App.controllers.project import (
     get_company_projects,
     create_project,
@@ -28,19 +26,9 @@ def _json_error(message, status=400, extra=None):
 def _require_company():
     if current_user is None:
         return None, _json_error('Not authenticated', 401)
-    if getattr(current_user, 'role', None) != 'company':
-        return None, _json_error('Forbidden – company access only', 403)
-
-    company = Company.query.filter_by(email=current_user.email).first()
-    if company is None:
-        return None, _json_error('Company profile not found', 404)
-
-    return company, None
-
-
-@company_views.post('/login')
-def api_company_login():
-    return login()
+    if not isinstance(current_user, Company):
+        return None, _json_error('Forbidden — company access only', 403)
+    return current_user, None
 
 
 @company_views.post('/register')
@@ -51,35 +39,29 @@ def api_company_register():
     if missing:
         return _json_error('Missing required fields', 400, {'missing': missing})
 
-    from App.models.user import User
-    from App.models.companyRegistration import CompanyRegistration
-
     email = str(data['email']).strip().lower()
 
-    if User.query.filter_by(email=email).first():
+    if Company.query.filter_by(email=email).first():
         return _json_error('Email already registered', 409)
 
     try:
-        from App.models.user import User as BaseUser
-        from werkzeug.security import generate_password_hash
-
-        user = BaseUser(email=email, password=data['password'], role='company')
-        db.session.add(user)
-
         company = Company(
             company_name=str(data['company_name']).strip(),
             email=email,
             website=data.get('website'),
             category=data.get('category')
         )
+        company.password_hash = generate_password_hash(str(data['password']), method='pbkdf2:sha256')
         db.session.add(company)
         db.session.commit()
     except Exception as e:
         db.session.rollback()
+        print(f"Company registration error: {e}")
         return _json_error('Registration failed', 500)
 
-    from App.controllers.auth import _issue_tokens
-    access, refresh = _issue_tokens(user)
+    access  = create_access_token(identity=f'company:{company.id}',
+                                  additional_claims={'role': 'company'})
+    refresh = create_refresh_token(identity=f'company:{company.id}')
 
     return jsonify({
         'message': 'Company registered successfully',
@@ -87,6 +69,31 @@ def api_company_register():
         'access_token': access,
         'refresh_token': refresh
     }), 201
+
+@company_views.post('/login')
+def api_company_login():
+    data = request.get_json(silent=True) or {}
+    email    = str(data.get('email', '')).strip().lower()
+    password = str(data.get('password', ''))
+
+    if not email or not password:
+        return _json_error('Email and password are required', 400)
+
+    company = Company.query.filter_by(email=email).first()
+    if company is None or not check_password_hash(company.password_hash, password):
+        return _json_error('Invalid email or password', 401)
+
+    access  = create_access_token(identity=f'company:{company.id}',
+                                  additional_claims={'role': 'company'})
+    refresh = create_refresh_token(identity=f'company:{company.id}')
+
+    return jsonify({
+        'message': 'Login successful',
+        'company': company.get_json(),
+        'access_token': access,
+        'refresh_token': refresh
+    }), 200
+
 
 
 @company_views.get('/me')
@@ -104,7 +111,6 @@ def api_company_projects():
     company, err = _require_company()
     if err:
         return err
-
     projects = get_company_projects(company.id)
     return jsonify({'projects': [p.get_json() for p in projects]}), 200
 
@@ -117,8 +123,7 @@ def api_company_create_project():
         return err
 
     data = request.get_json(silent=True) or {}
-    required = ['project_name', 'number_of_interns']
-    missing = [k for k in required if not data.get(k)]
+    missing = [k for k in ['project_name', 'number_of_interns'] if not data.get(k)]
     if missing:
         return _json_error('Missing required fields', 400, {'missing': missing})
 
@@ -201,14 +206,12 @@ def api_company_select_for_interview(shortlist_id):
         return _json_error('Forbidden', 403)
 
     data = request.get_json(silent=True) or {}
-    interview_date_str = data.get('interview_date')
     interview_date = None
-
-    if interview_date_str:
+    if data.get('interview_date'):
         try:
-            interview_date = datetime.fromisoformat(interview_date_str)
+            interview_date = datetime.fromisoformat(data['interview_date'])
         except ValueError:
-            return _json_error('Invalid interview_date format. Use ISO 8601 (e.g. 2026-03-12T14:30:00)', 400)
+            return _json_error('Invalid interview_date format. Use ISO 8601', 400)
 
     try:
         if interview_date:
@@ -240,9 +243,8 @@ def api_company_hire_student(shortlist_id):
 
     try:
         shortlist.mark_as_hired()
-        student = shortlist.student
-        if student:
-            student.current_internship_status = 'hired'
+        if shortlist.student:
+            shortlist.student.current_internship_status = 'hired'
         db.session.commit()
     except Exception:
         db.session.rollback()
@@ -267,7 +269,6 @@ def api_company_reject_student(shortlist_id):
         return _json_error('Forbidden', 403)
 
     data = request.get_json(silent=True) or {}
-
     try:
         shortlist.mark_as_rejected(reason=data.get('reason'))
         db.session.commit()

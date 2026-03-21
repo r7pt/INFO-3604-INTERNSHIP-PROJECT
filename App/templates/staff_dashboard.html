@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff Dashboard · UWI Internship Portal</title>
+    <title>Staff Dashboard · UWI Internship</title>
     <style>
+
         :root {
             --bg: #07131f;
             --panel: #102235;
             --panel-2: #132a41;
-            --border: rgba(255, 255, 255, 0.08);
+            --border: rgba(255,255,255,0.08);
             --text: #eaf2ff;
             --muted: #9db2c9;
             --accent: #49a6ff;
@@ -17,18 +18,12 @@
             --success: #35c67a;
             --warning: #f4b740;
             --danger: #ef5f6c;
-            --shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
-            --radius: 22px;
+            --shadow: 0 20px 45px rgba(0,0,0,0.28);
+            --radius: 20px;
         }
-
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; }
         html, body {
-            margin: 0;
-            padding: 0;
-            min-height: 100%;
+            margin: 0; padding: 0; min-height: 100%;
             font-family: Arial, Helvetica, sans-serif;
             background:
                 radial-gradient(circle at top left, rgba(73, 166, 255, 0.18), transparent 24%),
@@ -36,25 +31,9 @@
                 linear-gradient(180deg, #07131f 0%, #091624 100%);
             color: var(--text);
         }
-
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        button,
-        input,
-        textarea,
-        select {
-            font: inherit;
-        }
-
-        .shell {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            min-height: 100vh;
-        }
-
+        a { color: inherit; text-decoration: none; }
+        button, input, textarea, select { font: inherit; }
+        .shell { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
         .sidebar {
             background: rgba(8, 20, 32, 0.94);
             border-right: 1px solid var(--border);
@@ -62,561 +41,165 @@
             position: sticky;
             top: 0;
             height: 100vh;
+            overflow-y: auto;
         }
-
-        .brand {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 28px;
-        }
-
+        .brand { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
         .brand-badge {
-            display: inline-flex;
-            width: fit-content;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            border-radius: 999px;
-            background: rgba(73, 166, 255, 0.12);
-            color: #cfe7ff;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
+            display: inline-flex; width: fit-content; align-items: center; gap: 8px;
+            padding: 8px 12px; border-radius: 999px;
+            background: rgba(73, 166, 255, 0.12); color: #cfe7ff; font-size: 12px;
+            font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
         }
-
-        .brand h1 {
-            margin: 0;
-            font-size: 22px;
-            line-height: 1.2;
-        }
-
-        .brand p {
-            margin: 0;
-            color: var(--muted);
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .nav-group {
-            margin-top: 24px;
-        }
-
+        .brand h1 { margin: 0; font-size: 22px; line-height: 1.2; }
+        .brand p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+        .nav-group { margin-top: 24px; }
         .nav-title {
-            color: #7d96b0;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            margin-bottom: 10px;
-            font-weight: 700;
+            color: #7d96b0; font-size: 12px; text-transform: uppercase;
+            letter-spacing: 0.08em; margin-bottom: 10px; font-weight: 700;
         }
-
-        .nav-links {
-            display: grid;
-            gap: 8px;
-        }
-
+        .nav-links { display: grid; gap: 8px; }
         .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 14px;
-            border-radius: 14px;
-            color: #d9e7f5;
-            transition: 0.2s ease;
+            display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+            border-radius: 14px; color: #d9e7f5; transition: 0.2s ease;
             border: 1px solid transparent;
         }
-
-        .nav-link:hover,
-        .nav-link.active {
+        .nav-link:hover, .nav-link.active {
             background: rgba(73, 166, 255, 0.10);
             border-color: rgba(73, 166, 255, 0.25);
         }
-
         .sidebar-footer {
-            margin-top: 28px;
-            padding-top: 24px;
-            border-top: 1px solid var(--border);
-            display: grid;
-            gap: 10px;
+            margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border);
+            display: grid; gap: 10px;
         }
-
-        .sidebar-footer .small {
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .main {
-            padding: 28px;
-        }
-
+        .small { color: var(--muted); font-size: 13px; line-height: 1.5; }
+        .main { padding: 28px; }
         .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 16px; margin-bottom: 24px; flex-wrap: wrap;
         }
-
-        .topbar-left h2 {
-            margin: 0 0 6px 0;
-            font-size: 30px;
-            line-height: 1.15;
-        }
-
-        .topbar-left p {
-            margin: 0;
-            color: var(--muted);
-            max-width: 760px;
-            line-height: 1.6;
-        }
-
-        .topbar-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
+        .topbar-left h2 { margin: 0 0 6px 0; font-size: 30px; line-height: 1.15; }
+        .topbar-left p { margin: 0; color: var(--muted); max-width: 760px; line-height: 1.6; }
+        .topbar-actions { display: flex; gap: 10px; flex-wrap: wrap; }
         .btn {
-            border: none;
-            border-radius: 14px;
-            padding: 12px 16px;
-            cursor: pointer;
-            font-weight: 700;
-            transition: 0.2s ease;
+            border: none; border-radius: 14px; padding: 12px 16px; cursor: pointer;
+            font-weight: 700; transition: 0.2s ease;
         }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            color: #04101a;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            filter: brightness(1.03);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.06);
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-danger {
-            background: rgba(239, 95, 108, 0.14);
-            color: #ffb5bc;
-            border: 1px solid rgba(239, 95, 108, 0.25);
-        }
-
-        .btn-danger:hover {
-            background: rgba(239, 95, 108, 0.2);
-        }
-
-        .hero {
-            background: linear-gradient(135deg, rgba(22, 52, 82, 0.95), rgba(10, 28, 45, 0.95));
-            border: 1px solid var(--border);
-            border-radius: 28px;
-            padding: 28px;
-            box-shadow: var(--shadow);
-            display: grid;
-            grid-template-columns: 1.3fr 0.9fr;
-            gap: 20px;
-            margin-bottom: 24px;
-        }
-
-        .hero h3 {
-            margin: 0 0 10px 0;
-            font-size: 28px;
-            line-height: 1.15;
-        }
-
-        .hero p {
-            margin: 0;
-            color: #bfd2e8;
-            line-height: 1.7;
-            max-width: 760px;
-        }
-
-        .hero-note {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 18px;
-            align-self: stretch;
-        }
-
-        .hero-note h4 {
-            margin: 0 0 8px 0;
-            font-size: 16px;
-        }
-
-        .hero-note p {
-            margin: 0;
-            font-size: 14px;
-            color: var(--muted);
-            line-height: 1.6;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card,
-        .panel {
-            background: rgba(14, 28, 44, 0.92);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-        }
-
-        .stat-card {
-            padding: 20px;
-        }
-
-        .stat-label {
-            color: var(--muted);
-            font-size: 13px;
-            margin-bottom: 12px;
-        }
-
-        .stat-value {
-            font-size: 30px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .stat-subtext {
-            color: #bdd0e6;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .content-grid {
-            display: grid;
-            grid-template-columns: 1.05fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .panel {
-            padding: 22px;
-        }
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 18px;
-            flex-wrap: wrap;
-        }
-
-        .panel-header h3 {
-            margin: 0 0 6px 0;
-            font-size: 20px;
-        }
-
-        .panel-header p {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
-        .pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 7px 11px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
-            background: rgba(73, 166, 255, 0.1);
-            color: #cfe8ff;
-            border: 1px solid rgba(73, 166, 255, 0.18);
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 14px;
-        }
-
-        .field {
-            display: grid;
-            gap: 8px;
-        }
-
-        .field.full {
-            grid-column: 1 / -1;
-        }
-
-        .field label {
-            font-size: 13px;
-            color: #dbe8f6;
-            font-weight: 700;
-        }
-
-        .input,
-        .textarea,
-        .select {
-            width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--text);
-            border-radius: 14px;
-            padding: 13px 14px;
-            outline: none;
-        }
-
-        .textarea {
-            min-height: 110px;
-            resize: vertical;
-        }
-
-        .input::placeholder,
-        .textarea::placeholder {
-            color: #87a0ba;
-        }
-
-        .list {
-            display: grid;
-            gap: 14px;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 18px;
-        }
-
-        .card-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-
-        .card-title {
-            margin: 0;
-            font-size: 18px;
-        }
-
-        .card-subtitle {
-            margin: 4px 0 0 0;
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-        .meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .meta span {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid var(--border);
-            color: #d9e7f4;
-            border-radius: 999px;
-            padding: 7px 10px;
-            font-size: 12px;
-        }
-
-        .card p {
-            margin: 0;
-            color: #c9d8e7;
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 14px;
-        }
-
-        .status {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 11px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: capitalize;
-        }
-
-        .status-shortlisted,
-        .status-submitted {
-            background: rgba(73, 166, 255, 0.12);
-            color: #cfe8ff;
-        }
-
-        .status-interview_scheduled,
-        .status-interviewed,
-        .status-pending {
-            background: rgba(244, 183, 64, 0.14);
-            color: #ffd98a;
-        }
-
-        .status-hired,
-        .status-approved,
-        .status-completed {
-            background: rgba(53, 198, 122, 0.14);
-            color: #aef0ca;
-        }
-
-        .status-rejected,
-        .status-needs_revision,
-        .status-cancelled {
-            background: rgba(239, 95, 108, 0.14);
-            color: #ffbcc3;
-        }
-
-        .empty {
-            padding: 18px;
-            border-radius: 16px;
-            border: 1px dashed rgba(255, 255, 255, 0.16);
-            color: var(--muted);
-            line-height: 1.6;
-            background: rgba(255, 255, 255, 0.03);
-        }
-
+        .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #04101a; }
+        .btn-secondary { background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid var(--border); }
+        .btn-danger { background: rgba(239, 95, 108, 0.14); color: #ffb5bc; border: 1px solid rgba(239, 95, 108, 0.25); }
+        .btn:hover { transform: translateY(-1px); }
         .message-box {
-            margin-bottom: 18px;
-            border-radius: 16px;
-            padding: 14px 16px;
-            font-size: 14px;
-            line-height: 1.6;
-            display: none;
+            display: none; margin-bottom: 18px; padding: 14px 16px; border-radius: 16px;
+            border: 1px solid var(--border);
         }
-
-        .message-box.success {
+        .message-box.show { display: block; }
+        .message-box.success { background: rgba(53,198,122,0.12); border-color: rgba(53,198,122,0.25); color: #c7f5da; }
+        .message-box.error { background: rgba(239,95,108,0.12); border-color: rgba(239,95,108,0.25); color: #ffd2d6; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card {
+            background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+            padding: 20px; box-shadow: var(--shadow);
+        }
+        .stat-label { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; }
+        .stat-value { margin-top: 10px; font-size: 32px; font-weight: 800; }
+        .stat-subtext { margin-top: 8px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+        .hero, .panel {
+            background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        .hero { padding: 24px; margin-bottom: 24px; display: grid; gap: 16px; grid-template-columns: 1.5fr 1fr; }
+        .hero h3, .panel-header h3 { margin: 0 0 8px 0; font-size: 22px; }
+        .hero p, .panel-header p { margin: 0; color: var(--muted); line-height: 1.6; }
+        .hero-note {
+            background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+            border-radius: 16px; padding: 18px;
+        }
+        .content-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; }
+        .panel { padding: 22px; }
+        .panel-header {
+            display: flex; align-items: start; justify-content: space-between; gap: 16px; margin-bottom: 18px;
+        }
+        .pill {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
+            background: rgba(73,166,255,0.10); color: #cfe7ff; border: 1px solid rgba(73,166,255,0.25);
+        }
+        .field { display: grid; gap: 8px; margin-bottom: 14px; }
+        .field label { color: #dce8f6; font-size: 14px; font-weight: 700; }
+        .input, .textarea, .select {
+            width: 100%; border: 1px solid var(--border); background: var(--panel-2); color: var(--text);
+            border-radius: 14px; padding: 12px 14px;
+        }
+        .textarea { min-height: 120px; resize: vertical; }
+        .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+        .check-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+        .check-row {
+            display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+            border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+        }
+        .card-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+        .empty {
+            border: 1px dashed rgba(255,255,255,0.15); color: var(--muted);
+            border-radius: 16px; padding: 18px;
+        }
+        .list { display: grid; gap: 12px; }
+        .table-card {
+            background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 16px; padding: 16px;
+        }
+        .token-panel { margin-top: 18px; display: grid; gap: 14px; }
+        .wide { grid-column: 1 / -1; }
+        .page-only { display: none; }
+        body.page-overview .show-overview,
+        body.page-profile .show-profile,
+        body.page-documents .show-documents,
+        body.page-status .show-status,
+        body.page-reports .show-reports,
+        body.page-console .show-console,
+        body.page-projects .show-projects,
+        body.page-shortlist .show-shortlist,
+        body.page-announcements .show-announcements,
+        body.page-meetings .show-meetings {
             display: block;
-            background: rgba(53, 198, 122, 0.12);
-            border: 1px solid rgba(53, 198, 122, 0.24);
-            color: #b6f5cf;
         }
-
-        .message-box.error {
-            display: block;
-            background: rgba(239, 95, 108, 0.12);
-            border: 1px solid rgba(239, 95, 108, 0.24);
-            color: #ffc0c6;
-        }
-
-        .token-panel {
-            margin-top: 20px;
+        body.page-overview .grid-overview,
+        body.page-profile .grid-profile,
+        body.page-documents .grid-documents,
+        body.page-status .grid-status,
+        body.page-reports .grid-reports,
+        body.page-console .grid-console,
+        body.page-projects .grid-projects,
+        body.page-shortlist .grid-shortlist,
+        body.page-announcements .grid-announcements,
+        body.page-meetings .grid-meetings {
             display: grid;
-            gap: 12px;
+        }
+        .section-block { display: none; }
+        @media (max-width: 960px) {
+            .shell { grid-template-columns: 1fr; }
+            .sidebar { position: relative; height: auto; }
+            .content-grid, .form-grid, .check-grid, .hero { grid-template-columns: 1fr; }
         }
 
-        .token-panel textarea {
-            min-height: 90px;
-        }
-
-        .console {
-            background: #07111b;
-            border-radius: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 16px;
-            overflow: auto;
-            white-space: pre-wrap;
-            word-break: break-word;
-            color: #bfe4ff;
-            font-size: 13px;
-            line-height: 1.6;
-            min-height: 220px;
-        }
-
-        .footer-note {
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.6;
-            margin-top: 8px;
-        }
-
-        @media (max-width: 1180px) {
-            .stats {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-
-            .content-grid,
-            .hero {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 920px) {
-            .shell {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                position: relative;
-                height: auto;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
-
-            .main {
-                padding: 18px;
-            }
-        }
-
-        @media (max-width: 700px) {
-            .form-grid,
-            .stats {
-                grid-template-columns: 1fr;
-            }
-
-            .topbar-left h2 {
-                font-size: 24px;
-            }
-
-            .hero h3 {
-                font-size: 24px;
-            }
-        }
     </style>
 </head>
-<body>
+<body class="page-{{ active_page|default('overview') }}">
     <div class="shell">
         <aside class="sidebar">
             <div class="brand">
-                <div class="brand-badge">UWI Internship Portal</div>
-                <h1>Staff Dashboard</h1>
-                <p>
-                    Manage shortlists, announcements, meetings, and weekly report reviews
-                    from one place.
-                </p>
+                <span class="brand-badge">Staff Portal</span>
+                <h1>UWI Internship</h1>
+                <p>Manage student matching, announcements, meetings, and weekly report review from separate pages.</p>
             </div>
 
             <div class="nav-group">
                 <div class="nav-title">Dashboard</div>
                 <div class="nav-links">
-                    <a href="#overview" class="nav-link active">Overview</a>
-                    <a href="#shortlist" class="nav-link">Shortlists</a>
-                    <a href="#announcements" class="nav-link">Announcements</a>
-                    <a href="#meetings" class="nav-link">Meetings</a>
-                    <a href="#reports" class="nav-link">Weekly Reports</a>
-                    <a href="#console" class="nav-link">API Console</a>
+                    <a href="/staff/overview" class="nav-link {{ 'active' if active_page == 'overview' else '' }}">Overview</a>
+                    <a href="/staff/shortlists" class="nav-link {{ 'active' if active_page == 'shortlists' else '' }}">Shortlists</a>
+                    <a href="/staff/announcements" class="nav-link {{ 'active' if active_page == 'announcements' else '' }}">Announcements</a>
+                    <a href="/staff/meetings" class="nav-link {{ 'active' if active_page == 'meetings' else '' }}">Meetings</a>
+                    <a href="/staff/reports" class="nav-link {{ 'active' if active_page == 'reports' else '' }}">Weekly Reports</a>
+                    <a href="/staff/console" class="nav-link {{ 'active' if active_page == 'console' else '' }}">API Console</a>
                 </div>
             </div>
 
@@ -627,74 +210,42 @@
                     <a href="/login" class="nav-link">Sign In</a>
                 </div>
             </div>
-
-            <div class="sidebar-footer">
-                <div class="small">
-                    Review student progress, manage internship matches, and keep communication organized.
-                </div>
-                <button class="btn btn-secondary" id="logoutBtn" type="button">Sign Out</button>
-            </div>
         </aside>
 
         <main class="main">
-            <div class="topbar" id="overview">
+            <div class="topbar">
                 <div class="topbar-left">
-                    <h2 id="welcomeTitle">Welcome to your staff dashboard</h2>
-                    <p>
-                        Track shortlist activity, publish announcements, schedule meetings,
-                        and review intern reports.
-                    </p>
+                    <h2>{{ page_title }}</h2>
+                    <p>{{ page_subtitle }}</p>
                 </div>
                 <div class="topbar-actions">
-                    <button class="btn btn-secondary" type="button" id="refreshAllBtn">Refresh Data</button>
-                    <a class="btn btn-primary" href="#shortlist">Create Shortlist</a>
+                    <a class="btn btn-secondary" href="/staff/overview">Overview</a>
+                    <a class="btn btn-primary" href="/staff/shortlists">Create Shortlist</a>
                 </div>
             </div>
 
-            <section class="hero">
-                <div>
-                    <h3>Manage internship activity with clarity.</h3>
-                    <p>
-                        Keep student placement activity organized, monitor reporting progress,
-                        and handle staff actions from a single dashboard.
-                    </p>
-                </div>
-                <div class="hero-note">
-                    <h4>Quick Access</h4>
-                    <p>
-                        Use the sections below to create shortlist entries, post announcements,
-                        schedule meetings, and review weekly reports.
-                    </p>
-                </div>
-            </section>
-
             <div id="pageMessage" class="message-box"></div>
 
-            <section class="stats">
-                <div class="stat-card">
-                    <div class="stat-label">Shortlists</div>
-                    <div class="stat-value" id="shortlistCount">0</div>
-                    <div class="stat-subtext">Current shortlist entries under your account.</div>
+            <section class="hero section-block show-overview">
+                <div>
+                    <h3>Staff-first internship operations</h3>
+                    <p>Staff reviews student documents and handles matching. These pages separate shortlists, announcements, meetings, and report review into cleaner work areas.</p>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-label">Announcements</div>
-                    <div class="stat-value" id="announcementCount">0</div>
-                    <div class="stat-subtext">Announcements currently available in the portal.</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Meetings</div>
-                    <div class="stat-value" id="meetingCount">0</div>
-                    <div class="stat-subtext">Scheduled student meetings and follow-ups.</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Pending Reviews</div>
-                    <div class="stat-value" id="pendingReportCount">0</div>
-                    <div class="stat-subtext">Weekly reports waiting for review.</div>
+                <div class="hero-note">
+                    <h4 style="margin:0 0 8px 0;">Quick Access</h4>
+                    <p style="margin:0;">Use the left sidebar to move directly to the staff task you want to handle.</p>
                 </div>
             </section>
 
-            <section class="content-grid">
-                <div class="panel">
+            <section class="stats section-block show-overview">
+                <div class="stat-card"><div class="stat-label">Shortlists</div><div class="stat-value" id="shortlistCount">0</div><div class="stat-subtext">Current shortlist entries</div></div>
+                <div class="stat-card"><div class="stat-label">Announcements</div><div class="stat-value" id="announcementCount">0</div><div class="stat-subtext">Messages posted in portal</div></div>
+                <div class="stat-card"><div class="stat-label">Meetings</div><div class="stat-value" id="meetingCount">0</div><div class="stat-subtext">Scheduled student meetings</div></div>
+                <div class="stat-card"><div class="stat-label">Pending Reviews</div><div class="stat-value" id="pendingReportCount">0</div><div class="stat-subtext">Reports waiting for review</div></div>
+            </section>
+
+            <section class="content-grid section-block grid-overview">
+                <div class="panel wide">
                     <div class="panel-header">
                         <div>
                             <h3>Staff Access</h3>
@@ -702,170 +253,44 @@
                         </div>
                         <span class="pill">Staff Account</span>
                     </div>
-
-                    <div id="staffProfileCard" class="empty">
-                        Sign in and save your access token to begin.
-                    </div>
-
                     <div class="token-panel">
                         <div class="field">
-                            <label for="tokenInput">Access Token</label>
-                            <textarea id="tokenInput" class="textarea" placeholder="Paste your staff access token here..."></textarea>
+                            <label for="staffTokenInput">Access Token</label>
+                            <textarea id="staffTokenInput" class="textarea" placeholder="Paste your staff access token here..."></textarea>
                         </div>
                         <div class="card-actions">
-                            <button class="btn btn-primary" type="button" id="saveTokenBtn">Save Token</button>
-                            <button class="btn btn-secondary" type="button" id="clearTokenBtn">Clear Token</button>
+                            <button class="btn btn-primary" type="button" id="saveStaffTokenBtn">Save Token</button>
+                            <button class="btn btn-secondary" type="button" id="clearStaffTokenBtn">Clear Token</button>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <div class="panel" id="shortlist">
+            <section class="content-grid section-block grid-shortlists">
+                <div class="panel">
                     <div class="panel-header">
                         <div>
                             <h3>Create Shortlist Entry</h3>
                             <p>Match a student to a project and record supporting notes.</p>
                         </div>
-                        <span class="pill">POST /api/shortlist</span>
+                        <span class="pill">POST /api/staff/shortlists</span>
                     </div>
-
                     <form id="shortlistForm">
                         <div class="form-grid">
-                            <div class="field">
-                                <label for="student_id">Student ID *</label>
-                                <input id="student_id" class="input" required placeholder="e.g. 12">
-                            </div>
-
-                            <div class="field">
-                                <label for="project_id">Project ID *</label>
-                                <input id="project_id" class="input" required placeholder="e.g. 7">
-                            </div>
-
-                            <div class="field">
-                                <label for="shortlist_status">Status</label>
-                                <select id="shortlist_status" class="select">
-                                    <option value="shortlisted">shortlisted</option>
-                                    <option value="interview_scheduled">interview_scheduled</option>
-                                    <option value="interviewed">interviewed</option>
-                                    <option value="hired">hired</option>
-                                    <option value="rejected">rejected</option>
-                                </select>
-                            </div>
-
-                            <div class="field">
-                                <label for="match_score">Match Score</label>
-                                <input id="match_score" class="input" type="number" step="0.01" placeholder="e.g. 88.5">
-                            </div>
-
-                            <div class="field full">
-                                <label for="match_reason">Match Reason</label>
-                                <textarea id="match_reason" class="textarea" placeholder="Why is this student a good match for the position?"></textarea>
-                            </div>
-
-                            <div class="field full">
-                                <label for="staff_notes">Staff Notes</label>
-                                <textarea id="staff_notes" class="textarea" placeholder="Add any internal notes here..."></textarea>
-                            </div>
+                            <div class="field"><label for="student_id">Student ID *</label><input id="student_id" class="input"></div>
+                            <div class="field"><label for="project_id">Project ID *</label><input id="project_id" class="input"></div>
+                            <div class="field"><label for="match_score">Match Score</label><input id="match_score" class="input" type="number" step="0.01"></div>
+                            <div class="field"><label for="shortlist_status">Status</label><select id="shortlist_status" class="select"><option>shortlisted</option><option>interview_scheduled</option><option>interviewed</option><option>hired</option><option>rejected</option></select></div>
+                            <div class="field wide"><label for="match_reason">Match Reason</label><textarea id="match_reason" class="textarea"></textarea></div>
+                            <div class="field wide"><label for="staff_notes">Staff Notes</label><textarea id="staff_notes" class="textarea"></textarea></div>
                         </div>
-
-                        <div class="card-actions" style="margin-top: 18px;">
+                        <div class="card-actions">
                             <button class="btn btn-primary" type="submit">Create Shortlist</button>
                             <button class="btn btn-secondary" type="reset">Clear Form</button>
                         </div>
                     </form>
                 </div>
-            </section>
 
-            <section class="content-grid">
-                <div class="panel" id="announcements">
-                    <div class="panel-header">
-                        <div>
-                            <h3>Create Announcement</h3>
-                            <p>Post updates for students and companies.</p>
-                        </div>
-                        <span class="pill">POST /api/announcements</span>
-                    </div>
-
-                    <form id="announcementForm">
-                        <div class="form-grid">
-                            <div class="field full">
-                                <label for="announcement_title">Title</label>
-                                <input id="announcement_title" class="input" placeholder="e.g. Interview Schedule Update">
-                            </div>
-
-                            <div class="field full">
-                                <label for="announcement_body">Message</label>
-                                <textarea id="announcement_body" class="textarea" placeholder="Write your announcement here..."></textarea>
-                            </div>
-                        </div>
-
-                        <div class="card-actions" style="margin-top: 18px;">
-                            <button class="btn btn-primary" type="submit">Post Announcement</button>
-                            <button class="btn btn-secondary" type="reset">Clear Form</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="panel" id="meetings">
-                    <div class="panel-header">
-                        <div>
-                            <h3>Schedule Meeting</h3>
-                            <p>Create a student meeting and track its status.</p>
-                        </div>
-                        <span class="pill">POST /api/meetings</span>
-                    </div>
-
-                    <form id="meetingForm">
-                        <div class="form-grid">
-                            <div class="field">
-                                <label for="meeting_student_id">Student ID *</label>
-                                <input id="meeting_student_id" class="input" required placeholder="e.g. 12">
-                            </div>
-
-                            <div class="field">
-                                <label for="meeting_project_id">Project ID</label>
-                                <input id="meeting_project_id" class="input" placeholder="Optional">
-                            </div>
-
-                            <div class="field">
-                                <label for="scheduled_at">Scheduled At *</label>
-                                <input id="scheduled_at" class="input" type="datetime-local" required>
-                            </div>
-
-                            <div class="field">
-                                <label for="meeting_type">Meeting Type</label>
-                                <select id="meeting_type" class="select">
-                                    <option value="weekly">weekly</option>
-                                    <option value="check-in">check-in</option>
-                                    <option value="interview">interview</option>
-                                    <option value="review">review</option>
-                                </select>
-                            </div>
-
-                            <div class="field full">
-                                <label for="location">Location</label>
-                                <input id="location" class="input" placeholder="Room or meeting location">
-                            </div>
-
-                            <div class="field full">
-                                <label for="meeting_link">Meeting Link</label>
-                                <input id="meeting_link" class="input" placeholder="Online meeting link if applicable">
-                            </div>
-
-                            <div class="field full">
-                                <label for="agenda">Agenda</label>
-                                <textarea id="agenda" class="textarea" placeholder="Add meeting agenda or notes..."></textarea>
-                            </div>
-                        </div>
-
-                        <div class="card-actions" style="margin-top: 18px;">
-                            <button class="btn btn-primary" type="submit">Schedule Meeting</button>
-                            <button class="btn btn-secondary" type="reset">Clear Form</button>
-                        </div>
-                    </form>
-                </div>
-            </section>
-
-            <section class="content-grid">
                 <div class="panel">
                     <div class="panel-header">
                         <div>
@@ -877,6 +302,27 @@
                     <div id="shortlistsList" class="list">
                         <div class="empty">No shortlist entries loaded yet.</div>
                     </div>
+                </div>
+            </section>
+
+            <section class="content-grid section-block grid-announcements">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h3>Create Announcement</h3>
+                            <p>Post updates for students and companies.</p>
+                        </div>
+                        <span class="pill">POST /api/staff/announcements</span>
+                    </div>
+                    <form id="announcementForm">
+                        <div class="field"><label for="announcement_title">Title</label><input id="announcement_title" class="input"></div>
+                        <div class="field"><label for="announcement_audience">Audience</label><select id="announcement_audience" class="select"><option value="all">all</option><option value="students">students</option><option value="companies">companies</option></select></div>
+                        <div class="field"><label for="announcement_message">Message</label><textarea id="announcement_message" class="textarea"></textarea></div>
+                        <div class="card-actions">
+                            <button class="btn btn-primary" type="submit">Post Announcement</button>
+                            <button class="btn btn-secondary" type="reset">Clear Form</button>
+                        </div>
+                    </form>
                 </div>
 
                 <div class="panel">
@@ -893,7 +339,32 @@
                 </div>
             </section>
 
-            <section class="content-grid">
+            <section class="content-grid section-block grid-meetings">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h3>Schedule Meeting</h3>
+                            <p>Create a student meeting and track its status.</p>
+                        </div>
+                        <span class="pill">POST /api/staff/meetings</span>
+                    </div>
+                    <form id="meetingForm">
+                        <div class="form-grid">
+                            <div class="field"><label for="meeting_student_id">Student ID *</label><input id="meeting_student_id" class="input"></div>
+                            <div class="field"><label for="meeting_project_id">Project ID</label><input id="meeting_project_id" class="input"></div>
+                            <div class="field"><label for="meeting_scheduled_at">Scheduled At *</label><input id="meeting_scheduled_at" class="input" type="datetime-local"></div>
+                            <div class="field"><label for="meeting_type">Meeting Type</label><select id="meeting_type" class="select"><option>weekly</option><option>check-in</option><option>interview</option><option>review</option></select></div>
+                            <div class="field"><label for="meeting_location">Location</label><input id="meeting_location" class="input"></div>
+                            <div class="field"><label for="meeting_link">Meeting Link</label><input id="meeting_link" class="input"></div>
+                            <div class="field wide"><label for="meeting_agenda">Agenda</label><textarea id="meeting_agenda" class="textarea"></textarea></div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-primary" type="submit">Schedule Meeting</button>
+                            <button class="btn btn-secondary" type="reset">Clear Form</button>
+                        </div>
+                    </form>
+                </div>
+
                 <div class="panel">
                     <div class="panel-header">
                         <div>
@@ -906,8 +377,10 @@
                         <div class="empty">No meetings loaded yet.</div>
                     </div>
                 </div>
+            </section>
 
-                <div class="panel" id="reports">
+            <section class="content-grid section-block grid-reports">
+                <div class="panel">
                     <div class="panel-header">
                         <div>
                             <h3>Pending Weekly Reports</h3>
@@ -919,9 +392,7 @@
                         <div class="empty">No reports loaded yet.</div>
                     </div>
                 </div>
-            </section>
 
-            <section class="content-grid">
                 <div class="panel">
                     <div class="panel-header">
                         <div>
@@ -934,8 +405,10 @@
                         <div class="empty">No weekly reports loaded yet.</div>
                     </div>
                 </div>
+            </section>
 
-                <div class="panel" id="console">
+            <section class="content-grid section-block grid-console">
+                <div class="panel wide">
                     <div class="panel-header">
                         <div>
                             <h3>API Console</h3>
@@ -943,710 +416,16 @@
                         </div>
                         <span class="pill">Developer Utility</span>
                     </div>
-
-                    <div class="card-actions" style="margin-top: 0; margin-bottom: 14px;">
-                        <button class="btn btn-secondary" type="button" data-console-action="shortlists">GET /shortlist</button>
-                        <button class="btn btn-secondary" type="button" data-console-action="announcements">GET /announcements</button>
-                        <button class="btn btn-secondary" type="button" data-console-action="meetings">GET /meetings</button>
-                        <button class="btn btn-secondary" type="button" data-console-action="pendingReports">GET /reports/pending</button>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary" type="button">GET /shortlists</button>
+                        <button class="btn btn-secondary" type="button">GET /announcements</button>
+                        <button class="btn btn-secondary" type="button">GET /meetings</button>
+                        <button class="btn btn-secondary" type="button">GET /weekly-reports</button>
                     </div>
-
-                    <div id="apiConsole" class="console">Ready.</div>
-                    <div class="footer-note">
-                        Use this section to inspect responses while testing staff features.
-                    </div>
+                    <pre id="staffConsoleOutput" class="empty">Ready.</pre>
                 </div>
             </section>
         </main>
     </div>
-
-    <script>
-        const TOKEN_KEY = 'internship_staff_access_token';
-
-        const pageMessage = document.getElementById('pageMessage');
-        const tokenInput = document.getElementById('tokenInput');
-        const apiConsole = document.getElementById('apiConsole');
-
-        const welcomeTitle = document.getElementById('welcomeTitle');
-        const staffProfileCard = document.getElementById('staffProfileCard');
-
-        const shortlistCount = document.getElementById('shortlistCount');
-        const announcementCount = document.getElementById('announcementCount');
-        const meetingCount = document.getElementById('meetingCount');
-        const pendingReportCount = document.getElementById('pendingReportCount');
-
-        const shortlistsList = document.getElementById('shortlistsList');
-        const announcementsList = document.getElementById('announcementsList');
-        const meetingsList = document.getElementById('meetingsList');
-        const reportsList = document.getElementById('reportsList');
-        const allReportsList = document.getElementById('allReportsList');
-
-        function getToken() {
-            return localStorage.getItem(TOKEN_KEY) || '';
-        }
-
-        function setToken(token) {
-            localStorage.setItem(TOKEN_KEY, token);
-            tokenInput.value = token;
-        }
-
-        function clearToken() {
-            localStorage.removeItem(TOKEN_KEY);
-            tokenInput.value = '';
-        }
-
-        function showMessage(message, type = 'success') {
-            pageMessage.className = 'message-box ' + type;
-            pageMessage.textContent = message;
-        }
-
-        function clearMessage() {
-            pageMessage.className = 'message-box';
-            pageMessage.textContent = '';
-        }
-
-        function statusClass(status) {
-            const safe = String(status || 'pending').toLowerCase().replace(/\s+/g, '_');
-            return 'status status-' + safe;
-        }
-
-        function formatDate(value) {
-            if (!value) return 'N/A';
-            const date = new Date(value);
-            if (Number.isNaN(date.getTime())) return value;
-            return date.toLocaleString();
-        }
-
-        function toIsoFromLocal(value) {
-            if (!value) return '';
-            const date = new Date(value);
-            if (Number.isNaN(date.getTime())) return value;
-            return date.toISOString().slice(0, 19);
-        }
-
-        async function apiFetch(url, options = {}) {
-            const token = getToken();
-
-            const headers = {
-                'Content-Type': 'application/json',
-                ...(options.headers || {})
-            };
-
-            if (token) {
-                headers['Authorization'] = 'Bearer ' + token;
-            }
-
-            const response = await fetch(url, {
-                ...options,
-                headers
-            });
-
-            let data = {};
-            try {
-                data = await response.json();
-            } catch (error) {
-                data = {};
-            }
-
-            if (!response.ok) {
-                const message = data.error || data.message || 'Request failed';
-                throw new Error(message);
-            }
-
-            return data;
-        }
-
-        function printConsole(data) {
-            apiConsole.textContent = JSON.stringify(data, null, 2);
-        }
-
-        function renderProfile() {
-            welcomeTitle.textContent = 'Welcome to your staff dashboard';
-            staffProfileCard.innerHTML = `
-                <div class="card">
-                    <div class="card-top">
-                        <div>
-                            <h4 class="card-title">Staff Session</h4>
-                            <p class="card-subtitle">Access saved in this browser</p>
-                        </div>
-                        <span class="pill">Staff</span>
-                    </div>
-                    <p>
-                        Manage student placements, announcements, meetings, and report reviews.
-                    </p>
-                </div>
-            `;
-        }
-
-        function renderShortlists(items) {
-            shortlistCount.textContent = items.length;
-
-            if (!items.length) {
-                shortlistsList.innerHTML = '<div class="empty">No shortlist entries found.</div>';
-                return;
-            }
-
-            shortlistsList.innerHTML = items.map(item => `
-                <div class="card">
-                    <div class="card-top">
-                        <div>
-                            <h4 class="card-title">Student ${item.student_id}</h4>
-                            <p class="card-subtitle">Project ${item.project_id} · Shortlist ${item.id}</p>
-                        </div>
-                        <span class="${statusClass(item.status)}">${item.status || 'shortlisted'}</span>
-                    </div>
-                    <div class="meta">
-                        <span>Match Score: ${item.match_score ?? 'N/A'}</span>
-                        <span>Interview Date: ${item.interview_date ? formatDate(item.interview_date) : 'N/A'}</span>
-                    </div>
-                    <p>${item.match_reason || item.staff_notes || 'No additional notes available.'}</p>
-                    <div class="card-actions">
-                        <button class="btn btn-secondary" type="button" onclick="scheduleInterview(${item.id})">Schedule Interview</button>
-                        <button class="btn btn-secondary" type="button" onclick="markInterviewed(${item.id})">Mark Interviewed</button>
-                        <button class="btn btn-primary" type="button" onclick="markHired(${item.id})">Hire</button>
-                        <button class="btn btn-danger" type="button" onclick="markRejected(${item.id})">Reject</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderAnnouncements(items) {
-            announcementCount.textContent = items.length;
-
-            if (!items.length) {
-                announcementsList.innerHTML = '<div class="empty">No announcements found.</div>';
-                return;
-            }
-
-            announcementsList.innerHTML = items.map(item => `
-                <div class="card">
-                    <div class="card-top">
-                        <div>
-                            <h4 class="card-title">${item.title || item.subject || 'Announcement'}</h4>
-                            <p class="card-subtitle">Announcement ${item.id}</p>
-                        </div>
-                        <span class="pill">${item.created_at ? formatDate(item.created_at) : 'Posted'}</span>
-                    </div>
-                    <p>${item.body || item.message || item.content || 'No message available.'}</p>
-                    <div class="card-actions">
-                        <button class="btn btn-danger" type="button" onclick="deleteAnnouncement(${item.id})">Delete</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderMeetings(items) {
-            meetingCount.textContent = items.length;
-
-            if (!items.length) {
-                meetingsList.innerHTML = '<div class="empty">No meetings found.</div>';
-                return;
-            }
-
-            meetingsList.innerHTML = items.map(item => `
-                <div class="card">
-                    <div class="card-top">
-                        <div>
-                            <h4 class="card-title">${item.meeting_type || 'Meeting'}</h4>
-                            <p class="card-subtitle">Student ${item.student_id} · Meeting ${item.id}</p>
-                        </div>
-                        <span class="${statusClass(item.status || 'pending')}">${item.status || 'pending'}</span>
-                    </div>
-                    <div class="meta">
-                        <span>Scheduled: ${item.scheduled_at ? formatDate(item.scheduled_at) : 'N/A'}</span>
-                        <span>Project: ${item.project_id ?? 'N/A'}</span>
-                        <span>Location: ${item.location || 'N/A'}</span>
-                    </div>
-                    <p>${item.agenda || item.notes || 'No agenda available.'}</p>
-                    <div class="card-actions">
-                        <button class="btn btn-secondary" type="button" onclick="addMeetingNotes(${item.id})">Add Notes</button>
-                        <button class="btn btn-primary" type="button" onclick="completeMeeting(${item.id})">Complete</button>
-                        <button class="btn btn-danger" type="button" onclick="cancelMeeting(${item.id})">Cancel</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderReports(items, targetElement, updatePending = false) {
-            if (updatePending) {
-                pendingReportCount.textContent = items.length;
-            }
-
-            if (!items.length) {
-                targetElement.innerHTML = '<div class="empty">No weekly reports found.</div>';
-                return;
-            }
-
-            targetElement.innerHTML = items.map(item => `
-                <div class="card">
-                    <div class="card-top">
-                        <div>
-                            <h4 class="card-title">${item.title || 'Weekly Report'}</h4>
-                            <p class="card-subtitle">Student ${item.student_id} · Project ${item.project_id}</p>
-                        </div>
-                        <span class="${statusClass(item.status || 'submitted')}">${item.status || 'submitted'}</span>
-                    </div>
-                    <div class="meta">
-                        <span>Week ${item.week_number ?? 'N/A'}</span>
-                        <span>Hours: ${item.hours_worked ?? 'N/A'}</span>
-                        <span>Submitted: ${item.submission_date ? formatDate(item.submission_date) : 'N/A'}</span>
-                    </div>
-                    <p>${item.description || item.staff_feedback || 'No description available.'}</p>
-                    <div class="card-actions">
-                        <button class="btn btn-secondary" type="button" onclick="addReportFeedback(${item.id})">Add Feedback</button>
-                        <button class="btn btn-primary" type="button" onclick="approveReport(${item.id})">Approve</button>
-                        <button class="btn btn-danger" type="button" onclick="requestRevision(${item.id})">Request Revision</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function loadShortlists() {
-            const data = await apiFetch('/api/shortlist', { method: 'GET' });
-            renderShortlists(data.shortlists || []);
-            printConsole(data);
-            return data;
-        }
-
-        async function loadAnnouncements() {
-            const data = await apiFetch('/api/announcements', { method: 'GET' });
-            renderAnnouncements(data.announcements || []);
-            printConsole(data);
-            return data;
-        }
-
-        async function loadMeetings() {
-            const data = await apiFetch('/api/meetings', { method: 'GET' });
-            renderMeetings(data.meetings || []);
-            printConsole(data);
-            return data;
-        }
-
-        async function loadPendingReports() {
-            const data = await apiFetch('/api/reports/pending', { method: 'GET' });
-            renderReports(data.weekly_reports || [], reportsList, true);
-            printConsole(data);
-            return data;
-        }
-
-        async function loadAllReports() {
-            const data = await apiFetch('/api/reports', { method: 'GET' });
-            renderReports(data.weekly_reports || [], allReportsList, false);
-            printConsole(data);
-            return data;
-        }
-
-        async function refreshAll() {
-            clearMessage();
-            try {
-                renderProfile();
-                await loadShortlists();
-                await loadAnnouncements();
-                await loadMeetings();
-                await loadPendingReports();
-                await loadAllReports();
-                showMessage('Dashboard data refreshed successfully.', 'success');
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message });
-            }
-        }
-
-        async function createShortlist(event) {
-            event.preventDefault();
-            clearMessage();
-
-            const payload = {
-                student_id: document.getElementById('student_id').value.trim(),
-                project_id: document.getElementById('project_id').value.trim(),
-                status: document.getElementById('shortlist_status').value,
-                match_score: document.getElementById('match_score').value || null,
-                match_reason: document.getElementById('match_reason').value.trim(),
-                staff_notes: document.getElementById('staff_notes').value.trim()
-            };
-
-            try {
-                const data = await apiFetch('/api/shortlist', {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-                showMessage(data.message || 'Shortlist entry created successfully.', 'success');
-                printConsole(data);
-                document.getElementById('shortlistForm').reset();
-                await loadShortlists();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, payload });
-            }
-        }
-
-        async function createAnnouncement(event) {
-            event.preventDefault();
-            clearMessage();
-
-            const payload = {
-                title: document.getElementById('announcement_title').value.trim(),
-                body: document.getElementById('announcement_body').value.trim()
-            };
-
-            try {
-                const data = await apiFetch('/api/announcements', {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-                showMessage(data.message || 'Announcement posted successfully.', 'success');
-                printConsole(data);
-                document.getElementById('announcementForm').reset();
-                await loadAnnouncements();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, payload });
-            }
-        }
-
-        async function createMeeting(event) {
-            event.preventDefault();
-            clearMessage();
-
-            const payload = {
-                student_id: document.getElementById('meeting_student_id').value.trim(),
-                project_id: document.getElementById('meeting_project_id').value.trim() || null,
-                scheduled_at: toIsoFromLocal(document.getElementById('scheduled_at').value),
-                meeting_type: document.getElementById('meeting_type').value,
-                location: document.getElementById('location').value.trim(),
-                meeting_link: document.getElementById('meeting_link').value.trim(),
-                agenda: document.getElementById('agenda').value.trim()
-            };
-
-            try {
-                const data = await apiFetch('/api/meetings', {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-                showMessage(data.message || 'Meeting scheduled successfully.', 'success');
-                printConsole(data);
-                document.getElementById('meetingForm').reset();
-                await loadMeetings();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, payload });
-            }
-        }
-
-        async function scheduleInterview(shortlistId) {
-            const interviewDate = prompt('Enter interview date and time in this format: 2026-03-20T10:00:00');
-            if (!interviewDate) return;
-
-            clearMessage();
-
-            try {
-                const data = await apiFetch('/api/shortlist/' + shortlistId + '/interview', {
-                    method: 'POST',
-                    body: JSON.stringify({ interview_date: interviewDate })
-                });
-                showMessage(data.message || 'Interview scheduled.', 'success');
-                printConsole(data);
-                await loadShortlists();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, shortlist_id: shortlistId });
-            }
-        }
-
-        async function markInterviewed(shortlistId) {
-            const interviewNotes = prompt('Enter interview notes:') || '';
-
-            clearMessage();
-
-            try {
-                const data = await apiFetch('/api/shortlist/' + shortlistId + '/interviewed', {
-                    method: 'POST',
-                    body: JSON.stringify({ interview_notes: interviewNotes })
-                });
-                showMessage(data.message || 'Student marked as interviewed.', 'success');
-                printConsole(data);
-                await loadShortlists();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, shortlist_id: shortlistId });
-            }
-        }
-
-        async function markHired(shortlistId) {
-            if (!confirm('Mark this student as hired?')) return;
-
-            clearMessage();
-
-            try {
-                const data = await apiFetch('/api/shortlist/' + shortlistId + '/hire', {
-                    method: 'POST'
-                });
-                showMessage(data.message || 'Student marked as hired.', 'success');
-                printConsole(data);
-                await loadShortlists();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, shortlist_id: shortlistId });
-            }
-        }
-
-        async function markRejected(shortlistId) {
-            const rejectionReason = prompt('Enter rejection reason:') || '';
-
-            clearMessage();
-
-            try {
-                const data = await apiFetch('/api/shortlist/' + shortlistId + '/reject', {
-                    method: 'POST',
-                    body: JSON.stringify({ rejection_reason: rejectionReason })
-                });
-                showMessage(data.message || 'Student marked as rejected.', 'success');
-                printConsole(data);
-                await loadShortlists();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, shortlist_id: shortlistId });
-            }
-        }
-
-        async function deleteAnnouncement(announcementId) {
-            if (!confirm('Delete this announcement?')) return;
-
-            clearMessage();
-
-            try {
-                const data = await apiFetch('/api/announcements/' + announcementId, {
-                    method: 'DELETE'
-                });
-                showMessage(data.message || 'Announcement deleted.', 'success');
-                printConsole(data);
-                await loadAnnouncements();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, announcement_id: announcementId });
-            }
-        }
-
-        async function addMeetingNotes(meetingId) {
-            const notes = prompt('Enter meeting notes:') || '';
-            if (!notes.trim()) return;
-
-            clearMessage();
-
-            try {
-                const data = await apiFetch('/api/meetings/' + meetingId + '/notes', {
-                    method: 'POST',
-                    body: JSON.stringify({ notes })
-                });
-                showMessage(data.message || 'Notes added.', 'success');
-                printConsole(data);
-                await loadMeetings();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, meeting_id: meetingId });
-            }
-        }
-
-        async function completeMeeting(meetingId) {
-            if (!confirm('Mark this meeting as completed?')) return;
-
-            clearMessage();
-
-            try {
-                const data = await apiFetch('/api/meetings/' + meetingId + '/complete', {
-                    method: 'POST'
-                });
-                showMessage(data.message || 'Meeting completed.', 'success');
-                printConsole(data);
-                await loadMeetings();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, meeting_id: meetingId });
-            }
-        }
-
-        async function cancelMeeting(meetingId) {
-            const reason = prompt('Enter cancellation reason:') || '';
-
-            clearMessage();
-
-            try {
-                const data = await apiFetch('/api/meetings/' + meetingId + '/cancel', {
-                    method: 'POST',
-                    body: JSON.stringify({ reason })
-                });
-                showMessage(data.message || 'Meeting cancelled.', 'success');
-                printConsole(data);
-                await loadMeetings();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, meeting_id: meetingId });
-            }
-        }
-
-        async function addReportFeedback(reportId) {
-            const feedback = prompt('Enter feedback for this report:') || '';
-            if (!feedback.trim()) return;
-
-            clearMessage();
-
-            try {
-                const data = await apiFetch('/api/reports/' + reportId + '/feedback', {
-                    method: 'POST',
-                    body: JSON.stringify({ feedback })
-                });
-                showMessage(data.message || 'Feedback added.', 'success');
-                printConsole(data);
-                await loadPendingReports();
-                await loadAllReports();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, report_id: reportId });
-            }
-        }
-
-        async function approveReport(reportId) {
-            if (!confirm('Approve this weekly report?')) return;
-
-            clearMessage();
-
-            try {
-                const data = await apiFetch('/api/reports/' + reportId + '/approve', {
-                    method: 'POST'
-                });
-                showMessage(data.message || 'Report approved.', 'success');
-                printConsole(data);
-                await loadPendingReports();
-                await loadAllReports();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, report_id: reportId });
-            }
-        }
-
-        async function requestRevision(reportId) {
-            const feedback = prompt('Enter revision feedback:') || '';
-            if (!feedback.trim()) return;
-
-            clearMessage();
-
-            try {
-                const data = await apiFetch('/api/reports/' + reportId + '/revision', {
-                    method: 'POST',
-                    body: JSON.stringify({ feedback })
-                });
-                showMessage(data.message || 'Revision requested.', 'success');
-                printConsole(data);
-                await loadPendingReports();
-                await loadAllReports();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, report_id: reportId });
-            }
-        }
-
-        async function runConsoleAction(action) {
-            clearMessage();
-
-            try {
-                let data;
-
-                if (action === 'shortlists') {
-                    data = await apiFetch('/api/shortlist', { method: 'GET' });
-                } else if (action === 'announcements') {
-                    data = await apiFetch('/api/announcements', { method: 'GET' });
-                } else if (action === 'meetings') {
-                    data = await apiFetch('/api/meetings', { method: 'GET' });
-                } else if (action === 'pendingReports') {
-                    data = await apiFetch('/api/reports/pending', { method: 'GET' });
-                }
-
-                printConsole(data);
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message });
-            }
-        }
-
-        document.getElementById('shortlistForm').addEventListener('submit', createShortlist);
-        document.getElementById('announcementForm').addEventListener('submit', createAnnouncement);
-        document.getElementById('meetingForm').addEventListener('submit', createMeeting);
-
-        document.getElementById('saveTokenBtn').addEventListener('click', () => {
-            const value = tokenInput.value.trim();
-            if (!value) {
-                showMessage('Please paste a token before saving.', 'error');
-                return;
-            }
-            setToken(value);
-            renderProfile();
-            showMessage('Access token saved locally in the browser.', 'success');
-        });
-
-        document.getElementById('clearTokenBtn').addEventListener('click', () => {
-            clearToken();
-            staffProfileCard.innerHTML = '<div class="empty">Sign in and save your access token to begin.</div>';
-            showMessage('Access token cleared.', 'success');
-        });
-
-        document.getElementById('refreshAllBtn').addEventListener('click', refreshAll);
-        document.getElementById('refreshShortlistsBtn').addEventListener('click', async () => {
-            try { await loadShortlists(); } catch (error) { showMessage(error.message, 'error'); }
-        });
-        document.getElementById('refreshAnnouncementsBtn').addEventListener('click', async () => {
-            try { await loadAnnouncements(); } catch (error) { showMessage(error.message, 'error'); }
-        });
-        document.getElementById('refreshMeetingsBtn').addEventListener('click', async () => {
-            try { await loadMeetings(); } catch (error) { showMessage(error.message, 'error'); }
-        });
-        document.getElementById('refreshReportsBtn').addEventListener('click', async () => {
-            try { await loadPendingReports(); } catch (error) { showMessage(error.message, 'error'); }
-        });
-        document.getElementById('refreshAllReportsBtn').addEventListener('click', async () => {
-            try { await loadAllReports(); } catch (error) { showMessage(error.message, 'error'); }
-        });
-
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            clearToken();
-            staffProfileCard.innerHTML = '<div class="empty">Sign in and save your access token to begin.</div>';
-            shortlistsList.innerHTML = '<div class="empty">No shortlist entries loaded yet.</div>';
-            announcementsList.innerHTML = '<div class="empty">No announcements loaded yet.</div>';
-            meetingsList.innerHTML = '<div class="empty">No meetings loaded yet.</div>';
-            reportsList.innerHTML = '<div class="empty">No reports loaded yet.</div>';
-            allReportsList.innerHTML = '<div class="empty">No weekly reports loaded yet.</div>';
-            shortlistCount.textContent = '0';
-            announcementCount.textContent = '0';
-            meetingCount.textContent = '0';
-            pendingReportCount.textContent = '0';
-            welcomeTitle.textContent = 'Welcome to your staff dashboard';
-            printConsole({ message: 'Signed out locally.' });
-            showMessage('Signed out locally. Your saved access token was removed.', 'success');
-        });
-
-        document.querySelectorAll('[data-console-action]').forEach(button => {
-            button.addEventListener('click', () => runConsoleAction(button.dataset.consoleAction));
-        });
-
-        window.scheduleInterview = scheduleInterview;
-        window.markInterviewed = markInterviewed;
-        window.markHired = markHired;
-        window.markRejected = markRejected;
-        window.deleteAnnouncement = deleteAnnouncement;
-        window.addMeetingNotes = addMeetingNotes;
-        window.completeMeeting = completeMeeting;
-        window.cancelMeeting = cancelMeeting;
-        window.addReportFeedback = addReportFeedback;
-        window.approveReport = approveReport;
-        window.requestRevision = requestRevision;
-
-        (function init() {
-            const token = getToken();
-            if (token) {
-                tokenInput.value = token;
-                renderProfile();
-                refreshAll();
-            }
-        })();
-    </script>
 </body>
 </html>

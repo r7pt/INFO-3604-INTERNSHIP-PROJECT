@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Company Dashboard · UWI Internship Portal</title>
+    <title>Company Dashboard · UWI Internship</title>
     <style>
+
         :root {
             --bg: #07131f;
-            --bg-soft: #0c1b2a;
             --panel: #102235;
             --panel-2: #132a41;
-            --panel-3: #173554;
-            --border: rgba(255, 255, 255, 0.08);
+            --border: rgba(255,255,255,0.08);
             --text: #eaf2ff;
             --muted: #9db2c9;
             --accent: #49a6ff;
@@ -19,45 +18,22 @@
             --success: #35c67a;
             --warning: #f4b740;
             --danger: #ef5f6c;
-            --shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
-            --radius: 22px;
-            --radius-sm: 14px;
+            --shadow: 0 20px 45px rgba(0,0,0,0.28);
+            --radius: 20px;
         }
-
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; }
         html, body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0; min-height: 100%;
+            font-family: Arial, Helvetica, sans-serif;
             background:
                 radial-gradient(circle at top left, rgba(73, 166, 255, 0.18), transparent 24%),
                 radial-gradient(circle at top right, rgba(110, 208, 255, 0.12), transparent 18%),
                 linear-gradient(180deg, #07131f 0%, #091624 100%);
             color: var(--text);
-            font-family: Arial, Helvetica, sans-serif;
-            min-height: 100%;
         }
-
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        button,
-        input,
-        textarea,
-        select {
-            font: inherit;
-        }
-
-        .shell {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            min-height: 100vh;
-        }
-
+        a { color: inherit; text-decoration: none; }
+        button, input, textarea, select { font: inherit; }
+        .shell { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
         .sidebar {
             background: rgba(8, 20, 32, 0.94);
             border-right: 1px solid var(--border);
@@ -65,578 +41,164 @@
             position: sticky;
             top: 0;
             height: 100vh;
+            overflow-y: auto;
         }
-
-        .brand {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 28px;
-        }
-
+        .brand { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
         .brand-badge {
-            display: inline-flex;
-            width: fit-content;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            border-radius: 999px;
-            background: rgba(73, 166, 255, 0.12);
-            color: #cfe7ff;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
+            display: inline-flex; width: fit-content; align-items: center; gap: 8px;
+            padding: 8px 12px; border-radius: 999px;
+            background: rgba(73, 166, 255, 0.12); color: #cfe7ff; font-size: 12px;
+            font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
         }
-
-        .brand h1 {
-            margin: 0;
-            font-size: 22px;
-            line-height: 1.2;
-        }
-
-        .brand p {
-            margin: 0;
-            color: var(--muted);
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .nav-group {
-            margin-top: 24px;
-        }
-
+        .brand h1 { margin: 0; font-size: 22px; line-height: 1.2; }
+        .brand p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+        .nav-group { margin-top: 24px; }
         .nav-title {
-            color: #7d96b0;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            margin-bottom: 10px;
-            font-weight: 700;
+            color: #7d96b0; font-size: 12px; text-transform: uppercase;
+            letter-spacing: 0.08em; margin-bottom: 10px; font-weight: 700;
         }
-
-        .nav-links {
-            display: grid;
-            gap: 8px;
-        }
-
+        .nav-links { display: grid; gap: 8px; }
         .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 14px;
-            border-radius: 14px;
-            color: #d9e7f5;
-            transition: 0.2s ease;
+            display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+            border-radius: 14px; color: #d9e7f5; transition: 0.2s ease;
             border: 1px solid transparent;
         }
-
-        .nav-link:hover,
-        .nav-link.active {
+        .nav-link:hover, .nav-link.active {
             background: rgba(73, 166, 255, 0.10);
             border-color: rgba(73, 166, 255, 0.25);
         }
-
         .sidebar-footer {
-            margin-top: 28px;
-            padding-top: 24px;
-            border-top: 1px solid var(--border);
-            display: grid;
-            gap: 10px;
+            margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border);
+            display: grid; gap: 10px;
         }
-
-        .sidebar-footer .small {
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .main {
-            padding: 28px;
-        }
-
+        .small { color: var(--muted); font-size: 13px; line-height: 1.5; }
+        .main { padding: 28px; }
         .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 16px; margin-bottom: 24px; flex-wrap: wrap;
         }
-
-        .topbar-left h2 {
-            margin: 0 0 6px 0;
-            font-size: 30px;
-            line-height: 1.15;
-        }
-
-        .topbar-left p {
-            margin: 0;
-            color: var(--muted);
-            max-width: 760px;
-            line-height: 1.6;
-        }
-
-        .topbar-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
+        .topbar-left h2 { margin: 0 0 6px 0; font-size: 30px; line-height: 1.15; }
+        .topbar-left p { margin: 0; color: var(--muted); max-width: 760px; line-height: 1.6; }
+        .topbar-actions { display: flex; gap: 10px; flex-wrap: wrap; }
         .btn {
-            border: none;
-            border-radius: 14px;
-            padding: 12px 16px;
-            cursor: pointer;
-            font-weight: 700;
-            transition: 0.2s ease;
+            border: none; border-radius: 14px; padding: 12px 16px; cursor: pointer;
+            font-weight: 700; transition: 0.2s ease;
         }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            color: #04101a;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            filter: brightness(1.03);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.06);
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-danger {
-            background: rgba(239, 95, 108, 0.14);
-            color: #ffb5bc;
-            border: 1px solid rgba(239, 95, 108, 0.25);
-        }
-
-        .btn-danger:hover {
-            background: rgba(239, 95, 108, 0.2);
-        }
-
-        .hero {
-            background: linear-gradient(135deg, rgba(22, 52, 82, 0.95), rgba(10, 28, 45, 0.95));
-            border: 1px solid var(--border);
-            border-radius: 28px;
-            padding: 28px;
-            box-shadow: var(--shadow);
-            display: grid;
-            grid-template-columns: 1.3fr 0.9fr;
-            gap: 20px;
-            margin-bottom: 24px;
-        }
-
-        .hero h3 {
-            margin: 0 0 10px 0;
-            font-size: 28px;
-            line-height: 1.15;
-        }
-
-        .hero p {
-            margin: 0;
-            color: #bfd2e8;
-            line-height: 1.7;
-            max-width: 760px;
-        }
-
-        .hero-note {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 18px;
-            align-self: stretch;
-        }
-
-        .hero-note h4 {
-            margin: 0 0 8px 0;
-            font-size: 16px;
-        }
-
-        .hero-note p {
-            margin: 0;
-            font-size: 14px;
-            color: var(--muted);
-            line-height: 1.6;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card,
-        .panel {
-            background: rgba(14, 28, 44, 0.92);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-        }
-
-        .stat-card {
-            padding: 20px;
-        }
-
-        .stat-label {
-            color: var(--muted);
-            font-size: 13px;
-            margin-bottom: 12px;
-        }
-
-        .stat-value {
-            font-size: 30px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .stat-subtext {
-            color: #bdd0e6;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .content-grid {
-            display: grid;
-            grid-template-columns: 1.1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .panel {
-            padding: 22px;
-        }
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 18px;
-            flex-wrap: wrap;
-        }
-
-        .panel-header h3 {
-            margin: 0 0 6px 0;
-            font-size: 20px;
-        }
-
-        .panel-header p {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
-        .pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 7px 11px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
-            background: rgba(73, 166, 255, 0.1);
-            color: #cfe8ff;
-            border: 1px solid rgba(73, 166, 255, 0.18);
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 14px;
-        }
-
-        .field {
-            display: grid;
-            gap: 8px;
-        }
-
-        .field.full {
-            grid-column: 1 / -1;
-        }
-
-        .field label {
-            font-size: 13px;
-            color: #dbe8f6;
-            font-weight: 700;
-        }
-
-        .input,
-        .textarea,
-        .select {
-            width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--text);
-            border-radius: 14px;
-            padding: 13px 14px;
-            outline: none;
-        }
-
-        .textarea {
-            min-height: 110px;
-            resize: vertical;
-        }
-
-        .input::placeholder,
-        .textarea::placeholder {
-            color: #87a0ba;
-        }
-
-        .checkbox-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 12px;
-            margin-top: 6px;
-        }
-
-        .check {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 14px;
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--border);
-            color: #dce7f4;
-            font-size: 14px;
-        }
-
-        .list {
-            display: grid;
-            gap: 14px;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 18px;
-        }
-
-        .card-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-
-        .card-title {
-            margin: 0;
-            font-size: 18px;
-        }
-
-        .card-subtitle {
-            margin: 4px 0 0 0;
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-        .meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .meta span {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid var(--border);
-            color: #d9e7f4;
-            border-radius: 999px;
-            padding: 7px 10px;
-            font-size: 12px;
-        }
-
-        .card p {
-            margin: 0;
-            color: #c9d8e7;
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 14px;
-        }
-
-        .status {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 11px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: capitalize;
-        }
-
-        .status-shortlisted,
-        .status-submitted {
-            background: rgba(73, 166, 255, 0.12);
-            color: #cfe8ff;
-        }
-
-        .status-interview_scheduled,
-        .status-interviewed,
-        .status-reviewed {
-            background: rgba(244, 183, 64, 0.14);
-            color: #ffd98a;
-        }
-
-        .status-hired,
-        .status-approved {
-            background: rgba(53, 198, 122, 0.14);
-            color: #aef0ca;
-        }
-
-        .status-rejected,
-        .status-needs_revision {
-            background: rgba(239, 95, 108, 0.14);
-            color: #ffbcc3;
-        }
-
-        .empty {
-            padding: 18px;
-            border-radius: 16px;
-            border: 1px dashed rgba(255, 255, 255, 0.16);
-            color: var(--muted);
-            line-height: 1.6;
-            background: rgba(255, 255, 255, 0.03);
-        }
-
+        .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #04101a; }
+        .btn-secondary { background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid var(--border); }
+        .btn-danger { background: rgba(239, 95, 108, 0.14); color: #ffb5bc; border: 1px solid rgba(239, 95, 108, 0.25); }
+        .btn:hover { transform: translateY(-1px); }
         .message-box {
-            margin-bottom: 18px;
-            border-radius: 16px;
-            padding: 14px 16px;
-            font-size: 14px;
-            line-height: 1.6;
-            display: none;
+            display: none; margin-bottom: 18px; padding: 14px 16px; border-radius: 16px;
+            border: 1px solid var(--border);
         }
-
-        .message-box.success {
+        .message-box.show { display: block; }
+        .message-box.success { background: rgba(53,198,122,0.12); border-color: rgba(53,198,122,0.25); color: #c7f5da; }
+        .message-box.error { background: rgba(239,95,108,0.12); border-color: rgba(239,95,108,0.25); color: #ffd2d6; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card {
+            background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+            padding: 20px; box-shadow: var(--shadow);
+        }
+        .stat-label { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; }
+        .stat-value { margin-top: 10px; font-size: 32px; font-weight: 800; }
+        .stat-subtext { margin-top: 8px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+        .hero, .panel {
+            background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        .hero { padding: 24px; margin-bottom: 24px; display: grid; gap: 16px; grid-template-columns: 1.5fr 1fr; }
+        .hero h3, .panel-header h3 { margin: 0 0 8px 0; font-size: 22px; }
+        .hero p, .panel-header p { margin: 0; color: var(--muted); line-height: 1.6; }
+        .hero-note {
+            background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+            border-radius: 16px; padding: 18px;
+        }
+        .content-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; }
+        .panel { padding: 22px; }
+        .panel-header {
+            display: flex; align-items: start; justify-content: space-between; gap: 16px; margin-bottom: 18px;
+        }
+        .pill {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
+            background: rgba(73,166,255,0.10); color: #cfe7ff; border: 1px solid rgba(73,166,255,0.25);
+        }
+        .field { display: grid; gap: 8px; margin-bottom: 14px; }
+        .field label { color: #dce8f6; font-size: 14px; font-weight: 700; }
+        .input, .textarea, .select {
+            width: 100%; border: 1px solid var(--border); background: var(--panel-2); color: var(--text);
+            border-radius: 14px; padding: 12px 14px;
+        }
+        .textarea { min-height: 120px; resize: vertical; }
+        .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+        .check-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+        .check-row {
+            display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+            border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+        }
+        .card-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+        .empty {
+            border: 1px dashed rgba(255,255,255,0.15); color: var(--muted);
+            border-radius: 16px; padding: 18px;
+        }
+        .list { display: grid; gap: 12px; }
+        .table-card {
+            background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 16px; padding: 16px;
+        }
+        .token-panel { margin-top: 18px; display: grid; gap: 14px; }
+        .wide { grid-column: 1 / -1; }
+        .page-only { display: none; }
+        body.page-overview .show-overview,
+        body.page-profile .show-profile,
+        body.page-documents .show-documents,
+        body.page-status .show-status,
+        body.page-reports .show-reports,
+        body.page-console .show-console,
+        body.page-projects .show-projects,
+        body.page-shortlist .show-shortlist,
+        body.page-announcements .show-announcements,
+        body.page-meetings .show-meetings {
             display: block;
-            background: rgba(53, 198, 122, 0.12);
-            border: 1px solid rgba(53, 198, 122, 0.24);
-            color: #b6f5cf;
         }
-
-        .message-box.error {
-            display: block;
-            background: rgba(239, 95, 108, 0.12);
-            border: 1px solid rgba(239, 95, 108, 0.24);
-            color: #ffc0c6;
-        }
-
-        .token-panel {
-            margin-top: 20px;
+        body.page-overview .grid-overview,
+        body.page-profile .grid-profile,
+        body.page-documents .grid-documents,
+        body.page-status .grid-status,
+        body.page-reports .grid-reports,
+        body.page-console .grid-console,
+        body.page-projects .grid-projects,
+        body.page-shortlist .grid-shortlist,
+        body.page-announcements .grid-announcements,
+        body.page-meetings .grid-meetings {
             display: grid;
-            gap: 12px;
+        }
+        .section-block { display: none; }
+        @media (max-width: 960px) {
+            .shell { grid-template-columns: 1fr; }
+            .sidebar { position: relative; height: auto; }
+            .content-grid, .form-grid, .check-grid, .hero { grid-template-columns: 1fr; }
         }
 
-        .token-panel textarea {
-            min-height: 90px;
-        }
-
-        .console {
-            background: #07111b;
-            border-radius: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 16px;
-            overflow: auto;
-            white-space: pre-wrap;
-            word-break: break-word;
-            color: #bfe4ff;
-            font-size: 13px;
-            line-height: 1.6;
-            min-height: 220px;
-        }
-
-        .footer-note {
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.6;
-            margin-top: 8px;
-        }
-
-        @media (max-width: 1180px) {
-            .stats {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-
-            .content-grid,
-            .hero {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 920px) {
-            .shell {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                position: relative;
-                height: auto;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
-
-            .main {
-                padding: 18px;
-            }
-        }
-
-        @media (max-width: 700px) {
-            .form-grid,
-            .checkbox-grid,
-            .stats {
-                grid-template-columns: 1fr;
-            }
-
-            .topbar-left h2 {
-                font-size: 24px;
-            }
-
-            .hero h3 {
-                font-size: 24px;
-            }
-        }
     </style>
 </head>
-<body>
+<body class="page-{{ active_page|default('overview') }}">
     <div class="shell">
         <aside class="sidebar">
             <div class="brand">
-                <div class="brand-badge">UWI Internship Portal</div>
-                <h1>Company Dashboard</h1>
-                <p>
-                    Manage your company profile, internship positions, shortlisted candidates,
-                    and intern reports from one place.
-                </p>
+                <span class="brand-badge">Company Portal</span>
+                <h1>UWI Internship</h1>
+                <p>Manage internship opportunities, review shortlisted students, and follow intern progress.</p>
             </div>
 
             <div class="nav-group">
                 <div class="nav-title">Dashboard</div>
                 <div class="nav-links">
-                    <a href="#overview" class="nav-link active">Overview</a>
-                    <a href="#projects" class="nav-link">Projects</a>
-                    <a href="#shortlist" class="nav-link">Shortlisted Students</a>
-                    <a href="#reports" class="nav-link">Weekly Reports</a>
-                    <a href="#console" class="nav-link">API Console</a>
+                    <a href="/company/overview" class="nav-link {{ 'active' if active_page == 'overview' else '' }}">Overview</a>
+                    <a href="/company/projects" class="nav-link {{ 'active' if active_page == 'projects' else '' }}">Projects</a>
+                    <a href="/company/shortlist" class="nav-link {{ 'active' if active_page == 'shortlist' else '' }}">Shortlisted Students</a>
+                    <a href="/company/reports" class="nav-link {{ 'active' if active_page == 'reports' else '' }}">Weekly Reports</a>
+                    <a href="/company/console" class="nav-link {{ 'active' if active_page == 'console' else '' }}">API Console</a>
                 </div>
             </div>
 
@@ -648,75 +210,42 @@
                     <a href="/register/company" class="nav-link">Company Registration</a>
                 </div>
             </div>
-
-            <div class="sidebar-footer">
-                <div class="small">
-                    Review shortlisted students, update internship opportunities,
-                    and keep track of current intern activity.
-                </div>
-                <button class="btn btn-secondary" id="logoutBtn" type="button">Sign Out</button>
-            </div>
         </aside>
 
         <main class="main">
-            <div class="topbar" id="overview">
+            <div class="topbar">
                 <div class="topbar-left">
-                    <h2 id="welcomeTitle">Welcome to your company dashboard</h2>
-                    <p>
-                        View your current internship positions, manage candidate updates,
-                        and monitor intern progress from a single workspace.
-                    </p>
+                    <h2>{{ page_title }}</h2>
+                    <p>{{ page_subtitle }}</p>
                 </div>
                 <div class="topbar-actions">
-                    <button class="btn btn-secondary" type="button" id="refreshAllBtn">Refresh Data</button>
-                    <a class="btn btn-primary" href="#projects">Create Project</a>
+                    <a class="btn btn-secondary" href="/company/overview">Overview</a>
+                    <a class="btn btn-primary" href="/company/projects">Projects</a>
                 </div>
             </div>
 
-            <section class="hero">
-                <div>
-                    <h3>Manage your internship opportunities with ease.</h3>
-                    <p>
-                        Keep your company information up to date, create internship positions,
-                        respond to shortlisted candidates, and view weekly intern submissions.
-                    </p>
-                </div>
-                <div class="hero-note">
-                    <h4>Quick Access</h4>
-                    <p>
-                        Use the sections below to manage projects, review shortlisted students,
-                        and check reports submitted during the internship period.
-                    </p>
-                </div>
-            </section>
-
             <div id="pageMessage" class="message-box"></div>
 
-            <section class="stats">
-                <div class="stat-card">
-                    <div class="stat-label">Active Projects</div>
-                    <div class="stat-value" id="projectCount">0</div>
-                    <div class="stat-subtext">Internship positions currently listed under your company.</div>
+            <section class="hero section-block show-overview">
+                <div>
+                    <h3>Manage opportunities from cleaner dedicated pages</h3>
+                    <p>This layout breaks the company portal into real routes so Projects, Shortlisted Students, Weekly Reports, and the API console are no longer mixed together on one long screen.</p>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-label">Shortlisted Students</div>
-                    <div class="stat-value" id="shortlistCount">0</div>
-                    <div class="stat-subtext">Students currently available for your review.</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Hired Candidates</div>
-                    <div class="stat-value" id="hiredCount">0</div>
-                    <div class="stat-subtext">Candidates marked as hired for internship placement.</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Weekly Reports</div>
-                    <div class="stat-value" id="reportCount">0</div>
-                    <div class="stat-subtext">Reports submitted by interns assigned to your company.</div>
+                <div class="hero-note">
+                    <h4 style="margin:0 0 8px 0;">Quick Access</h4>
+                    <p style="margin:0;">Use the left menu to move directly between the major company functions.</p>
                 </div>
             </section>
 
-            <section class="content-grid">
-                <div class="panel">
+            <section class="stats section-block show-overview">
+                <div class="stat-card"><div class="stat-label">Active Projects</div><div class="stat-value" id="projectCount">0</div><div class="stat-subtext">Internship positions currently listed</div></div>
+                <div class="stat-card"><div class="stat-label">Shortlisted Students</div><div class="stat-value" id="shortlistCount">0</div><div class="stat-subtext">Students sent for review</div></div>
+                <div class="stat-card"><div class="stat-label">Hired Candidates</div><div class="stat-value" id="hiredCount">0</div><div class="stat-subtext">Candidates marked hired</div></div>
+                <div class="stat-card"><div class="stat-label">Weekly Reports</div><div class="stat-value" id="reportCount">0</div><div class="stat-subtext">Intern reports submitted</div></div>
+            </section>
+
+            <section class="content-grid section-block grid-overview">
+                <div class="panel wide">
                     <div class="panel-header">
                         <div>
                             <h3>Company Profile</h3>
@@ -724,11 +253,7 @@
                         </div>
                         <span class="pill" id="companyRolePill">Company Account</span>
                     </div>
-
-                    <div id="companyProfileCard" class="empty">
-                        Sign in and save your access token to load company details.
-                    </div>
-
+                    <div id="companyProfileCard" class="empty">Sign in and save your access token to load company details.</div>
                     <div class="token-panel">
                         <div class="field">
                             <label for="tokenInput">Access Token</label>
@@ -741,8 +266,10 @@
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <div class="panel" id="projects">
+            <section class="content-grid section-block grid-projects">
+                <div class="panel">
                     <div class="panel-header">
                         <div>
                             <h3>Create Internship Project</h3>
@@ -753,73 +280,31 @@
 
                     <form id="projectForm">
                         <div class="form-grid">
-                            <div class="field">
-                                <label for="project_name">Project Name *</label>
-                                <input id="project_name" name="project_name" class="input" required placeholder="e.g. Data Analytics Internship">
-                            </div>
-
-                            <div class="field">
-                                <label for="number_of_interns">Number of Interns *</label>
-                                <input id="number_of_interns" name="number_of_interns" class="input" type="number" min="1" required placeholder="e.g. 2">
-                            </div>
-
-                            <div class="field">
-                                <label for="stipend">Stipend</label>
-                                <input id="stipend" name="stipend" class="input" type="number" step="0.01" placeholder="e.g. 3000">
-                            </div>
-
-                            <div class="field">
-                                <label for="project_category_hint">Category Hint</label>
-                                <input id="project_category_hint" class="input" placeholder="Optional display-only helper">
-                            </div>
-
-                            <div class="field full">
-                                <label for="description">Short Description</label>
-                                <textarea id="description" name="description" class="textarea" placeholder="Briefly describe the internship position..."></textarea>
-                            </div>
-
-                            <div class="field full">
-                                <label for="details">Project Details</label>
-                                <textarea id="details" name="details" class="textarea" placeholder="Add responsibilities, tools, expectations, or any other relevant details..."></textarea>
-                            </div>
+                            <div class="field"><label for="project_name">Project Name *</label><input id="project_name" name="project_name" class="input" required></div>
+                            <div class="field"><label for="number_of_interns">Number of Interns *</label><input id="number_of_interns" name="number_of_interns" class="input" type="number" required></div>
+                            <div class="field"><label for="stipend">Stipend</label><input id="stipend" name="stipend" class="input" type="number" step="0.01"></div>
+                            <div class="field"><label for="category_hint">Category Hint</label><input id="category_hint" name="category_hint" class="input"></div>
+                            <div class="field wide"><label for="description">Short Description</label><textarea id="description" name="description" class="textarea"></textarea></div>
+                            <div class="field wide"><label for="details">Project Details</label><textarea id="details" name="details" class="textarea"></textarea></div>
                         </div>
-
-                        <div class="checkbox-grid">
-                            <label class="check">
-                                <input type="checkbox" id="place_of_work" name="place_of_work">
-                                <span>On-site place of work required</span>
-                            </label>
-
-                            <label class="check">
-                                <input type="checkbox" id="international_students" name="international_students">
-                                <span>Open to international students</span>
-                            </label>
-
-                            <label class="check">
-                                <input type="checkbox" id="hired_after" name="hired_after">
-                                <span>Potential for employment after internship</span>
-                            </label>
-
-                            <label class="check">
-                                <input type="checkbox" id="covid_vaccination" name="covid_vaccination">
-                                <span>COVID vaccination required</span>
-                            </label>
+                        <div class="check-grid">
+                            <label class="check-row"><input id="place_of_work" type="checkbox"> On-site place of work required</label>
+                            <label class="check-row"><input id="international_students" type="checkbox"> Open to international students</label>
+                            <label class="check-row"><input id="hired_after" type="checkbox"> Potential for employment after internship</label>
+                            <label class="check-row"><input id="covid_vaccination" type="checkbox"> COVID vaccination required</label>
                         </div>
-
-                        <div class="card-actions" style="margin-top: 18px;">
+                        <div class="card-actions">
                             <button class="btn btn-primary" type="submit">Create Project</button>
                             <button class="btn btn-secondary" type="reset">Clear Form</button>
                         </div>
                     </form>
                 </div>
-            </section>
 
-            <section class="content-grid">
                 <div class="panel">
                     <div class="panel-header">
                         <div>
                             <h3>My Projects</h3>
-                            <p>View internship positions currently attached to your account.</p>
+                            <p>Internship positions currently attached to your account.</p>
                         </div>
                         <button class="btn btn-secondary" type="button" id="refreshProjectsBtn">Refresh</button>
                     </div>
@@ -827,8 +312,10 @@
                         <div class="empty">No projects loaded yet.</div>
                     </div>
                 </div>
+            </section>
 
-                <div class="panel" id="shortlist">
+            <section class="content-grid section-block grid-shortlist">
+                <div class="panel wide">
                     <div class="panel-header">
                         <div>
                             <h3>Shortlisted Students</h3>
@@ -842,8 +329,8 @@
                 </div>
             </section>
 
-            <section class="content-grid">
-                <div class="panel" id="reports">
+            <section class="content-grid section-block grid-reports">
+                <div class="panel wide">
                     <div class="panel-header">
                         <div>
                             <h3>Weekly Reports</h3>
@@ -855,8 +342,10 @@
                         <div class="empty">No weekly reports loaded yet.</div>
                     </div>
                 </div>
+            </section>
 
-                <div class="panel" id="console">
+            <section class="content-grid section-block grid-console">
+                <div class="panel wide">
                     <div class="panel-header">
                         <div>
                             <h3>API Console</h3>
@@ -864,528 +353,16 @@
                         </div>
                         <span class="pill">Developer Utility</span>
                     </div>
-
-                    <div class="card-actions" style="margin-top: 0; margin-bottom: 14px;">
-                        <button class="btn btn-secondary" type="button" data-console-action="me">GET /me</button>
-                        <button class="btn btn-secondary" type="button" data-console-action="projects">GET /projects</button>
-                        <button class="btn btn-secondary" type="button" data-console-action="shortlist">GET /shortlist</button>
-                        <button class="btn btn-secondary" type="button" data-console-action="reports">GET /weekly-reports</button>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary" type="button">GET /me</button>
+                        <button class="btn btn-secondary" type="button">GET /projects</button>
+                        <button class="btn btn-secondary" type="button">GET /shortlist</button>
+                        <button class="btn btn-secondary" type="button">GET /weekly-reports</button>
                     </div>
-
-                    <div id="apiConsole" class="console">Ready.</div>
-                    <div class="footer-note">
-                        Use this section to quickly inspect responses while testing company features.
-                    </div>
+                    <pre id="consoleOutput" class="empty">Ready.</pre>
                 </div>
             </section>
         </main>
     </div>
-
-    <script>
-        const TOKEN_KEY = 'internship_company_access_token';
-
-        const pageMessage = document.getElementById('pageMessage');
-        const tokenInput = document.getElementById('tokenInput');
-        const apiConsole = document.getElementById('apiConsole');
-
-        const welcomeTitle = document.getElementById('welcomeTitle');
-        const companyProfileCard = document.getElementById('companyProfileCard');
-
-        const projectCount = document.getElementById('projectCount');
-        const shortlistCount = document.getElementById('shortlistCount');
-        const hiredCount = document.getElementById('hiredCount');
-        const reportCount = document.getElementById('reportCount');
-
-        const projectsList = document.getElementById('projectsList');
-        const shortlistList = document.getElementById('shortlistList');
-        const reportsList = document.getElementById('reportsList');
-
-        function getToken() {
-            return localStorage.getItem(TOKEN_KEY) || '';
-        }
-
-        function setToken(token) {
-            localStorage.setItem(TOKEN_KEY, token);
-            tokenInput.value = token;
-        }
-
-        function clearToken() {
-            localStorage.removeItem(TOKEN_KEY);
-            tokenInput.value = '';
-        }
-
-        function showMessage(message, type = 'success') {
-            pageMessage.className = 'message-box ' + type;
-            pageMessage.textContent = message;
-        }
-
-        function clearMessage() {
-            pageMessage.className = 'message-box';
-            pageMessage.textContent = '';
-        }
-
-        function statusClass(status) {
-            const safe = String(status || 'submitted').toLowerCase().replace(/\s+/g, '_');
-            return 'status status-' + safe;
-        }
-
-        function formatDate(value) {
-            if (!value) return 'N/A';
-            const date = new Date(value);
-            if (Number.isNaN(date.getTime())) return value;
-            return date.toLocaleString();
-        }
-
-        async function apiFetch(url, options = {}) {
-            const token = getToken();
-
-            const headers = {
-                'Content-Type': 'application/json',
-                ...(options.headers || {})
-            };
-
-            if (token) {
-                headers['Authorization'] = 'Bearer ' + token;
-            }
-
-            const response = await fetch(url, {
-                ...options,
-                headers
-            });
-
-            let data = {};
-            try {
-                data = await response.json();
-            } catch (error) {
-                data = {};
-            }
-
-            if (!response.ok) {
-                const message = data.error || data.message || 'Request failed';
-                throw new Error(message);
-            }
-
-            return data;
-        }
-
-        function renderCompanyProfile(company) {
-            if (!company) {
-                companyProfileCard.innerHTML = '<div class="empty">Company profile not available.</div>';
-                return;
-            }
-
-            welcomeTitle.textContent = 'Welcome, ' + (company.company_name || 'Company');
-
-            companyProfileCard.innerHTML = `
-                <div class="card">
-                    <div class="card-top">
-                        <div>
-                            <h4 class="card-title">${company.company_name || 'Company Name'}</h4>
-                            <p class="card-subtitle">${company.email || 'No email available'}</p>
-                        </div>
-                        <span class="pill">ID ${company.id ?? 'N/A'}</span>
-                    </div>
-
-                    <div class="meta">
-                        <span>Category: ${company.category || 'Not provided'}</span>
-                        <span>Website: ${company.website || 'Not provided'}</span>
-                    </div>
-
-                    <p>
-                        Review your company details, manage available internship opportunities,
-                        and stay updated on candidate and intern activity.
-                    </p>
-                </div>
-            `;
-        }
-
-        function renderProjects(projects) {
-            projectCount.textContent = projects.length;
-
-            if (!projects.length) {
-                projectsList.innerHTML = '<div class="empty">No projects found for this company yet.</div>';
-                return;
-            }
-
-            projectsList.innerHTML = projects.map(project => `
-                <div class="card">
-                    <div class="card-top">
-                        <div>
-                            <h4 class="card-title">${project.project_name || 'Untitled Project'}</h4>
-                            <p class="card-subtitle">Project ID: ${project.id}</p>
-                        </div>
-                        <span class="pill">${project.number_of_interns || 0} Intern(s)</span>
-                    </div>
-
-                    <div class="meta">
-                        <span>Stipend: ${project.stipend ?? 'N/A'}</span>
-                        <span>On-site: ${project.place_of_work ? 'Yes' : 'No'}</span>
-                        <span>International Students: ${project.international_students ? 'Yes' : 'No'}</span>
-                        <span>Hire After: ${project.hired_after ? 'Yes' : 'No'}</span>
-                        <span>Vaccination: ${project.covid_vaccination ? 'Required' : 'Not Required'}</span>
-                    </div>
-
-                    <div class="card-actions">
-                        <button class="btn btn-danger" type="button" onclick="deleteProject(${project.id})">Delete Project</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderShortlist(shortlist) {
-            shortlistCount.textContent = shortlist.length;
-            hiredCount.textContent = shortlist.filter(item => String(item.status).toLowerCase() === 'hired').length;
-
-            if (!shortlist.length) {
-                shortlistList.innerHTML = '<div class="empty">No shortlisted students have been sent to this company yet.</div>';
-                return;
-            }
-
-            shortlistList.innerHTML = shortlist.map(item => `
-                <div class="card">
-                    <div class="card-top">
-                        <div>
-                            <h4 class="card-title">Student ID ${item.student_id}</h4>
-                            <p class="card-subtitle">Project ID ${item.project_id} · Shortlist ID ${item.id}</p>
-                        </div>
-                        <span class="${statusClass(item.status)}">${item.status || 'shortlisted'}</span>
-                    </div>
-
-                    <div class="meta">
-                        <span>Match Score: ${item.match_score ?? 'N/A'}</span>
-                        <span>Interview Scheduled: ${item.interview_scheduled ? 'Yes' : 'No'}</span>
-                        <span>Interview Date: ${item.interview_date ? formatDate(item.interview_date) : 'N/A'}</span>
-                        <span>Hired: ${item.hired ? 'Yes' : 'No'}</span>
-                    </div>
-
-                    <p>${item.match_reason || 'No additional notes are available for this candidate.'}</p>
-
-                    <div class="card-actions">
-                        <button class="btn btn-secondary" type="button" onclick="scheduleInterview(${item.id})">Schedule Interview</button>
-                        <button class="btn btn-secondary" type="button" onclick="markInterviewed(${item.id})">Mark Interviewed</button>
-                        <button class="btn btn-primary" type="button" onclick="hireStudent(${item.id})">Hire</button>
-                        <button class="btn btn-danger" type="button" onclick="rejectStudent(${item.id})">Reject</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderReports(reports) {
-            reportCount.textContent = reports.length;
-
-            if (!reports.length) {
-                reportsList.innerHTML = '<div class="empty">No weekly reports have been submitted yet.</div>';
-                return;
-            }
-
-            reportsList.innerHTML = reports.map(report => `
-                <div class="card">
-                    <div class="card-top">
-                        <div>
-                            <h4 class="card-title">${report.title || 'Weekly Report'}</h4>
-                            <p class="card-subtitle">Student ID ${report.student_id} · Project ID ${report.project_id}</p>
-                        </div>
-                        <span class="${statusClass(report.status)}">${report.status || 'submitted'}</span>
-                    </div>
-
-                    <div class="meta">
-                        <span>Week ${report.week_number ?? 'N/A'}</span>
-                        <span>Hours: ${report.hours_worked ?? 'N/A'}</span>
-                        <span>Submitted: ${report.submission_date ? formatDate(report.submission_date) : 'N/A'}</span>
-                        <span>Late: ${report.is_late ? 'Yes' : 'No'}</span>
-                    </div>
-
-                    <p>${report.description || 'No description provided.'}</p>
-
-                    <div class="card-actions">
-                        <a class="btn btn-secondary" href="${report.report_file_path || '#'}" target="_blank" rel="noopener noreferrer">Open PDF</a>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function printConsole(data) {
-            apiConsole.textContent = JSON.stringify(data, null, 2);
-        }
-
-        async function loadProfile() {
-            try {
-                const data = await apiFetch('/api/company/me', { method: 'GET' });
-                renderCompanyProfile(data.company);
-                printConsole(data);
-                return data;
-            } catch (error) {
-                renderCompanyProfile(null);
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message });
-                throw error;
-            }
-        }
-
-        async function loadProjects() {
-            try {
-                const data = await apiFetch('/api/company/projects', { method: 'GET' });
-                renderProjects(data.projects || []);
-                printConsole(data);
-                return data;
-            } catch (error) {
-                projectsList.innerHTML = `<div class="empty">${error.message}</div>`;
-                printConsole({ error: error.message });
-                throw error;
-            }
-        }
-
-        async function loadShortlist() {
-            try {
-                const data = await apiFetch('/api/company/shortlist', { method: 'GET' });
-                renderShortlist(data.shortlist || []);
-                printConsole(data);
-                return data;
-            } catch (error) {
-                shortlistList.innerHTML = `<div class="empty">${error.message}</div>`;
-                printConsole({ error: error.message });
-                throw error;
-            }
-        }
-
-        async function loadReports() {
-            try {
-                const data = await apiFetch('/api/company/weekly-reports', { method: 'GET' });
-                renderReports(data.weekly_reports || []);
-                printConsole(data);
-                return data;
-            } catch (error) {
-                reportsList.innerHTML = `<div class="empty">${error.message}</div>`;
-                printConsole({ error: error.message });
-                throw error;
-            }
-        }
-
-        async function refreshAll() {
-            clearMessage();
-            try {
-                await loadProfile();
-                await loadProjects();
-                await loadShortlist();
-                await loadReports();
-                showMessage('Dashboard data refreshed successfully.', 'success');
-            } catch (error) {
-            }
-        }
-
-        async function createProject(event) {
-            event.preventDefault();
-            clearMessage();
-
-            const payload = {
-                project_name: document.getElementById('project_name').value.trim(),
-                number_of_interns: document.getElementById('number_of_interns').value,
-                stipend: document.getElementById('stipend').value || null,
-                description: document.getElementById('description').value.trim(),
-                details: document.getElementById('details').value.trim(),
-                place_of_work: document.getElementById('place_of_work').checked,
-                international_students: document.getElementById('international_students').checked,
-                hired_after: document.getElementById('hired_after').checked,
-                covid_vaccination: document.getElementById('covid_vaccination').checked
-            };
-
-            try {
-                const data = await apiFetch('/api/company/projects', {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-
-                showMessage(data.message || 'Project created successfully.', 'success');
-                printConsole(data);
-                document.getElementById('projectForm').reset();
-                await loadProjects();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, payload });
-            }
-        }
-
-        async function deleteProject(projectId) {
-            if (!confirm('Delete this project?')) {
-                return;
-            }
-
-            clearMessage();
-
-            try {
-                const data = await apiFetch('/api/company/projects/' + projectId, {
-                    method: 'DELETE'
-                });
-
-                showMessage(data.message || 'Project deleted.', 'success');
-                printConsole(data);
-                await loadProjects();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, project_id: projectId });
-            }
-        }
-
-        async function scheduleInterview(shortlistId) {
-            const interviewDate = prompt('Enter interview date and time in this format: 2026-03-20T10:00:00');
-            if (!interviewDate) return;
-
-            clearMessage();
-
-            try {
-                const data = await apiFetch('/api/company/shortlist/' + shortlistId + '/interview', {
-                    method: 'POST',
-                    body: JSON.stringify({ interview_date: interviewDate })
-                });
-
-                showMessage(data.message || 'Interview scheduled.', 'success');
-                printConsole(data);
-                await loadShortlist();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, shortlist_id: shortlistId });
-            }
-        }
-
-        async function markInterviewed(shortlistId) {
-            const notes = prompt('Optional interview notes:') || '';
-
-            clearMessage();
-
-            try {
-                const data = await apiFetch('/api/company/shortlist/' + shortlistId + '/interview', {
-                    method: 'POST',
-                    body: JSON.stringify({ notes })
-                });
-
-                showMessage(data.message || 'Interview status updated.', 'success');
-                printConsole(data);
-                await loadShortlist();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, shortlist_id: shortlistId });
-            }
-        }
-
-        async function hireStudent(shortlistId) {
-            if (!confirm('Mark this shortlisted student as hired?')) {
-                return;
-            }
-
-            clearMessage();
-
-            try {
-                const data = await apiFetch('/api/company/shortlist/' + shortlistId + '/hire', {
-                    method: 'POST'
-                });
-
-                showMessage(data.message || 'Student hired successfully.', 'success');
-                printConsole(data);
-                await loadShortlist();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, shortlist_id: shortlistId });
-            }
-        }
-
-        async function rejectStudent(shortlistId) {
-            const reason = prompt('Optional rejection reason:') || '';
-
-            clearMessage();
-
-            try {
-                const data = await apiFetch('/api/company/shortlist/' + shortlistId + '/reject', {
-                    method: 'POST',
-                    body: JSON.stringify({ reason })
-                });
-
-                showMessage(data.message || 'Student rejected.', 'success');
-                printConsole(data);
-                await loadShortlist();
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message, shortlist_id: shortlistId });
-            }
-        }
-
-        async function runConsoleAction(action) {
-            clearMessage();
-
-            try {
-                let data;
-
-                if (action === 'me') {
-                    data = await apiFetch('/api/company/me', { method: 'GET' });
-                } else if (action === 'projects') {
-                    data = await apiFetch('/api/company/projects', { method: 'GET' });
-                } else if (action === 'shortlist') {
-                    data = await apiFetch('/api/company/shortlist', { method: 'GET' });
-                } else if (action === 'reports') {
-                    data = await apiFetch('/api/company/weekly-reports', { method: 'GET' });
-                }
-
-                printConsole(data);
-            } catch (error) {
-                showMessage(error.message, 'error');
-                printConsole({ error: error.message });
-            }
-        }
-
-        document.getElementById('projectForm').addEventListener('submit', createProject);
-
-        document.getElementById('saveTokenBtn').addEventListener('click', () => {
-            const value = tokenInput.value.trim();
-            if (!value) {
-                showMessage('Please paste a token before saving.', 'error');
-                return;
-            }
-            setToken(value);
-            showMessage('Access token saved locally in the browser.', 'success');
-        });
-
-        document.getElementById('clearTokenBtn').addEventListener('click', () => {
-            clearToken();
-            showMessage('Access token cleared.', 'success');
-        });
-
-        document.getElementById('loadProfileBtn').addEventListener('click', loadProfile);
-        document.getElementById('refreshAllBtn').addEventListener('click', refreshAll);
-        document.getElementById('refreshProjectsBtn').addEventListener('click', loadProjects);
-        document.getElementById('refreshShortlistBtn').addEventListener('click', loadShortlist);
-        document.getElementById('refreshReportsBtn').addEventListener('click', loadReports);
-
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            clearToken();
-            showMessage('Signed out locally. Your saved access token was removed.', 'success');
-            renderCompanyProfile(null);
-            projectsList.innerHTML = '<div class="empty">No projects loaded yet.</div>';
-            shortlistList.innerHTML = '<div class="empty">No shortlist data loaded yet.</div>';
-            reportsList.innerHTML = '<div class="empty">No weekly reports loaded yet.</div>';
-            projectCount.textContent = '0';
-            shortlistCount.textContent = '0';
-            hiredCount.textContent = '0';
-            reportCount.textContent = '0';
-            welcomeTitle.textContent = 'Welcome to your company dashboard';
-            printConsole({ message: 'Signed out locally.' });
-        });
-
-        document.querySelectorAll('[data-console-action]').forEach(button => {
-            button.addEventListener('click', () => runConsoleAction(button.dataset.consoleAction));
-        });
-
-        window.deleteProject = deleteProject;
-        window.scheduleInterview = scheduleInterview;
-        window.markInterviewed = markInterviewed;
-        window.hireStudent = hireStudent;
-        window.rejectStudent = rejectStudent;
-
-        (function init() {
-            const token = getToken();
-            if (token) {
-                tokenInput.value = token;
-                refreshAll();
-            }
-        })();
-    </script>
 </body>
 </html>

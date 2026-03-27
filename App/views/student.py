@@ -14,6 +14,7 @@ from App.models.project import Project
 from App.models.weeklyreport import WeeklyReport
 from App.models.shortlist import Shortlist
 from App.models.Meeting import Meeting
+from App.controllers.weeklyreport import create_weekly_report
 
 student_views = Blueprint('student_views', __name__, url_prefix='/api/student')
 
@@ -195,14 +196,14 @@ def api_weekly_reports_create():
         rel_path = DocumentController.save_weekly_report(
             file_storage=file_obj,
             student_id=current_user.id,
-            week_number=week_number
+            week_number=int(week_number)
         )
     except ValueError as e:
         return _json_error(str(e), 400)
     except Exception:
         return _json_error('Failed to save weekly report file', 500)
 
-    title       = request.form.get('title')
+    title = request.form.get('title')
     description = request.form.get('description')
     hours_worked = request.form.get('hours_worked')
 
@@ -214,21 +215,21 @@ def api_weekly_reports_create():
     else:
         hours_worked = None
 
-    try:
-        report = WeeklyReport(
-            student_id=current_user.id,
-            project_id=project.id,
-            week_number=int(week_number),
-            report_file_path=rel_path,
-            title=title,
-            description=description,
-            hours_worked=hours_worked
+    report = create_weekly_report(
+        student_id=current_user.id,
+        project_id=project.id,
+        week_number=int(week_number),
+        report_file_path=rel_path,
+        title=title,
+        description=description,
+        hours_worked=hours_worked
+    )
+
+    if report is None:
+        return _json_error(
+            'Could not submit report. Ensure you are hired for this project and have not already submitted this week.',
+            400
         )
-        db.session.add(report)
-        db.session.commit()
-    except Exception:
-        db.session.rollback()
-        return _json_error('Failed to create weekly report', 500)
 
     return jsonify({'message': 'Weekly report uploaded', 'weekly_report': report.get_json()}), 201
 
@@ -268,7 +269,7 @@ def student_dashboard():
         # Upcoming meetings
         upcoming_meetings = Meeting.query.filter(
             Meeting.student_id == current_user.id,
-            Meeting.meeting_date >= now
+            Meeting.scheduled_at >= now
         ).order_by(Meeting.meeting_date.asc()).all()
 
         # Build combined deadlines list

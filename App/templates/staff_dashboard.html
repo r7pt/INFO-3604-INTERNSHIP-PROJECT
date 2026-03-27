@@ -1,431 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff Dashboard · UWI Internship</title>
-    <style>
-
-        :root {
-            --bg: #07131f;
-            --panel: #102235;
-            --panel-2: #132a41;
-            --border: rgba(255,255,255,0.08);
-            --text: #eaf2ff;
-            --muted: #9db2c9;
-            --accent: #49a6ff;
-            --accent-2: #6ed0ff;
-            --success: #35c67a;
-            --warning: #f4b740;
-            --danger: #ef5f6c;
-            --shadow: 0 20px 45px rgba(0,0,0,0.28);
-            --radius: 20px;
-        }
-        * { box-sizing: border-box; }
-        html, body {
-            margin: 0; padding: 0; min-height: 100%;
-            font-family: Arial, Helvetica, sans-serif;
-            background:
-                radial-gradient(circle at top left, rgba(73, 166, 255, 0.18), transparent 24%),
-                radial-gradient(circle at top right, rgba(110, 208, 255, 0.12), transparent 18%),
-                linear-gradient(180deg, #07131f 0%, #091624 100%);
-            color: var(--text);
-        }
-        a { color: inherit; text-decoration: none; }
-        button, input, textarea, select { font: inherit; }
-        .shell { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
-        .sidebar {
-            background: rgba(8, 20, 32, 0.94);
-            border-right: 1px solid var(--border);
-            padding: 28px 22px;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            overflow-y: auto;
-        }
-        .brand { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
-        .brand-badge {
-            display: inline-flex; width: fit-content; align-items: center; gap: 8px;
-            padding: 8px 12px; border-radius: 999px;
-            background: rgba(73, 166, 255, 0.12); color: #cfe7ff; font-size: 12px;
-            font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
-        }
-        .brand h1 { margin: 0; font-size: 22px; line-height: 1.2; }
-        .brand p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
-        .nav-group { margin-top: 24px; }
-        .nav-title {
-            color: #7d96b0; font-size: 12px; text-transform: uppercase;
-            letter-spacing: 0.08em; margin-bottom: 10px; font-weight: 700;
-        }
-        .nav-links { display: grid; gap: 8px; }
-        .nav-link {
-            display: flex; align-items: center; gap: 10px; padding: 12px 14px;
-            border-radius: 14px; color: #d9e7f5; transition: 0.2s ease;
-            border: 1px solid transparent;
-        }
-        .nav-link:hover, .nav-link.active {
-            background: rgba(73, 166, 255, 0.10);
-            border-color: rgba(73, 166, 255, 0.25);
-        }
-        .sidebar-footer {
-            margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border);
-            display: grid; gap: 10px;
-        }
-        .small { color: var(--muted); font-size: 13px; line-height: 1.5; }
-        .main { padding: 28px; }
-        .topbar {
-            display: flex; justify-content: space-between; align-items: center;
-            gap: 16px; margin-bottom: 24px; flex-wrap: wrap;
-        }
-        .topbar-left h2 { margin: 0 0 6px 0; font-size: 30px; line-height: 1.15; }
-        .topbar-left p { margin: 0; color: var(--muted); max-width: 760px; line-height: 1.6; }
-        .topbar-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-        .btn {
-            border: none; border-radius: 14px; padding: 12px 16px; cursor: pointer;
-            font-weight: 700; transition: 0.2s ease;
-        }
-        .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #04101a; }
-        .btn-secondary { background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid var(--border); }
-        .btn-danger { background: rgba(239, 95, 108, 0.14); color: #ffb5bc; border: 1px solid rgba(239, 95, 108, 0.25); }
-        .btn:hover { transform: translateY(-1px); }
-        .message-box {
-            display: none; margin-bottom: 18px; padding: 14px 16px; border-radius: 16px;
-            border: 1px solid var(--border);
-        }
-        .message-box.show { display: block; }
-        .message-box.success { background: rgba(53,198,122,0.12); border-color: rgba(53,198,122,0.25); color: #c7f5da; }
-        .message-box.error { background: rgba(239,95,108,0.12); border-color: rgba(239,95,108,0.25); color: #ffd2d6; }
-        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 16px; margin-bottom: 24px; }
-        .stat-card {
-            background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
-            padding: 20px; box-shadow: var(--shadow);
-        }
-        .stat-label { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; }
-        .stat-value { margin-top: 10px; font-size: 32px; font-weight: 800; }
-        .stat-subtext { margin-top: 8px; color: var(--muted); font-size: 13px; line-height: 1.5; }
-        .hero, .panel {
-            background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
-            box-shadow: var(--shadow);
-        }
-        .hero { padding: 24px; margin-bottom: 24px; display: grid; gap: 16px; grid-template-columns: 1.5fr 1fr; }
-        .hero h3, .panel-header h3 { margin: 0 0 8px 0; font-size: 22px; }
-        .hero p, .panel-header p { margin: 0; color: var(--muted); line-height: 1.6; }
-        .hero-note {
-            background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-            border-radius: 16px; padding: 18px;
-        }
-        .content-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; }
-        .panel { padding: 22px; }
-        .panel-header {
-            display: flex; align-items: start; justify-content: space-between; gap: 16px; margin-bottom: 18px;
-        }
-        .pill {
-            display: inline-flex; align-items: center; justify-content: center;
-            padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
-            background: rgba(73,166,255,0.10); color: #cfe7ff; border: 1px solid rgba(73,166,255,0.25);
-        }
-        .field { display: grid; gap: 8px; margin-bottom: 14px; }
-        .field label { color: #dce8f6; font-size: 14px; font-weight: 700; }
-        .input, .textarea, .select {
-            width: 100%; border: 1px solid var(--border); background: var(--panel-2); color: var(--text);
-            border-radius: 14px; padding: 12px 14px;
-        }
-        .textarea { min-height: 120px; resize: vertical; }
-        .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
-        .check-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
-        .check-row {
-            display: flex; align-items: center; gap: 10px; padding: 12px 14px;
-            border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-        }
-        .card-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
-        .empty {
-            border: 1px dashed rgba(255,255,255,0.15); color: var(--muted);
-            border-radius: 16px; padding: 18px;
-        }
-        .list { display: grid; gap: 12px; }
-        .table-card {
-            background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 16px; padding: 16px;
-        }
-        .token-panel { margin-top: 18px; display: grid; gap: 14px; }
-        .wide { grid-column: 1 / -1; }
-        .page-only { display: none; }
-        body.page-overview .show-overview,
-        body.page-profile .show-profile,
-        body.page-documents .show-documents,
-        body.page-status .show-status,
-        body.page-reports .show-reports,
-        body.page-console .show-console,
-        body.page-projects .show-projects,
-        body.page-shortlist .show-shortlist,
-        body.page-announcements .show-announcements,
-        body.page-meetings .show-meetings {
-            display: block;
-        }
-        body.page-overview .grid-overview,
-        body.page-profile .grid-profile,
-        body.page-documents .grid-documents,
-        body.page-status .grid-status,
-        body.page-reports .grid-reports,
-        body.page-console .grid-console,
-        body.page-projects .grid-projects,
-        body.page-shortlist .grid-shortlist,
-        body.page-announcements .grid-announcements,
-        body.page-meetings .grid-meetings {
-            display: grid;
-        }
-        .section-block { display: none; }
-        @media (max-width: 960px) {
-            .shell { grid-template-columns: 1fr; }
-            .sidebar { position: relative; height: auto; }
-            .content-grid, .form-grid, .check-grid, .hero { grid-template-columns: 1fr; }
-        }
-
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page_title or 'Staff Portal' }}</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:0;background:#0b1520;color:#e8eef5}
+    .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+    aside{background:#111d2b;padding:24px;border-right:1px solid #233548}
+    main{padding:24px}.nav a{display:block;color:#d9e7f7;text-decoration:none;padding:10px 12px;border-radius:8px;margin-bottom:8px;background:#142234}.nav a.active{background:#1f3550}
+    .card{background:#132131;border:1px solid #24384d;border-radius:12px;padding:16px;margin-bottom:16px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+    label{display:block;margin-bottom:6px;font-weight:700} input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #31485f;background:#0d1825;color:#fff;margin-bottom:12px;box-sizing:border-box} textarea{min-height:110px}
+    button{padding:10px 14px;border:0;border-radius:8px;background:#3b82f6;color:#fff;cursor:pointer;font-weight:700} button.secondary{background:#334155} button.danger{background:#b91c1c}
+    .muted{color:#9fb3c8}.row{display:flex;gap:10px;flex-wrap:wrap}.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#24384d;font-size:12px}.item{border:1px solid #2b3f55;border-radius:10px;padding:12px;margin-bottom:10px;background:#0f1a28}
+    .msg{display:none;padding:10px 12px;border-radius:8px;margin-bottom:16px}.msg.show{display:block}.success{background:#153d28;color:#bbf7d0}.error{background:#4c1d1d;color:#fecaca}
+    @media(max-width:900px){.layout{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid #233548}}
+  </style>
 </head>
-<body class="page-{{ active_page|default('overview') }}">
-    <div class="shell">
-        <aside class="sidebar">
-            <div class="brand">
-                <span class="brand-badge">Staff Portal</span>
-                <h1>UWI Internship</h1>
-                <p>Manage student matching, announcements, meetings, and weekly report review from separate pages.</p>
-            </div>
-
-            <div class="nav-group">
-                <div class="nav-title">Dashboard</div>
-                <div class="nav-links">
-                    <a href="/staff/overview" class="nav-link {{ 'active' if active_page == 'overview' else '' }}">Overview</a>
-                    <a href="/staff/shortlists" class="nav-link {{ 'active' if active_page == 'shortlists' else '' }}">Shortlists</a>
-                    <a href="/staff/announcements" class="nav-link {{ 'active' if active_page == 'announcements' else '' }}">Announcements</a>
-                    <a href="/staff/meetings" class="nav-link {{ 'active' if active_page == 'meetings' else '' }}">Meetings</a>
-                    <a href="/staff/reports" class="nav-link {{ 'active' if active_page == 'reports' else '' }}">Weekly Reports</a>
-                    <a href="/staff/console" class="nav-link {{ 'active' if active_page == 'console' else '' }}">API Console</a>
-                </div>
-            </div>
-
-            <div class="nav-group">
-                <div class="nav-title">Navigation</div>
-                <div class="nav-links">
-                    <a href="/" class="nav-link">Home</a>
-                    <a href="/login" class="nav-link">Sign In</a>
-                </div>
-            </div>
-        </aside>
-
-        <main class="main">
-            <div class="topbar">
-                <div class="topbar-left">
-                    <h2>{{ page_title }}</h2>
-                    <p>{{ page_subtitle }}</p>
-                </div>
-                <div class="topbar-actions">
-                    <a class="btn btn-secondary" href="/staff/overview">Overview</a>
-                    <a class="btn btn-primary" href="/staff/shortlists">Create Shortlist</a>
-                </div>
-            </div>
-
-            <div id="pageMessage" class="message-box"></div>
-
-            <section class="hero section-block show-overview">
-                <div>
-                    <h3>Staff-first internship operations</h3>
-                    <p>Staff reviews student documents and handles matching. These pages separate shortlists, announcements, meetings, and report review into cleaner work areas.</p>
-                </div>
-                <div class="hero-note">
-                    <h4 style="margin:0 0 8px 0;">Quick Access</h4>
-                    <p style="margin:0;">Use the left sidebar to move directly to the staff task you want to handle.</p>
-                </div>
-            </section>
-
-            <section class="stats section-block show-overview">
-                <div class="stat-card"><div class="stat-label">Shortlists</div><div class="stat-value" id="shortlistCount">0</div><div class="stat-subtext">Current shortlist entries</div></div>
-                <div class="stat-card"><div class="stat-label">Announcements</div><div class="stat-value" id="announcementCount">0</div><div class="stat-subtext">Messages posted in portal</div></div>
-                <div class="stat-card"><div class="stat-label">Meetings</div><div class="stat-value" id="meetingCount">0</div><div class="stat-subtext">Scheduled student meetings</div></div>
-                <div class="stat-card"><div class="stat-label">Pending Reviews</div><div class="stat-value" id="pendingReportCount">0</div><div class="stat-subtext">Reports waiting for review</div></div>
-            </section>
-
-            <section class="content-grid section-block grid-overview">
-                <div class="panel wide">
-                    <div class="panel-header">
-                        <div>
-                            <h3>Staff Access</h3>
-                            <p>Save your access token to use the dashboard functions.</p>
-                        </div>
-                        <span class="pill">Staff Account</span>
-                    </div>
-                    <div class="token-panel">
-                        <div class="field">
-                            <label for="staffTokenInput">Access Token</label>
-                            <textarea id="staffTokenInput" class="textarea" placeholder="Paste your staff access token here..."></textarea>
-                        </div>
-                        <div class="card-actions">
-                            <button class="btn btn-primary" type="button" id="saveStaffTokenBtn">Save Token</button>
-                            <button class="btn btn-secondary" type="button" id="clearStaffTokenBtn">Clear Token</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="content-grid section-block grid-shortlists">
-                <div class="panel">
-                    <div class="panel-header">
-                        <div>
-                            <h3>Create Shortlist Entry</h3>
-                            <p>Match a student to a project and record supporting notes.</p>
-                        </div>
-                        <span class="pill">POST /api/staff/shortlists</span>
-                    </div>
-                    <form id="shortlistForm">
-                        <div class="form-grid">
-                            <div class="field"><label for="student_id">Student ID *</label><input id="student_id" class="input"></div>
-                            <div class="field"><label for="project_id">Project ID *</label><input id="project_id" class="input"></div>
-                            <div class="field"><label for="match_score">Match Score</label><input id="match_score" class="input" type="number" step="0.01"></div>
-                            <div class="field"><label for="shortlist_status">Status</label><select id="shortlist_status" class="select"><option>shortlisted</option><option>interview_scheduled</option><option>interviewed</option><option>hired</option><option>rejected</option></select></div>
-                            <div class="field wide"><label for="match_reason">Match Reason</label><textarea id="match_reason" class="textarea"></textarea></div>
-                            <div class="field wide"><label for="staff_notes">Staff Notes</label><textarea id="staff_notes" class="textarea"></textarea></div>
-                        </div>
-                        <div class="card-actions">
-                            <button class="btn btn-primary" type="submit">Create Shortlist</button>
-                            <button class="btn btn-secondary" type="reset">Clear Form</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header">
-                        <div>
-                            <h3>Shortlist Entries</h3>
-                            <p>View and manage student matching activity.</p>
-                        </div>
-                        <button class="btn btn-secondary" type="button" id="refreshShortlistsBtn">Refresh</button>
-                    </div>
-                    <div id="shortlistsList" class="list">
-                        <div class="empty">No shortlist entries loaded yet.</div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="content-grid section-block grid-announcements">
-                <div class="panel">
-                    <div class="panel-header">
-                        <div>
-                            <h3>Create Announcement</h3>
-                            <p>Post updates for students and companies.</p>
-                        </div>
-                        <span class="pill">POST /api/staff/announcements</span>
-                    </div>
-                    <form id="announcementForm">
-                        <div class="field"><label for="announcement_title">Title</label><input id="announcement_title" class="input"></div>
-                        <div class="field"><label for="announcement_audience">Audience</label><select id="announcement_audience" class="select"><option value="all">all</option><option value="students">students</option><option value="companies">companies</option></select></div>
-                        <div class="field"><label for="announcement_message">Message</label><textarea id="announcement_message" class="textarea"></textarea></div>
-                        <div class="card-actions">
-                            <button class="btn btn-primary" type="submit">Post Announcement</button>
-                            <button class="btn btn-secondary" type="reset">Clear Form</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header">
-                        <div>
-                            <h3>Announcements</h3>
-                            <p>View recently posted announcements.</p>
-                        </div>
-                        <button class="btn btn-secondary" type="button" id="refreshAnnouncementsBtn">Refresh</button>
-                    </div>
-                    <div id="announcementsList" class="list">
-                        <div class="empty">No announcements loaded yet.</div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="content-grid section-block grid-meetings">
-                <div class="panel">
-                    <div class="panel-header">
-                        <div>
-                            <h3>Schedule Meeting</h3>
-                            <p>Create a student meeting and track its status.</p>
-                        </div>
-                        <span class="pill">POST /api/staff/meetings</span>
-                    </div>
-                    <form id="meetingForm">
-                        <div class="form-grid">
-                            <div class="field"><label for="meeting_student_id">Student ID *</label><input id="meeting_student_id" class="input"></div>
-                            <div class="field"><label for="meeting_project_id">Project ID</label><input id="meeting_project_id" class="input"></div>
-                            <div class="field"><label for="meeting_scheduled_at">Scheduled At *</label><input id="meeting_scheduled_at" class="input" type="datetime-local"></div>
-                            <div class="field"><label for="meeting_type">Meeting Type</label><select id="meeting_type" class="select"><option>weekly</option><option>check-in</option><option>interview</option><option>review</option></select></div>
-                            <div class="field"><label for="meeting_location">Location</label><input id="meeting_location" class="input"></div>
-                            <div class="field"><label for="meeting_link">Meeting Link</label><input id="meeting_link" class="input"></div>
-                            <div class="field wide"><label for="meeting_agenda">Agenda</label><textarea id="meeting_agenda" class="textarea"></textarea></div>
-                        </div>
-                        <div class="card-actions">
-                            <button class="btn btn-primary" type="submit">Schedule Meeting</button>
-                            <button class="btn btn-secondary" type="reset">Clear Form</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header">
-                        <div>
-                            <h3>Meetings</h3>
-                            <p>Track scheduled meetings and update outcomes.</p>
-                        </div>
-                        <button class="btn btn-secondary" type="button" id="refreshMeetingsBtn">Refresh</button>
-                    </div>
-                    <div id="meetingsList" class="list">
-                        <div class="empty">No meetings loaded yet.</div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="content-grid section-block grid-reports">
-                <div class="panel">
-                    <div class="panel-header">
-                        <div>
-                            <h3>Pending Weekly Reports</h3>
-                            <p>Review submitted reports that need staff action.</p>
-                        </div>
-                        <button class="btn btn-secondary" type="button" id="refreshReportsBtn">Refresh</button>
-                    </div>
-                    <div id="reportsList" class="list">
-                        <div class="empty">No reports loaded yet.</div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header">
-                        <div>
-                            <h3>All Weekly Reports</h3>
-                            <p>View all submitted weekly reports across the system.</p>
-                        </div>
-                        <button class="btn btn-secondary" type="button" id="refreshAllReportsBtn">Refresh</button>
-                    </div>
-                    <div id="allReportsList" class="list">
-                        <div class="empty">No weekly reports loaded yet.</div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="content-grid section-block grid-console">
-                <div class="panel wide">
-                    <div class="panel-header">
-                        <div>
-                            <h3>API Console</h3>
-                            <p>Run quick checks on staff data and actions.</p>
-                        </div>
-                        <span class="pill">Developer Utility</span>
-                    </div>
-                    <div class="card-actions">
-                        <button class="btn btn-secondary" type="button">GET /shortlists</button>
-                        <button class="btn btn-secondary" type="button">GET /announcements</button>
-                        <button class="btn btn-secondary" type="button">GET /meetings</button>
-                        <button class="btn btn-secondary" type="button">GET /weekly-reports</button>
-                    </div>
-                    <pre id="staffConsoleOutput" class="empty">Ready.</pre>
-                </div>
-            </section>
-        </main>
+<body>
+<div class="layout">
+  <aside>
+    <h2>Staff Portal</h2>
+    <p class="muted">Review students, shortlists, announcements, meetings, and reports.</p>
+    <div class="nav">
+      <a href="/staff/overview" class="{{ 'active' if active_page == 'overview' else '' }}">Overview</a>
+      <a href="/staff/shortlists" class="{{ 'active' if active_page == 'shortlists' else '' }}">Shortlists</a>
+      <a href="/staff/announcements" class="{{ 'active' if active_page == 'announcements' else '' }}">Announcements</a>
+      <a href="/staff/meetings" class="{{ 'active' if active_page == 'meetings' else '' }}">Meetings</a>
+      <a href="/staff/reports" class="{{ 'active' if active_page == 'reports' else '' }}">Weekly Reports</a>
     </div>
+    <div class="row" style="margin-top:16px"><button class="secondary" onclick="logout()">Logout</button></div>
+  </aside>
+  <main>
+    <div id="msg" class="msg"></div>
+    <h1>{{ page_title }}</h1>
+    <p class="muted">{{ page_subtitle }}</p>
+    {% if active_page == 'overview' %}
+      <div class="grid">
+        <div class="card"><h3>System Counts</h3><div id="countsBox" class="muted">Loading...</div></div>
+        <div class="card"><h3>Recent Shortlists</h3><div id="recentShortlistsBox" class="muted">Loading...</div></div>
+      </div>
+    {% elif active_page == 'shortlists' %}
+      <div class="grid">
+        <div class="card">
+          <h3>Create Shortlist</h3>
+          <form id="shortlistForm">
+            <label>Student</label><select id="shortlist_student_id"></select>
+            <label>Project</label><select id="shortlist_project_id"></select>
+            <label>Match Reason</label><textarea id="shortlist_reason"></textarea>
+            <label>Match Score</label><input id="shortlist_score" type="number" step="0.1">
+            <button type="submit">Create Shortlist</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between;align-items:center"><h3>Students Available</h3><button class="secondary" onclick="loadShortlistPage()">Refresh</button></div>
+          <div id="studentsBox" class="muted">Loading...</div>
+          <hr style="border-color:#24384d">
+          <h3>Projects Available</h3>
+          <div id="projectsBox" class="muted">Loading...</div>
+          <hr style="border-color:#24384d">
+          <h3>Existing Shortlists</h3>
+          <div id="shortlistsBox" class="muted">Loading...</div>
+        </div>
+      </div>
+    {% elif active_page == 'announcements' %}
+      <div class="grid">
+        <div class="card">
+          <h3>Create Announcement</h3>
+          <form id="announcementForm">
+            <label>Title</label><input id="announcement_title" required>
+            <label>Audience</label><select id="announcement_audience"><option value="all">all</option><option value="students">students</option><option value="companies">companies</option></select>
+            <label>Message</label><textarea id="announcement_message" required></textarea>
+            <button type="submit">Post Announcement</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between;align-items:center"><h3>Announcements</h3><button class="secondary" onclick="loadAnnouncements()">Refresh</button></div>
+          <div id="announcementsBox" class="muted">Loading...</div>
+        </div>
+      </div>
+    {% elif active_page == 'meetings' %}
+      <div class="grid">
+        <div class="card">
+          <h3>Schedule Meeting</h3>
+          <form id="meetingForm">
+            <label>Student</label><select id="meeting_student_id"></select>
+            <label>Project (optional)</label><select id="meeting_project_id"><option value="">None</option></select>
+            <label>Scheduled At</label><input id="meeting_scheduled_at" type="datetime-local" required>
+            <label>Type</label><select id="meeting_type"><option value="weekly">weekly</option><option value="check-in">check-in</option><option value="interview">interview</option><option value="review">review</option></select>
+            <label>Location</label><input id="meeting_location">
+            <label>Meeting Link</label><input id="meeting_link">
+            <label>Agenda</label><textarea id="meeting_agenda"></textarea>
+            <button type="submit">Create Meeting</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between;align-items:center"><h3>Meetings</h3><button class="secondary" onclick="loadMeetings()">Refresh</button></div>
+          <div id="meetingsBox" class="muted">Loading...</div>
+        </div>
+      </div>
+    {% elif active_page == 'reports' %}
+      <div class="card">
+        <div class="row" style="justify-content:space-between;align-items:center"><h3>Weekly Reports</h3><button class="secondary" onclick="loadReports()">Refresh</button></div>
+        <div id="reportsBox" class="muted">Loading...</div>
+      </div>
+    {% endif %}
+  </main>
+</div>
+<script>
+const token = localStorage.getItem('staff_token');
+function authHeaders(){return token?{'Authorization':'Bearer '+token}:{}};
+function showMsg(text,type='success'){const el=document.getElementById('msg');el.textContent=text;el.className='msg show '+type;setTimeout(()=>el.className='msg',3500);}
+async function api(url, options={}){const res=await fetch(url, options);const data=await res.json().catch(()=>({}));if(!res.ok) throw {status:res.status,data}; return data;}
+function logout(){localStorage.removeItem('staff_token');localStorage.removeItem('current_role');window.location.href='/login';}
+function itemCard(html){return `<div class="item">${html}</div>`}
+function fillSelect(el, items, labelFn, includeBlank=false){ if(!el) return; el.innerHTML = includeBlank ? '<option value="">None</option>' : ''; el.innerHTML += items.map(i=>`<option value="${i.id}">${labelFn(i)}</option>`).join(''); }
+async function loadOverview(){const d=await api('/api/staff/dashboard',{headers:{...authHeaders()}}); document.getElementById('countsBox').innerHTML=`Students: ${d.counts.students}<br>Companies: ${d.counts.companies}<br>Projects: ${d.counts.projects}<br>Shortlists: ${d.counts.shortlists}<br>Pending Weekly Reports: ${d.counts.pending_weekly_reports}`; document.getElementById('recentShortlistsBox').innerHTML = d.recent_shortlists.length ? d.recent_shortlists.map(s=>itemCard(`<strong>${s.student?.full_name||('Student '+s.student_id)}</strong><br>Project: ${s.project?.project_name||s.project_id}<br>Status: <span class="badge">${s.status}</span>`)).join('') : '<div class="muted">No shortlists yet.</div>';}
+async function loadShortlistPage(){
+  const students=(await api('/api/staff/students',{headers:{...authHeaders()}})).students;
+  const projects=(await api('/api/staff/projects',{headers:{...authHeaders()}})).projects;
+  const shortlists=(await api('/api/staff/shortlists',{headers:{...authHeaders()}})).shortlists;
+  fillSelect(document.getElementById('shortlist_student_id'), students, s => `${s.full_name} (${s.student_id})`);
+  fillSelect(document.getElementById('meeting_student_id'), students, s => `${s.full_name} (${s.student_id})`);
+  fillSelect(document.getElementById('shortlist_project_id'), projects, p => `${p.project_name} [${p.company_name||'No company'}]`);
+  fillSelect(document.getElementById('meeting_project_id'), projects, p => `${p.project_name} [${p.company_name||'No company'}]`, true);
+  const studentsBox=document.getElementById('studentsBox'); const projectsBox=document.getElementById('projectsBox'); const shortlistsBox=document.getElementById('shortlistsBox');
+  if(studentsBox) studentsBox.innerHTML = students.length ? students.map(s=>itemCard(`<strong>${s.full_name}</strong> <span class="badge">${s.current_internship_status||'—'}</span><br>ID: ${s.id} · Student ID: ${s.student_id}<br>Degree: ${s.degree||'—'}<br>Resume: ${s.has_resume?'Yes':'No'} · Transcript: ${s.has_transcript?'Yes':'No'}`)).join('') : '<div class="muted">No students found.</div>';
+  if(projectsBox) projectsBox.innerHTML = projects.length ? projects.map(p=>itemCard(`<strong>${p.project_name}</strong> <span class="badge">ID ${p.id}</span><br>${p.company_name||'No company'}<br>Interns: ${p.number_of_interns} · Stipend: ${p.stipend ?? '—'}`)).join('') : '<div class="muted">No projects found.</div>';
+  if(shortlistsBox) shortlistsBox.innerHTML = shortlists.length ? shortlists.map(s=>itemCard(`<strong>${s.student?.full_name||('Student '+s.student_id)}</strong> <span class="badge">${s.status}</span><br>Project: ${s.project?.project_name||s.project_id}<br>Reason: ${s.match_reason||'—'}`)).join('') : '<div class="muted">No shortlists found.</div>';
+}
+async function loadAnnouncements(){ const data=await api('/api/staff/announcements',{headers:{...authHeaders()}}); const box=document.getElementById('announcementsBox'); box.innerHTML = data.announcements.length ? data.announcements.map(a=>itemCard(`<strong>${a.title}</strong> <span class="badge">${a.audience}</span><br>${a.message}<div class="row" style="margin-top:8px"><button class="danger" onclick="deleteAnnouncement(${a.id})">Delete</button></div>`)).join('') : '<div class="muted">No announcements yet.</div>'; }
+async function deleteAnnouncement(id){ if(!confirm('Delete this announcement?')) return; try{await api('/api/staff/announcements/'+id,{method:'DELETE',headers:{...authHeaders()}}); showMsg('Announcement deleted'); loadAnnouncements();}catch(e){showMsg(e.data?.error||'Failed to delete announcement','error');}}
+async function loadMeetings(){ const data=await api('/api/staff/meetings',{headers:{...authHeaders()}}); const box=document.getElementById('meetingsBox'); box.innerHTML = data.meetings.length ? data.meetings.map(m=>itemCard(`<strong>${m.student?.full_name||('Student '+m.student_id)}</strong> <span class="badge">${m.status}</span><br>When: ${m.scheduled_at ? new Date(m.scheduled_at).toLocaleString() : '—'}<br>Type: ${m.meeting_type||'—'}<br>Project: ${m.project?.project_name||'—'}<br>Location: ${m.location||'—'}`)).join('') : '<div class="muted">No meetings yet.</div>'; }
+async function loadReports(){ const data=await api('/api/staff/weekly-reports',{headers:{...authHeaders()}}); const box=document.getElementById('reportsBox'); box.innerHTML = data.weekly_reports.length ? data.weekly_reports.map(r=>itemCard(`<strong>${r.student?.full_name||('Student '+r.student_id)}</strong> <span class="badge">${r.status}</span><br>Project: ${r.project?.project_name||r.project_id}<br>Week: ${r.week_number}<br>Title: ${r.title||'—'}<br>Description: ${r.description||'—'}<br><span class="muted">Hours: ${r.hours_worked ?? '—'} · Submitted: ${r.submission_date ? new Date(r.submission_date).toLocaleString() : '—'}</span><div class="row" style="margin-top:8px"><button onclick="approveReport(${r.id})">Approve</button><button class="secondary" onclick="requestRevision(${r.id})">Needs Revision</button></div>`)).join('') : '<div class="muted">No weekly reports found.</div>'; }
+async function approveReport(id){ try{await api(`/api/staff/weekly-reports/${id}/review`,{method:'PATCH',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({action:'approve'})});showMsg('Report approved');loadReports();loadOverview();}catch(e){showMsg(e.data?.error||'Failed to approve report','error');}}
+async function requestRevision(id){ const feedback=prompt('Feedback for revision:'); if(!feedback) return; try{await api(`/api/staff/weekly-reports/${id}/review`,{method:'PATCH',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({action:'needs_revision',feedback})});showMsg('Revision requested');loadReports();loadOverview();}catch(e){showMsg(e.data?.error||'Failed to update report','error');}}
+const shortlistForm=document.getElementById('shortlistForm'); if(shortlistForm){ shortlistForm.addEventListener('submit', async (e)=>{e.preventDefault(); const body={student_id:shortlist_student_id.value,project_id:shortlist_project_id.value,match_reason:shortlist_reason.value,match_score:shortlist_score.value}; try{await api('/api/staff/shortlists',{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify(body)});showMsg('Shortlist created');shortlistForm.reset();loadShortlistPage();loadOverview();}catch(e2){showMsg(e2.data?.error||'Failed to create shortlist','error');}}); }
+const announcementForm=document.getElementById('announcementForm'); if(announcementForm){ announcementForm.addEventListener('submit', async (e)=>{e.preventDefault(); const body={title:announcement_title.value,message:announcement_message.value,audience:announcement_audience.value}; try{await api('/api/staff/announcements',{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify(body)});showMsg('Announcement posted');announcementForm.reset();loadAnnouncements();}catch(e2){showMsg(e2.data?.error||'Failed to post announcement','error');}}); }
+const meetingForm=document.getElementById('meetingForm'); if(meetingForm){ meetingForm.addEventListener('submit', async (e)=>{e.preventDefault(); const body={student_id:meeting_student_id.value,project_id:meeting_project_id.value||null,scheduled_at:meeting_scheduled_at.value,meeting_type:meeting_type.value,location:meeting_location.value,meeting_link:meeting_link.value,agenda:meeting_agenda.value}; try{await api('/api/staff/meetings',{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify(body)});showMsg('Meeting created');meetingForm.reset();loadMeetings();loadOverview();}catch(e2){showMsg(e2.data?.error||'Failed to create meeting','error');}}); }
+(async()=>{try{
+  {% if active_page == 'overview' %}await loadOverview();{% elif active_page == 'shortlists' %}await loadShortlistPage();{% elif active_page == 'announcements' %}await loadAnnouncements();{% elif active_page == 'meetings' %}await loadShortlistPage(); await loadMeetings();{% elif active_page == 'reports' %}await loadReports();{% endif %}
+}catch(e){showMsg('Please log in again.','error');}})();
+</script>
 </body>
 </html>

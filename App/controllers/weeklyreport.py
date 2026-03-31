@@ -1,4 +1,4 @@
-from App.models import WeeklyReport, Student, Project, Staff
+from App.models import WeeklyReport, Student, Project, Staff, Shortlist
 from App.database import db
 from datetime import datetime
 
@@ -27,6 +27,16 @@ def create_weekly_report(student_id, project_id, week_number, report_file_path,
     
     if student.current_internship_status not in ['hired', 'active']:
         print("Student must be hired to upload weekly reports")
+        return None
+
+    hired_shortlist = Shortlist.query.filter_by(
+        student_id=student_id,
+        project_id=project_id,
+        status='hired'
+    ).first()
+
+    if hired_shortlist is None:
+        print("Student is not hired for this project")
         return None
     
     existing = WeeklyReport.query.filter_by(

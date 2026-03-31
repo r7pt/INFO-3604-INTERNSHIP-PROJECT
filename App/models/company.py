@@ -1,5 +1,7 @@
 from App.database import db
 from datetime import datetime
+from werkzeug.security import check_password_hash, generate_password_hash
+
 
 class Company(db.Model):
     __tablename__ = 'company'
@@ -17,15 +19,19 @@ class Company(db.Model):
     projects = db.relationship('Project', backref='company', lazy=True)
     student_evaluations = db.relationship('StudentEvaluation', back_populates='company', lazy=True)
 
-    def check_password(self, password):
-        from werkzeug.security import check_password_hash
-        return check_password_hash(self.password_hash, password)
-
-    def __init__(self, company_name, website=None, category=None, email=None):
+    def __init__(self, company_name, website=None, category=None, email=None, password=None):
         self.company_name = company_name
         self.website = website
         self.category = category
         self.email = email
+        if password:
+            self.set_password(password)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password, method='pbkdf2:sha256')
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     def get_json(self):
         return {

@@ -186,28 +186,48 @@ def login(payload=None):
         return _json_error("Email and password are required", 400)
 
     user = User.query.filter_by(email=email).first()
-    if not user:
-        return _json_error("Invalid credentials", 401)
+    if user:
+        if not user.is_active:
+            return _json_error("Account is disabled", 403)
 
-    if not user.is_active:
-        return _json_error("Account is disabled", 403)
+        if not user.check_password(password):
+            return _json_error("Invalid credentials", 401)
 
-    if not user.check_password(password):
-        return _json_error("Invalid credentials", 401)
+        try:
+            user.update_last_login()
+        except Exception:
+            db.session.rollback()
 
-    try:
-        user.update_last_login()
-    except Exception:
-        db.session.rollback()
+        access, refresh = _issue_tokens(user)
 
-    access, refresh = _issue_tokens(user)
+        return jsonify({
+            "message": "Login successful",
+            "user": user.get_json(),
+            "access_token": access,
+            "refresh_token": refresh
+        }), 200
 
-    return jsonify({
-        "message": "Login successful",
-        "user": user.get_json(),
-        "access_token": access,
-        "refresh_token": refresh
-    }), 200
+    from App.models.company import Company
+    company = Company.query.filter_by(email=email).first()
+    if company and company.check_password(password):
+        access = create_access_token(
+            identity=f"company:{company.id}",
+            additional_claims={"role": "company"},
+            expires_delta=ACCESS_EXPIRES
+        )
+        refresh = create_refresh_token(
+            identity=f"company:{company.id}",
+            additional_claims={"role": "company"},
+            expires_delta=REFRESH_EXPIRES
+        )
+        return jsonify({
+            "message": "Login successful",
+            "user": company.get_json(),
+            "access_token": access,
+            "refresh_token": refresh
+        }), 200
+
+    return _json_error("Invalid credentials", 401)
 
 
 def whoami():

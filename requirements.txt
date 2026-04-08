@@ -8,12 +8,12 @@ Flask-Admin==1.6.1
 Werkzeug>=3.0.0
 click==8.1.3
 gunicorn==20.1.0
-
+python-magic-bin==0.4.14
 pytest==7.0.1
 #psycopg2-binary==2.9.9
 python-dotenv==1.0.1
 rich==13.4.2
-
+pypdf
 click==8.1.3
 Flask==2.3.3
 Flask-Admin==1.6.1

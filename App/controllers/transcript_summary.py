@@ -1,7 +1,10 @@
 from dataclasses import dataclass, field
 from pypdf import PdfReader
 from typing import List
-from App.model.Transcript_summary import *
+from App.models.transcriptSummary import *
+import json
+from dataclasses import asdict
+from App.database import db
 
 @dataclass
 class Course:
@@ -120,38 +123,39 @@ def parse_transcript(pdf_path):
 
     return report
 
-def create_transcript_report(student_id,application_id,report):
-    summary = Transcript_summary(Transcript_summary)
-    db.session.add(summary)
-    db.session.commit()
-    return summary
+def create_transcript_report(student_id, application_id, parsed_report_obj):
+    
+    try:
+        
+        report_json = json.dumps(asdict(parsed_report_obj))
+        
+        new_summary = Transcript_summary(
+            student_id=student_id,
+            application_id=application_id,
+            report=report_json
+        )
+        
+        db.session.add(new_summary)
+        db.session.commit()
+        return new_summary
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error saving transcript: {e}")
+        return None
 
-def edit_transcript_report(reportid,newreport):
-    report= __get_transcript_by_id(reportid)
+def edit_transcript_report(transcript_id, new_data_dict):
+    
+    summary = Transcript_summary.query.get(transcript_id)
+    if not summary:
+        return None
 
-    if report.studen_name != newreport.new_name:
-        report.student_name = newreport.new_name
-
-    if report.student_id !=newreport.new_id:
-        report.student_id = newreport.new_id
-
-    for index in range(len(report.courses)):
-
-        course= report.courses[index]
-        newcourse= newreport.courses[index]
-
-        if course.subject !=newcourse.subject:
-            course.subject = newcourse.subject
-
-        if course.code !=newcourse.code:
-            course.code = newcourse.code
-
-        if course.grade!=newcourse.grade:
-            course.grade = newcourse.grade
-
-        if course.title != newcourse.title:
-            course.title = newcourse.title
-    return report
+    try:
+        summary.report = json.dumps(new_data_dict)
+        db.session.commit()
+        return summary
+    except Exception as e:
+        db.session.rollback()
+        return None
 
 def delete_transcript_summary(summaryid):
     try:

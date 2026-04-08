@@ -5,6 +5,16 @@ from .auth import (
     login,
     whoami
 )
+from .auth import *
+from .user import (
+    create_user,
+    get_user,
+    get_all_users,
+    get_all_users_json,
+    get_user_by_email,
+    update_user,
+    delete_user
+)
 
 from .student import (
     get_student,

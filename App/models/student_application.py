@@ -1,6 +1,6 @@
 from App.database import db
 from App.models.user import User
-from datetime import date
+from datetime import datetime
 import phonenumbers
 
 class Student_application(db.Model):
@@ -18,18 +18,18 @@ class Student_application(db.Model):
     profile_picture = db.Column(db.String,nullable=False)
     returning_intern = db.Column(db.Boolean,nullable=False)
     year_of_study= db.Column(db.Integer,nullable=False)
-    created_on = db.Column(db.Date,nullable=False,default =date.utcnow)
+    created_on = db.Column(db.Date,nullable=False,default=datetime.utcnow)
     resume = db.Column(db.String,nullable=False)
-    skills =db.db.Column(db.String,nullable=True)
+    skills =db.Column(db.String,nullable=True)
     transcript = db.Column(db.String,nullable =False)
     status = db.Column(db.String,nullable=False,default="pending")
-    created_at= db.Column(db.DateTime,default=db.DateTime.utcnow,nullable=False)
-
-    transcript_summary = db.relationship("Transcript_summary",uselist=False,back_populates="student_application",lazy=True)
+    created_at= db.Column(db.DateTime,default=datetime.utcnow,nullable=False)
+    
+    transcript_summary = db.relationship("Transcript_summary",uselist=False,back_populates="application",lazy=True)
     __tablename__ ="student_application"
 
 
-    def __init__ (self,student_id,first_name,last_name,email,contact_number,covid_19_vaccination,summer_requirment,program,cover_letter,internship_credits,citizenship,profile_picture,returning_intern,year_of_study,resume,skills=None,transcript):
+    def __init__ (self,student_id,first_name,last_name,email,contact_number,covid_19_vaccination,summer_requirment,program,cover_letter,internship_credits,citizenship,profile_picture,returning_intern,year_of_study,resume,transcript,skills=None):
         self.first_name = first_name
         self.student_id = student_id
         self.last_name=last_name
@@ -127,7 +127,7 @@ class Student_application(db.Model):
             'returning_intern':self.returning_intern,
             'year_of_study':self.year_of_study,
             'resume':self.resume,
-            'transcript':self.transcript
+            'transcript':self.transcript,
             'status':self.status
         }
 

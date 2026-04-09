@@ -24,10 +24,10 @@ def create_staff(email, password, first_name, last_name, department):
             print("this staff already exist")
             return None
         else:
-        staff = Staff(email, password, first_name, last_name, department)
-        db.session.add(staff)
-        db.session.commit()
-        return staff
+            staff = Staff(email, password, first_name, last_name, department)
+            db.session.add(staff)
+            db.session.commit()
+            return staff
     except Exception as e:
         db.session.rollback()
         print("the following error occurred while creating staff ", e)
@@ -53,8 +53,8 @@ def update_staff(staff_id,email=None, password=None, first_name=None, last_name=
             return staff
     except Exception as e:
         db.session.rollback()
-         print("the following error occurred while updating staff ", e)
-         return None
+        print("the following error occurred while updating staff ", e)
+        return None
 
 def delete_staff(staff_id):
     try:

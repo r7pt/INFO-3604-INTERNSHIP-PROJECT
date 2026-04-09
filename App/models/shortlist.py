@@ -12,7 +12,7 @@ class Shortlist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
    
-    staff_id = db.Column(db.Integer, db.ForeignKey('staff.id'), nullable=False, index=True)
+    staff_id = db.Column(db.Integer, db.ForeignKey('staff.staff_id'), nullable=False, index=True)
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False, index=True)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=False, index=True)
     
@@ -39,7 +39,7 @@ class Shortlist(db.Model):
     
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
-    shortlisted_by = db.Column(db.Integer, db.ForeignKey('staff.id'))  
+    shortlisted_by = db.Column(db.Integer, db.ForeignKey('staff.staff_id'))  
    
     student_notified = db.Column(db.Boolean, default=False)
     student_notification_sent_at = db.Column(db.DateTime)
@@ -65,6 +65,7 @@ class Shortlist(db.Model):
         self.match_reason = match_reason
         self.match_score = match_score
         self.shortlisted_by = staff_id
+        self.status = 'shortlisted'  
     
     def mark_as_interviewed(self, interview_notes=None):
         self.interviewed = True

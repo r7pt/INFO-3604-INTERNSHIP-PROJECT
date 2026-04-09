@@ -25,6 +25,7 @@ class User(db.Model):
         self.email = email
         self.set_password(password)
         self.role = role
+        self.is_active = True
     
     def get_json(self):
         return {

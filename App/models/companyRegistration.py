@@ -24,7 +24,7 @@ class CompanyRegistration(db.Model):
             'company_name': self.company_name,
             'website': self.website,
             'category': self.category,
-            'created_at': self.created_at.isoformat()
+            'created_at': self.created_at.isoformat() if self.created_at else None
         }
 
     def __repr__(self):

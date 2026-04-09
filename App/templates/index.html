@@ -1,513 +1,454 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>UWI Internship Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <title>UWI Internship Portal · DCIT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-   
     :root {
-        --gold: #D4A017;
-        --gold-light: #F0C040;
-        --dark: #F0F4FF;
-        --dark2: #FFFFFF;
-        --dark3: #E8EFFE;
-        --text: #0F1B3D;
-        --text-muted: #6B7A99;
-        --green: #16A34A;
-        --blue: #2563EB;
+      --uwi-blue:       #1A4FAB;
+      --uwi-blue-mid:   #2563EB;
+      --uwi-blue-soft:  #3B82F6;
+      --uwi-gold:       #C9A84C;
+      --uwi-gold-light: #E8C96A;
+      --uwi-gold-pale:  #F5E4B0;
+
+      --bg:           #F7F9FC;
+      --bg2:          #FFFFFF;
+      --bg3:          #EEF2FA;
+      --bg4:          #E4EAF6;
+      --surface:      rgba(255,255,255,0.85);
+      --glass:        rgba(255,255,255,0.6);
+
+      --text:         #0B1A3E;
+      --text-mid:     #2D3F6B;
+      --text-muted:   #6874A0;
+      --text-dim:     #A5AECB;
+      --text-inv:     #FFFFFF;
+
+      --border:       rgba(26,79,171,0.12);
+      --border-gold:  rgba(201,168,76,0.35);
+      --shadow-sm:    0 1px 4px rgba(26,79,171,0.08);
+      --shadow:       0 4px 20px rgba(26,79,171,0.1);
+      --shadow-lg:    0 12px 48px rgba(26,79,171,0.16);
+      --shadow-gold:  0 6px 24px rgba(201,168,76,0.25);
+
+      --nav-bg:       rgba(247,249,252,0.9);
+      --card-bg:      #FFFFFF;
+      --stat-bg:      linear-gradient(135deg, #EEF2FA 0%, #FFFFFF 100%);
     }
 
+    [data-theme="dark"] {
+      --bg:           #0A1628;
+      --bg2:          #0F1E35;
+      --bg3:          #152540;
+      --bg4:          #1B2E4F;
+      --surface:      rgba(15,30,53,0.9);
+      --glass:        rgba(15,30,53,0.7);
+
+      --text:         #E8EFF8;
+      --text-mid:     #B8C8E0;
+      --text-muted:   #7A94B8;
+      --text-dim:     #4A6080;
+
+      --border:       rgba(59,130,246,0.15);
+      --border-gold:  rgba(201,168,76,0.3);
+      --shadow-sm:    0 1px 4px rgba(0,0,0,0.3);
+      --shadow:       0 4px 20px rgba(0,0,0,0.35);
+      --shadow-lg:    0 12px 48px rgba(0,0,0,0.5);
+
+      --nav-bg:       rgba(10,22,40,0.92);
+      --card-bg:      #0F1E35;
+      --stat-bg:      linear-gradient(135deg, #152540 0%, #0F1E35 100%);
+    }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background: var(--dark);
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
       color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
     }
 
-    /* Animated background */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
+    
+    .mesh-bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background:
-        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(201,168,76,0.12) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(88,166,255,0.08) 0%, transparent 60%);
-      pointer-events: none;
-      z-index: 0;
+        radial-gradient(ellipse 70% 50% at 15% -5%, rgba(26,79,171,0.09) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 85% 110%, rgba(201,168,76,0.08) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 35% at 60% 50%, rgba(37,99,235,0.04) 0%, transparent 50%);
+    }
+    [data-theme="dark"] .mesh-bg {
+      background:
+        radial-gradient(ellipse 70% 50% at 15% -5%, rgba(26,79,171,0.2) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 85% 110%, rgba(201,168,76,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 35% at 60% 50%, rgba(37,99,235,0.07) 0%, transparent 50%);
     }
 
+  
     nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 48px;
-      background: rgba(13,17,23,0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(201,168,76,0.15);
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 48px; height: 66px;
+      background: var(--nav-bg);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      transition: background 0.3s;
     }
 
     .nav-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.3rem;
-      color: var(--gold);
-      letter-spacing: 0.02em;
+      display: flex; align-items: center; gap: 12px;
     }
+    .nav-logo-mark {
+      width: 36px; height: 36px; border-radius: 9px;
+      background: linear-gradient(135deg, var(--uwi-blue) 0%, var(--uwi-blue-soft) 100%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 3px 10px rgba(26,79,171,0.3);
+    }
+    .nav-logo-mark svg { width: 18px; height: 18px; fill: white; }
+    .nav-logo-text { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 600; color: var(--text); letter-spacing: 0.01em; }
+    .nav-logo-text span { color: var(--uwi-gold); }
 
-    .nav-logo span {
-      color: var(--text);
-      font-weight: 300;
-    }
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
 
-    .nav-links {
-      display: flex;
-      gap: 12px;
-      align-items: center;
+    .theme-toggle {
+      width: 38px; height: 38px; border-radius: 9px; border: 1px solid var(--border);
+      background: var(--bg3); cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; transition: all 0.2s; color: var(--text-muted);
     }
+    .theme-toggle:hover { background: var(--bg4); border-color: var(--border-gold); color: var(--uwi-gold); }
 
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 22px;
-      border-radius: 6px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.2s ease;
-      border: none;
+    .btn-nav-ghost {
+      padding: 8px 18px; border-radius: 8px; border: 1px solid var(--border);
+      background: transparent; color: var(--text-mid);
+      font-family: 'DM Sans', sans-serif; font-size: 0.86rem; font-weight: 500;
+      cursor: pointer; text-decoration: none; display: inline-flex; align-items: center;
+      transition: all 0.2s;
     }
+    .btn-nav-ghost:hover { border-color: var(--border-gold); color: var(--uwi-gold); background: rgba(201,168,76,0.06); }
 
-    .btn-ghost {
-      background: transparent;
-      color: var(--text-muted);
-      border: 1px solid rgba(139,148,158,0.3);
+    .btn-nav-primary {
+      padding: 8px 20px; border-radius: 8px; border: none;
+      background: var(--uwi-blue); color: white;
+      font-family: 'DM Sans', sans-serif; font-size: 0.86rem; font-weight: 600;
+      cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+      transition: all 0.2s;
+      box-shadow: 0 2px 12px rgba(26,79,171,0.3);
     }
-    .btn-ghost:hover {
-      color: var(--text);
-      border-color: rgba(201,168,76,0.4);
-      background: rgba(201,168,76,0.05);
-    }
+    .btn-nav-primary:hover { background: var(--uwi-blue-mid); transform: translateY(-1px); box-shadow: 0 4px 18px rgba(26,79,171,0.4); }
 
-    .btn-gold {
-      background: var(--gold);
-      color: var(--dark);
-      font-weight: 600;
-    }
-    .btn-gold:hover {
-      background: var(--gold-light);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 20px rgba(201,168,76,0.3);
-    }
-
-    .btn-outline-gold {
-      background: transparent;
-      color: var(--gold);
-      border: 1.5px solid var(--gold);
-    }
-    .btn-outline-gold:hover {
-      background: rgba(201,168,76,0.1);
-      transform: translateY(-1px);
-    }
-
-    /* Hero */
+    
     .hero {
-      position: relative;
-      z-index: 1;
+      position: relative; z-index: 1;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 120px 24px 80px;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      text-align: center; padding: 110px 24px 80px;
     }
 
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 16px;
-      border-radius: 999px;
-      border: 1px solid rgba(201,168,76,0.3);
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 7px 18px; border-radius: 999px;
+      border: 1px solid var(--border-gold);
       background: rgba(201,168,76,0.08);
-      font-size: 0.8rem;
-      color: var(--gold);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 32px;
-      animation: fadeUp 0.6s ease both;
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--uwi-gold);
+      margin-bottom: 36px;
+      animation: riseUp 0.7s ease both;
     }
-
-    .hero-badge::before {
-      content: '';
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--gold);
-      animation: pulse 2s infinite;
+    .hero-eyebrow::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--uwi-gold); animation: breathe 2.5s infinite;
     }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.4); }
-    }
+    @keyframes breathe { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.5)} }
 
     h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2.8rem, 7vw, 5.5rem);
-      font-weight: 900;
-      line-height: 1.08;
-      letter-spacing: -0.02em;
-      margin-bottom: 24px;
-      animation: fadeUp 0.6s 0.1s ease both;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 7.5vw, 6rem);
+      font-weight: 700; line-height: 1.05; letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 28px;
+      animation: riseUp 0.7s 0.1s ease both;
     }
-
-    h1 .accent {
-      color: var(--gold);
+    h1 em {
+      font-style: italic; color: var(--uwi-gold);
       display: block;
     }
 
     .hero-sub {
-      font-size: 1.15rem;
-      color: var(--text-muted);
-      max-width: 520px;
-      line-height: 1.7;
-      margin-bottom: 56px;
-      font-weight: 300;
-      animation: fadeUp 0.6s 0.2s ease both;
+      font-size: 1.1rem; color: var(--text-muted); max-width: 480px;
+      line-height: 1.75; font-weight: 400; margin-bottom: 52px;
+      animation: riseUp 0.7s 0.2s ease both;
     }
 
-    /* Portal cards */
-    .portal-cards {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      flex-wrap: wrap;
-      animation: fadeUp 0.6s 0.3s ease both;
-      margin-bottom: 64px;
+    @keyframes riseUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+    
+    .portal-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 20px;
+      max-width: 860px; width: 100%;
+      animation: riseUp 0.7s 0.3s ease both;
+      margin-bottom: 70px;
     }
 
     .portal-card {
-      background: var(--dark2);
-      border: 1px solid rgba(139,148,158,0.15);
-      border-radius: 16px;
-      padding: 32px 28px;
-      width: 240px;
-      text-align: left;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      text-decoration: none;
-      color: inherit;
-      position: relative;
-      overflow: hidden;
+      position: relative; overflow: hidden;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 28px 24px 24px;
+      text-decoration: none; color: inherit;
+      transition: all 0.3s cubic-bezier(0.23,1,0.32,1);
+      box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column;
     }
-
-    .portal-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(201,168,76,0.06) 0%, transparent 60%);
-      opacity: 0;
-      transition: opacity 0.3s;
+    .portal-card::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(201,168,76,0.05) 100%);
+      opacity: 0; transition: opacity 0.3s;
     }
-
     .portal-card:hover {
-      border-color: rgba(201,168,76,0.4);
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--border-gold);
+    }
+    .portal-card:hover::after { opacity: 1; }
+
+    .card-accent-line {
+      height: 3px; border-radius: 2px; margin-bottom: 22px;
+      background: linear-gradient(90deg, var(--uwi-blue) 0%, var(--uwi-blue-soft) 100%);
+      width: 36px; transition: width 0.3s;
+    }
+    .portal-card:hover .card-accent-line { width: 56px; }
+    .portal-card.gold-accent .card-accent-line {
+      background: linear-gradient(90deg, var(--uwi-gold) 0%, var(--uwi-gold-light) 100%);
     }
 
-    .portal-card:hover::before { opacity: 1; }
-
-    .card-icon {
-      width: 48px; height: 48px;
-      border-radius: 12px;
+    .card-icon-wrap {
+      width: 52px; height: 52px; border-radius: 14px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem;
-      margin-bottom: 20px;
+      font-size: 1.5rem; margin-bottom: 18px;
+      transition: transform 0.3s;
     }
+    .portal-card:hover .card-icon-wrap { transform: scale(1.05) rotate(-3deg); }
 
-    .card-icon.student { background: rgba(63,185,80,0.15); }
-    .card-icon.company { background: rgba(88,166,255,0.15); }
-    .card-icon.staff   { background: rgba(201,168,76,0.15); }
+    .icon-student { background: rgba(26,79,171,0.1); }
+    .icon-company { background: rgba(201,168,76,0.12); }
+    .icon-staff   { background: rgba(37,99,235,0.1); }
 
-    .card-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
+    .card-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); font-weight: 600; margin-bottom: 6px; }
+    .card-heading { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+    .card-body { font-size: 0.84rem; color: var(--text-muted); line-height: 1.65; flex: 1; margin-bottom: 22px; }
 
-    .card-desc {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-
-    .card-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .card-btn {
-      flex: 1;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 0.82rem;
-      font-weight: 500;
-      text-align: center;
-      text-decoration: none;
-      transition: all 0.2s;
-      cursor: pointer;
-      border: none;
+    .card-btns { display: flex; gap: 8px; }
+    .cbtn {
+      flex: 1; padding: 9px 10px; border-radius: 8px;
+      font-size: 0.81rem; font-weight: 600;
+      text-align: center; text-decoration: none;
+      transition: all 0.2s; cursor: pointer; border: none;
       font-family: 'DM Sans', sans-serif;
     }
+    .cbtn-fill { background: var(--uwi-blue); color: white; }
+    .cbtn-fill:hover { background: var(--uwi-blue-mid); }
+    .cbtn-gold { background: var(--uwi-gold); color: white; }
+    .cbtn-gold:hover { background: var(--uwi-gold-light); }
+    .cbtn-ghost { background: var(--bg3); color: var(--text-muted); border: 1px solid var(--border); }
+    .cbtn-ghost:hover { color: var(--text); border-color: var(--border-gold); background: rgba(201,168,76,0.08); }
 
-    .card-btn-primary {
-      background: var(--gold);
-      color: var(--dark);
+   
+    .stats-strip {
+      position: relative; z-index: 1;
+      display: flex; justify-content: center; flex-wrap: wrap; gap: 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--card-bg);
+      animation: riseUp 0.7s 0.4s ease both;
     }
-    .card-btn-primary:hover {
-      background: var(--gold-light);
+    .stat-item {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 32px 56px; border-right: 1px solid var(--border);
+      transition: background 0.2s;
     }
-
-    .card-btn-secondary {
-      background: var(--dark3);
-      color: var(--text-muted);
-      border: 1px solid rgba(139,148,158,0.2);
-    }
-    .card-btn-secondary:hover {
-      color: var(--text);
-      border-color: rgba(201,168,76,0.3);
-    }
-
-    /* Stats bar */
-    .stats-bar {
-      display: flex;
-      gap: 48px;
-      justify-content: center;
-      flex-wrap: wrap;
-      padding: 32px 48px;
-      border-top: 1px solid rgba(139,148,158,0.1);
-      border-bottom: 1px solid rgba(139,148,158,0.1);
-      background: rgba(22,27,34,0.6);
-      animation: fadeUp 0.6s 0.4s ease both;
-    }
-
-    .stat { text-align: center; }
+    .stat-item:last-child { border-right: none; }
+    .stat-item:hover { background: var(--bg3); }
     .stat-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--gold);
-      display: block;
-    }
-    .stat-label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    /* Process section */
-    .section {
-      position: relative;
-      z-index: 1;
-      max-width: 1000px;
-      margin: 80px auto;
-      padding: 0 24px;
-    }
-
-    .section-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--gold);
-      margin-bottom: 12px;
-    }
-
-    .section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.2rem;
-      font-weight: 700;
-      margin-bottom: 48px;
-    }
-
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 24px;
-    }
-
-    .step {
-      background: var(--dark2);
-      border: 1px solid rgba(139,148,158,0.1);
-      border-radius: 12px;
-      padding: 28px 24px;
-      position: relative;
-      transition: border-color 0.3s;
-    }
-
-    .step:hover { border-color: rgba(201,168,76,0.3); }
-
-    .step-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.5rem;
-      font-weight: 900;
-      color: rgba(201,168,76,0.2);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.4rem; font-weight: 700; color: var(--uwi-gold);
       line-height: 1;
-      margin-bottom: 16px;
     }
+    .stat-lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); font-weight: 600; margin-top: 6px; }
 
-    .step-title {
-      font-weight: 600;
-      margin-bottom: 8px;
-      font-size: 0.95rem;
+    
+    .section {
+      position: relative; z-index: 1;
+      max-width: 1060px; margin: 90px auto; padding: 0 24px;
     }
-
-    .step-desc {
-      font-size: 0.83rem;
-      color: var(--text-muted);
-      line-height: 1.6;
+    .section-kicker {
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.14em;
+      color: var(--uwi-gold); font-weight: 700; margin-bottom: 12px;
     }
+    .section-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.6rem; font-weight: 700; color: var(--text);
+      margin-bottom: 52px; line-height: 1.15;
+    }
+    .section-heading span { color: var(--uwi-blue); font-style: italic; }
 
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(5,1fr); gap: 16px;
+    }
+    .step-card {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 16px; padding: 26px 20px;
+      position: relative; overflow: hidden;
+      transition: all 0.3s;
+    }
+    .step-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--border-gold); }
+    .step-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem; font-weight: 700;
+      color: rgba(201,168,76,0.18); line-height: 1; margin-bottom: 14px;
+    }
+    .step-title { font-weight: 600; font-size: 0.9rem; color: var(--text); margin-bottom: 8px; }
+    .step-desc { font-size: 0.81rem; color: var(--text-muted); line-height: 1.6; }
+
+   
     footer {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 40px 24px;
-      border-top: 1px solid rgba(139,148,158,0.1);
-      color: var(--text-muted);
-      font-size: 0.85rem;
+      position: relative; z-index: 1;
+      text-align: center; padding: 40px 24px;
+      border-top: 1px solid var(--border);
+      color: var(--text-dim); font-size: 0.82rem;
     }
+    footer strong { color: var(--uwi-gold); }
 
-    footer strong { color: var(--gold); }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
+    
+    @media (max-width: 900px) {
+      nav { padding: 0 20px; }
+      .portal-grid { grid-template-columns: 1fr; max-width: 400px; }
+      .stats-strip { flex-wrap: wrap; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--border); padding: 24px 36px; flex: 1 1 40%; }
+      .steps-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      nav { padding: 0 16px; }
+      .nav-logo-text { display: none; }
+      h1 { font-size: 2.4rem; }
+      .steps-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <nav>
-    <div class="nav-logo">UWI <span>Internship Portal</span></div>
-    <div class="nav-links">
-      <a href="/login" class="btn btn-ghost">Sign In</a>
-      <a href="/register/student" class="btn btn-gold">Apply Now</a>
+<div class="mesh-bg"></div>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M12 3L2 9l10 6 10-6-10-6zM2 17l10 6 10-6M2 13l10 6 10-6"/></svg>
     </div>
-  </nav>
+    <div class="nav-logo-text">UWI <span>Internship</span></div>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" id="themeBtn" title="Toggle theme">🌙</button>
+    <a href="/login" class="btn-nav-ghost">Sign In</a>
+    <a href="/register/student" class="btn-nav-primary">
+      <span>Apply Now</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
 
-  <section class="hero">
-    <div class="hero-badge">Department of Computing &amp; Information Technology</div>
+<section class="hero">
+  <div class="hero-eyebrow">Department of Computing &amp; Information Technology</div>
 
-    <h1>
-      Launch Your Career
-      <span class="accent">With Purpose.</span>
-    </h1>
+  <h1>
+    Bridge the gap between
+    <em>knowledge &amp; career.</em>
+  </h1>
 
-    <p class="hero-sub">
-      The UWI Internship Portal connects talented students with industry partners,
-      streamlining every step from application to placement.
-    </p>
+  <p class="hero-sub">
+    The UWI Internship Portal seamlessly connects DCIT students with leading industry partners — from application through to placement.
+  </p>
 
-    <div class="portal-cards">
-      <a href="/register/student" class="portal-card">
-        <div class="card-icon student">🎓</div>
-        <div class="card-title">Students</div>
-        <div class="card-desc">Apply for internships, upload documents and track your placement status.</div>
-        <div class="card-actions">
-          <a href="/register/student" class="card-btn card-btn-primary">Register</a>
-          <a href="/login" class="card-btn card-btn-secondary">Sign In</a>
-        </div>
-      </a>
-
-      <a href="/register/company" class="portal-card">
-        <div class="card-icon company">🏢</div>
-        <div class="card-title">Companies</div>
-        <div class="card-desc">Post internship positions, review applicants and hire top talent.</div>
-        <div class="card-actions">
-          <a href="/register/company" class="card-btn card-btn-primary">Register</a>
-          <a href="/login" class="card-btn card-btn-secondary">Sign In</a>
-        </div>
-      </a>
-
-      <a href="/login" class="portal-card">
-        <div class="card-icon staff">⚙️</div>
-        <div class="card-title">Staff</div>
-        <div class="card-desc">Manage the internship programme, match students and oversee placements.</div>
-        <div class="card-actions">
-          <a href="/login" class="card-btn card-btn-primary">Sign In</a>
-        </div>
-      </a>
+  <div class="portal-grid">
+    <div class="portal-card">
+      <div class="card-accent-line"></div>
+      <div class="card-icon-wrap icon-student">🎓</div>
+      <div class="card-label">Student Portal</div>
+      <div class="card-heading">Students</div>
+      <div class="card-body">Apply for internships, upload your CV &amp; transcript, and track your placement journey.</div>
+      <div class="card-btns">
+        <a href="/register/student" class="cbtn cbtn-fill">Register</a>
+        <a href="/login" class="cbtn cbtn-ghost">Sign In</a>
+      </div>
     </div>
-  </section>
 
-  <div class="stats-bar">
-    <div class="stat">
-      <span class="stat-num">3</span>
-      <span class="stat-label">User Roles</span>
+    <div class="portal-card gold-accent">
+      <div class="card-accent-line"></div>
+      <div class="card-icon-wrap icon-company">🏢</div>
+      <div class="card-label">Company Portal</div>
+      <div class="card-heading">Companies</div>
+      <div class="card-body">Post internship projects, review shortlisted candidates, and hire top DCIT talent.</div>
+      <div class="card-btns">
+        <a href="/register/company" class="cbtn cbtn-gold">Register</a>
+        <a href="/login" class="cbtn cbtn-ghost">Sign In</a>
+      </div>
     </div>
-    <div class="stat">
-      <span class="stat-num">100%</span>
-      <span class="stat-label">UWI Only</span>
-    </div>
-    <div class="stat">
-      <span class="stat-num">PDF</span>
-      <span class="stat-label">Secure Uploads</span>
-    </div>
-    <div class="stat">
-      <span class="stat-num">JWT</span>
-      <span class="stat-label">Auth Protected</span>
+
+    <div class="portal-card">
+      <div class="card-accent-line"></div>
+      <div class="card-icon-wrap icon-staff">⚙️</div>
+      <div class="card-label">Admin Portal</div>
+      <div class="card-heading">Staff</div>
+      <div class="card-body">Manage the internship programme, match students to positions, and oversee all placements.</div>
+      <div class="card-btns">
+        <a href="/login" class="cbtn cbtn-fill">Sign In</a>
+      </div>
     </div>
   </div>
+</section>
 
-  <section class="section">
-    <div class="section-label">How It Works</div>
-    <div class="section-title">Student Workflow</div>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">01</div>
-        <div class="step-title">Register &amp; Login</div>
-        <div class="step-desc">Create your account using your UWI student email address.</div>
-      </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <div class="step-title">Upload Documents</div>
-        <div class="step-desc">Upload your CV and official transcript in PDF format.</div>
-      </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <div class="step-title">Apply to Projects</div>
-        <div class="step-desc">Browse available internship positions and submit your application.</div>
-      </div>
-      <div class="step">
-        <div class="step-num">04</div>
-        <div class="step-title">Track Status</div>
-        <div class="step-desc">Monitor your application status from applied through to hired.</div>
-      </div>
-      <div class="step">
-        <div class="step-num">05</div>
-        <div class="step-title">Submit Reports</div>
-        <div class="step-desc">Once hired, upload weekly progress reports to your supervisor.</div>
-      </div>
-    </div>
-  </section>
+<div class="stats-strip">
+  <div class="stat-item"><div class="stat-num">3</div><div class="stat-lbl">User Roles</div></div>
+  <div class="stat-item"><div class="stat-num">100%</div><div class="stat-lbl">UWI Only</div></div>
+  <div class="stat-item"><div class="stat-num">PDF</div><div class="stat-lbl">Secure Uploads</div></div>
+  <div class="stat-item"><div class="stat-num">JWT</div><div class="stat-lbl">Auth Protected</div></div>
+</div>
 
-  <footer>
-    <p>© 2026 <strong>UWI Internship Portal</strong> · Department of Computing &amp; Information Technology</p>
-  </footer>
+<section class="section">
+  <div class="section-kicker">How It Works</div>
+  <div class="section-heading">The student <span>journey</span></div>
+  <div class="steps-grid">
+    <div class="step-card"><div class="step-num">01</div><div class="step-title">Register &amp; Login</div><div class="step-desc">Create your account using your official UWI student email address.</div></div>
+    <div class="step-card"><div class="step-num">02</div><div class="step-title">Upload Documents</div><div class="step-desc">Submit your CV and official academic transcript in PDF format.</div></div>
+    <div class="step-card"><div class="step-num">03</div><div class="step-title">Get Matched</div><div class="step-desc">DCIT staff review your profile and match you to suitable positions.</div></div>
+    <div class="step-card"><div class="step-num">04</div><div class="step-title">Interview &amp; Hire</div><div class="step-desc">Receive notifications when shortlisted and invited for interview.</div></div>
+    <div class="step-card"><div class="step-num">05</div><div class="step-title">Submit Reports</div><div class="step-desc">Once placed, upload weekly progress reports throughout your internship.</div></div>
+  </div>
+</section>
 
+<footer>
+  <p>© 2026 <strong>UWI Internship Portal</strong> · Department of Computing &amp; Information Technology, St. Augustine</p>
+</footer>
+
+<script>
+  const btn = document.getElementById('themeBtn');
+  const html = document.documentElement;
+  const saved = localStorage.getItem('uwi_theme') || 'light';
+  html.setAttribute('data-theme', saved);
+  btn.textContent = saved === 'dark' ? '☀️' : '🌙';
+
+  btn.addEventListener('click', () => {
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    btn.textContent = next === 'dark' ? '☀️' : '🌙';
+    localStorage.setItem('uwi_theme', next);
+  });
+</script>
 </body>
 </html>

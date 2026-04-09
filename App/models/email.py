@@ -1,18 +1,18 @@
 from App.database import db
-from datetime import date
-from sqlalchemy_imageattach.entity import Image, image_attachment
+from datetime import datetime
+#from sqlalchemy_imageattach.entity import Image, image_attachment
 from App.models.user import User
 import re
 
 class Email(db.Model):
     email_id = db.Column(db.Integer,primary_key=True)
-    recipient_id= db.Column(db.Integer,db.ForeignKey("user.user_id"),nullable =False)
-    sender_id = db.Column(db.Integer,db.ForeignKey("user.user_id"),nullable = False)
+    recipient_id= db.Column(db.Integer,db.ForeignKey("user.id"),nullable =False)
+    sender_id = db.Column(db.Integer,db.ForeignKey("user.id"),nullable = False)
     subject = db.Column(db.String(50),nullable = False)
     description = db.Column(db.String(500),nullable = False)
-    graphic = db.Column(image_attachment("graphic"),nullable=False)
+    #graphic = db.Column(image_attachment("graphic"),nullable=False)
     attachment = db.Column(db.String,nullable = True)
-    created_at = db.Column(db.DateTime, default= db.DateTime.utcnow)
+    created_at = db.Column(db.DateTime, default= datetime.utcnow)
     status = db.Column(db.Boolean, nullable =False, default= False)
     
     sender = db.relationship("User",backref="sent_emails",foreign_keys =[sender_id],lazy=True)
@@ -26,6 +26,7 @@ class Email(db.Model):
         self.description=description
         self.graphic=graphic
         self.attachment=attachment
+        self.status = False
 
     #get all email 
     def get_all_emails(self):

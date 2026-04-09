@@ -1,150 +1,360 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ page_title or 'Company Portal' }}</title>
+  <title>Company Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body{font-family:Arial,sans-serif;margin:0;background:#0b1520;color:#e8eef5}
-    .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
-    aside{background:#111d2b;padding:24px;border-right:1px solid #233548}
-    main{padding:24px}
-    h1,h2,h3{margin-top:0}
-    .nav a{display:block;color:#d9e7f7;text-decoration:none;padding:10px 12px;border-radius:8px;margin-bottom:8px;background:#142234}
-    .nav a.active{background:#1f3550}
-    .card{background:#132131;border:1px solid #24384d;border-radius:12px;padding:16px;margin-bottom:16px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-    label{display:block;margin-bottom:6px;font-weight:700}
-    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #31485f;background:#0d1825;color:#fff;margin-bottom:12px;box-sizing:border-box}
-    textarea{min-height:110px}
-    button{padding:10px 14px;border:0;border-radius:8px;background:#3b82f6;color:#fff;cursor:pointer;font-weight:700}
-    button.secondary{background:#334155}
-    button.danger{background:#b91c1c}
-    .muted{color:#9fb3c8}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#24384d;font-size:12px}
-    .item{border:1px solid #2b3f55;border-radius:10px;padding:12px;margin-bottom:10px;background:#0f1a28}
-    .msg{display:none;padding:10px 12px;border-radius:8px;margin-bottom:16px}
-    .msg.show{display:block}.success{background:#153d28;color:#bbf7d0}.error{background:#4c1d1d;color:#fecaca}
-    @media(max-width:900px){.layout{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid #233548}}
+    :root{--blue:#1A4DB3;--gold:#F5A800;--gold-d:#C98C00}
+    [data-theme="dark"]{--bg:#0e1c2f;--surface:#152438;--card:#1a2e45;--border:#243d58;--text:#e8f0fb;--muted:#7a9ab8}
+    [data-theme="light"]{--bg:#f0f4fb;--surface:#fff;--card:#fff;--border:#c8d8ee;--text:#0d1b2e;--muted:#5a7a9e}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:.2s}
+    .layout{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+    aside{background:var(--surface);padding:24px;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+    aside h2{font-size:18px;font-weight:700;color:var(--gold);margin-bottom:4px}
+    aside p{font-size:12px;color:var(--muted);margin-bottom:12px}
+    .nav a{display:block;color:var(--muted);text-decoration:none;padding:9px 12px;border-radius:8px;margin-bottom:4px;font-size:14px;font-weight:500;transition:.15s;border:1px solid transparent;cursor:pointer}
+    .nav a:hover{background:var(--card);color:var(--text);border-color:var(--border)}
+    .nav a.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+    .sidebar-foot{margin-top:auto;display:flex;gap:8px;flex-wrap:wrap}
+    main{padding:28px 32px;background:var(--bg)}
+    h1{font-size:24px;font-weight:700;margin-bottom:4px}
+    .subtitle{color:var(--muted);font-size:14px;margin-bottom:24px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px}
+    .card h3{font-size:15px;font-weight:600;margin-bottom:16px;color:var(--gold)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+    label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+    input,textarea,select{width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;margin-bottom:12px;outline:none;transition:.15s}
+    input:focus,textarea:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(245,168,0,.15)}
+    input[type="checkbox"]{width:auto;margin:0;padding:0;accent-color:var(--gold)}
+    textarea{min-height:90px;resize:vertical}
+    button{padding:9px 16px;border:none;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:.15s}
+    .btn-gold{background:var(--gold);color:#0d1b2e}.btn-gold:hover{background:var(--gold-d)}
+    .btn-blue{background:var(--blue);color:#fff}.btn-blue:hover{filter:brightness(1.15)}
+    .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted)}.btn-ghost:hover{border-color:var(--gold);color:var(--text)}
+    .btn-danger{background:transparent;border:1px solid #e05252;color:#e05252}.btn-danger:hover{background:rgba(224,82,82,.1)}
+    .btn-sm{padding:6px 12px;font-size:13px}
+    .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .badge{display:inline-block;padding:2px 9px;border-radius:999px;background:rgba(26,77,179,.25);color:#7aadff;font-size:11px;font-weight:600;border:1px solid rgba(26,77,179,.4)}
+    .item{border:1px solid var(--border);border-radius:9px;padding:12px;margin-bottom:8px;background:var(--bg)}
+    .msg{display:none;padding:10px 14px;border-radius:8px;margin-bottom:16px;font-size:14px;font-weight:500}
+    .msg.show{display:block}
+    .success{background:rgba(16,185,100,.12);color:#10b964;border:1px solid rgba(16,185,100,.25)}
+    .error{background:rgba(224,82,82,.12);color:#e05252;border:1px solid rgba(224,82,82,.25)}
+    .cb-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+    .cb-label{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;padding:6px 10px;border:1px solid var(--border);border-radius:7px;cursor:pointer}
+    .page{display:none}.page.active{display:block}
+    @media(max-width:800px){.layout{grid-template-columns:1fr}aside{border-right:none;border-bottom:1px solid var(--border)}}
   </style>
 </head>
 <body>
 <div class="layout">
   <aside>
-    <h2>Company Portal</h2>
-    <p class="muted">Manage projects, shortlist decisions, and intern reports.</p>
-    <div class="nav">
-      <a href="/company/overview" class="{{ 'active' if active_page == 'overview' else '' }}">Overview</a>
-      <a href="/company/projects" class="{{ 'active' if active_page == 'projects' else '' }}">Projects</a>
-      <a href="/company/shortlist" class="{{ 'active' if active_page == 'shortlist' else '' }}">Shortlist</a>
-      <a href="/company/reports" class="{{ 'active' if active_page == 'reports' else '' }}">Weekly Reports</a>
+    <div>
+      <h2>Company Portal</h2>
+      <p>Manage projects, shortlists &amp; intern reports.</p>
     </div>
-    <div class="row" style="margin-top:16px"><button class="secondary" onclick="logout()">Logout</button></div>
+    <div class="nav">
+      <a onclick="navigate('overview')" id="nav-overview" class="active">Overview</a>
+      <a onclick="navigate('projects')" id="nav-projects">Projects</a>
+      <a onclick="navigate('shortlist')" id="nav-shortlist">Shortlist</a>
+      <a onclick="navigate('reports')" id="nav-reports">Weekly Reports</a>
+    </div>
+    <div class="sidebar-foot">
+      <button class="btn-ghost btn-sm" onclick="toggleTheme()" id="themeBtn">&#9728; Light mode</button>
+      <button class="btn-ghost btn-sm" onclick="logout()">Sign out</button>
+    </div>
   </aside>
+
   <main>
     <div id="msg" class="msg"></div>
-    <h1>{{ page_title }}</h1>
-    <p class="muted">{{ page_subtitle }}</p>
+    <h1 id="pageTitle">Overview</h1>
+    <p class="subtitle" id="pageSubtitle">Your company at a glance.</p>
 
-    {% if active_page == 'overview' %}
-    <div class="grid">
-      <div class="card"><h3>Company</h3><div id="profileBox" class="muted">Loading...</div></div>
-      <div class="card"><h3>Counts</h3><div id="countBox" class="muted">Loading...</div></div>
+    
+    <div id="page-overview" class="page active">
+      <div class="grid">
+        <div class="card"><h3>Company</h3><div id="profileBox" style="color:var(--muted)">Loading...</div></div>
+        <div class="card"><h3>Counts</h3><div id="countBox" style="color:var(--muted)">Loading...</div></div>
+      </div>
     </div>
-    {% elif active_page == 'projects' %}
-    <div class="grid">
-      <div class="card">
-        <h3>Create Project</h3>
-        <form id="projectForm">
-          <label>Project Name</label><input id="project_name" required>
-          <label>Number of Interns</label><input id="number_of_interns" type="number" required>
-          <label>Stipend</label><input id="stipend" type="number" step="0.01">
-          <label>Description</label><textarea id="description"></textarea>
-          <label>Details</label><textarea id="details"></textarea>
-          <div class="row">
-            <label><input type="checkbox" id="place_of_work" style="width:auto"> On-site</label>
-            <label><input type="checkbox" id="international_students" style="width:auto"> International</label>
-            <label><input type="checkbox" id="hired_after" style="width:auto"> Hired After</label>
-            <label><input type="checkbox" id="covid_vaccination" style="width:auto"> Vaccination</label>
+
+    
+    <div id="page-projects" class="page">
+      <div class="grid">
+        <div class="card">
+          <h3>Create Project</h3>
+          <form id="projectForm">
+            <label>Project Name</label>
+            <input id="project_name" required>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div><label>No. of Interns</label><input id="number_of_interns" type="number" required></div>
+              <div><label>Stipend</label><input id="stipend" type="number" step="0.01"></div>
+            </div>
+            <label>Description</label><textarea id="description"></textarea>
+            <label>Details</label><textarea id="details"></textarea>
+            <label style="margin-bottom:8px">Options</label>
+            <div class="cb-row">
+              <label class="cb-label"><input type="checkbox" id="place_of_work"> On-site</label>
+              <label class="cb-label"><input type="checkbox" id="international_students"> International</label>
+              <label class="cb-label"><input type="checkbox" id="hired_after"> Hire after</label>
+              <label class="cb-label"><input type="checkbox" id="covid_vaccination"> Vaccination</label>
+            </div>
+            <button type="submit" class="btn-gold" style="width:100%">Create Project</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between;margin-bottom:16px">
+            <h3 style="margin:0">My Projects</h3>
+            <button class="btn-ghost btn-sm" onclick="loadProjects()">&#8635; Refresh</button>
           </div>
-          <button type="submit">Create Project</button>
-        </form>
-      </div>
-      <div class="card">
-        <div class="row" style="justify-content:space-between;align-items:center"><h3>My Projects</h3><button class="secondary" onclick="loadProjects()">Refresh</button></div>
-        <div id="projectsList" class="muted">Loading...</div>
+          <div id="projectsList" style="color:var(--muted)">Loading...</div>
+        </div>
       </div>
     </div>
-    {% elif active_page == 'shortlist' %}
+
+    
+    <div id="page-shortlist" class="page">
       <div class="card">
-        <div class="row" style="justify-content:space-between;align-items:center"><h3>Shortlisted Students</h3><button class="secondary" onclick="loadShortlist()">Refresh</button></div>
-        <div id="shortlistList" class="muted">Loading...</div>
+        <div class="row" style="justify-content:space-between;margin-bottom:16px">
+          <h3 style="margin:0">Shortlisted Students</h3>
+          <button class="btn-ghost btn-sm" onclick="loadShortlist()">&#8635; Refresh</button>
+        </div>
+        <div id="shortlistList" style="color:var(--muted)">Loading...</div>
       </div>
-    {% elif active_page == 'reports' %}
+    </div>
+
+   
+    <div id="page-reports" class="page">
       <div class="card">
-        <div class="row" style="justify-content:space-between;align-items:center"><h3>Weekly Reports</h3><button class="secondary" onclick="loadReports()">Refresh</button></div>
-        <div id="reportsList" class="muted">Loading...</div>
+        <div class="row" style="justify-content:space-between;margin-bottom:16px">
+          <h3 style="margin:0">Weekly Reports</h3>
+          <button class="btn-ghost btn-sm" onclick="loadReports()">&#8635; Refresh</button>
+        </div>
+        <div id="reportsList" style="color:var(--muted)">Loading...</div>
       </div>
-    {% endif %}
+    </div>
   </main>
 </div>
+
 <script>
-const token = localStorage.getItem('company_token');
-function authHeaders(){return token?{'Authorization':'Bearer '+token}:{}};
-function showMsg(text,type='success'){const el=document.getElementById('msg');el.textContent=text;el.className='msg show '+type;setTimeout(()=>el.className='msg',3500);}
-async function api(url, options={}){const res=await fetch(url, options);const data=await res.json().catch(()=>({}));if(!res.ok) throw {status:res.status,data}; return data;}
-function logout(){localStorage.removeItem('company_token');localStorage.removeItem('current_role');window.location.href='/login';}
-function itemCard(html){return `<div class="item">${html}</div>`}
-async function loadOverview(){
-  if(!token){showMsg('Please log in again.','error');return;}
-  const me = await api('/api/company/me',{headers:{...authHeaders()}});
-  document.getElementById('profileBox').innerHTML = `
-    <strong>${me.company.company_name}</strong><br>
-    Email: ${me.company.email||'—'}<br>
-    Website: ${me.company.website||'—'}<br>
-    Category: ${me.company.category||'—'}`;
-  const projects = await api('/api/company/projects',{headers:{...authHeaders()}});
-  const shortlist = await api('/api/company/shortlist',{headers:{...authHeaders()}});
-  const reports = await api('/api/company/weekly-reports',{headers:{...authHeaders()}});
-  document.getElementById('countBox').innerHTML = `Projects: ${projects.projects.length}<br>Shortlists: ${shortlist.shortlist.length}<br>Weekly Reports: ${reports.weekly_reports.length}`;
-}
-async function loadProjects(){
-  const box=document.getElementById('projectsList'); if(!box) return;
-  box.textContent='Loading...';
-  try{
-    const data=await api('/api/company/projects',{headers:{...authHeaders()}});
-    if(!data.projects.length){box.innerHTML='<div class="muted">No projects found.</div>';return;}
-    box.innerHTML=data.projects.map(p=>itemCard(`<strong>${p.project_name}</strong> <span class="badge">ID ${p.id}</span><br>${p.description||''}<br><span class="muted">Interns: ${p.number_of_interns} · Stipend: ${p.stipend ?? '—'}</span><div class="row" style="margin-top:8px"><button class="danger" onclick="deleteProject(${p.id})">Delete</button></div>`)).join('');
-  }catch(e){box.innerHTML='<div class="muted">Failed to load projects.</div>';}
-}
-async function deleteProject(id){if(!confirm('Delete this project?')) return; try{await api('/api/company/projects/'+id,{method:'DELETE',headers:{...authHeaders()}});showMsg('Project deleted');loadProjects();loadOverview();}catch(e){showMsg(e.data?.error||'Failed to delete project','error');}}
-async function loadShortlist(){
-  const box=document.getElementById('shortlistList'); if(!box) return;
-  box.textContent='Loading...';
-  try{
-    const data=await api('/api/company/shortlist',{headers:{...authHeaders()}});
-    if(!data.shortlist.length){box.innerHTML='<div class="muted">No shortlisted students yet.</div>';return;}
-    box.innerHTML=data.shortlist.map(s=>{const st=s.student||{};const p=s.project||{};return itemCard(`<strong>${st.full_name||('Student '+s.student_id)}</strong> <span class="badge">${s.status}</span><br>Project: ${p.project_name||s.project_id}<br>Reason: ${s.match_reason||'—'}<br><div class="row" style="margin-top:8px"><button onclick="hireStudent(${s.id})">Hire</button><button class="secondary" onclick="scheduleInterview(${s.id})">Schedule Interview</button><button class="danger" onclick="rejectStudent(${s.id})">Reject</button></div>`)}).join('');
-  }catch(e){box.innerHTML='<div class="muted">Failed to load shortlist.</div>';}
-}
-async function hireStudent(id){try{await api(`/api/company/shortlist/${id}/hire`,{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:'{}'});showMsg('Student hired');loadShortlist();loadReports();loadOverview();}catch(e){showMsg(e.data?.error||'Failed to hire student','error');}}
-async function rejectStudent(id){const reason=prompt('Reason for rejection:')||''; try{await api(`/api/company/shortlist/${id}/reject`,{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({reason})});showMsg('Student rejected');loadShortlist();loadOverview();}catch(e){showMsg(e.data?.error||'Failed to reject student','error');}}
-async function scheduleInterview(id){const dt=prompt('Interview date/time in format YYYY-MM-DDTHH:MM'); if(!dt) return; try{await api(`/api/company/shortlist/${id}/interview`,{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify({interview_date:dt})});showMsg('Interview scheduled');loadShortlist();loadOverview();}catch(e){showMsg(e.data?.error||'Failed to schedule interview','error');}}
-async function loadReports(){
-  const box=document.getElementById('reportsList'); if(!box) return;
-  box.textContent='Loading...';
-  try{
-    const data=await api('/api/company/weekly-reports',{headers:{...authHeaders()}});
-    if(!data.weekly_reports.length){box.innerHTML='<div class="muted">No weekly reports found.</div>';return;}
-    box.innerHTML=data.weekly_reports.map(r=>{const st=r.student||{};const p=r.project||{};return itemCard(`<strong>${st.full_name||('Student '+r.student_id)}</strong> <span class="badge">${r.status}</span><br>Project: ${p.project_name||r.project_id}<br>Week: ${r.week_number}<br>Title: ${r.title||'—'}<br>Description: ${r.description||'—'}<br><span class="muted">Hours: ${r.hours_worked ?? '—'} · Submitted: ${r.submission_date ? new Date(r.submission_date).toLocaleString() : '—'}</span>`) }).join('');
-  }catch(e){box.innerHTML='<div class="muted">Failed to load weekly reports.</div>';}
-}
-const form=document.getElementById('projectForm');
-if(form){form.addEventListener('submit', async (e)=>{e.preventDefault(); const body={project_name:project_name.value,number_of_interns:number_of_interns.value,stipend:stipend.value,description:description.value,details:details.value,place_of_work:place_of_work.checked,international_students:international_students.checked,hired_after:hired_after.checked,covid_vaccination:covid_vaccination.checked}; try{await api('/api/company/projects',{method:'POST',headers:{'Content-Type':'application/json',...authHeaders()},body:JSON.stringify(body)});showMsg('Project created');form.reset();loadProjects();loadOverview();}catch(e2){showMsg(e2.data?.error||'Failed to create project','error');}})}
-(async()=>{try{
-  {% if active_page == 'overview' %}await loadOverview();{% elif active_page == 'projects' %}await loadProjects();{% elif active_page == 'shortlist' %}await loadShortlist();{% elif active_page == 'reports' %}await loadReports();{% endif %}
-}catch(e){showMsg('Please log in again.','error');}})();
+  const token = localStorage.getItem('company_token');
+
+  function authHeaders() {
+    return token ? { 'Authorization': 'Bearer ' + token } : {};
+  }
+
+  function showMsg(text, type = 'success') {
+    const el = document.getElementById('msg');
+    el.textContent = text;
+    el.className = 'msg show ' + type;
+    setTimeout(() => el.className = 'msg', 3500);
+  }
+
+  async function api(url, options = {}) {
+    const res = await fetch(url, options);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw { status: res.status, data };
+    return data;
+  }
+
+  function logout() {
+    localStorage.removeItem('company_token');
+    localStorage.removeItem('current_role');
+    window.location.href = '/login';
+  }
+
+  function itemCard(html) {
+    return `<div class="item">${html}</div>`;
+  }
+
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  function updateThemeBtn(t) {
+    const b = document.getElementById('themeBtn');
+    if (b) b.textContent = t === 'dark' ? '☀ Light mode' : '☽ Dark mode';
+  }
+  updateThemeBtn(savedTheme);
+  function toggleTheme() {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateThemeBtn(next);
+  }
+
+  const pageMeta = {
+    overview: { title: 'Overview', subtitle: 'Your company at a glance.' },
+    projects: { title: 'Projects', subtitle: 'Create and manage your internship projects.' },
+    shortlist: { title: 'Shortlist', subtitle: 'Review and act on shortlisted students.' },
+    reports:  { title: 'Weekly Reports', subtitle: 'View intern progress reports.' }
+  };
+
+  function navigate(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.getElementById('nav-' + page).classList.add('active');
+    document.getElementById('pageTitle').textContent = pageMeta[page].title;
+    document.getElementById('pageSubtitle').textContent = pageMeta[page].subtitle;
+    if (page === 'overview') loadOverview();
+    if (page === 'projects') loadProjects();
+    if (page === 'shortlist') loadShortlist();
+    if (page === 'reports') loadReports();
+  }
+
+  async function loadOverview() {
+    if (!token) { showMsg('Please log in again.', 'error'); return; }
+    try {
+      const me = await api('/api/company/me', { headers: { ...authHeaders() } });
+      document.getElementById('profileBox').innerHTML =
+        `<strong>${me.company.company_name}</strong><br>
+         Email: ${me.company.email || '—'}<br>
+         Website: ${me.company.website || '—'}<br>
+         Category: ${me.company.category || '—'}`;
+      const [projects, shortlist, reports] = await Promise.all([
+        api('/api/company/projects', { headers: { ...authHeaders() } }),
+        api('/api/company/shortlist', { headers: { ...authHeaders() } }),
+        api('/api/company/weekly-reports', { headers: { ...authHeaders() } })
+      ]);
+      document.getElementById('countBox').innerHTML =
+        `Projects: <strong>${projects.projects.length}</strong><br>
+         Shortlists: <strong>${shortlist.shortlist.length}</strong><br>
+         Weekly Reports: <strong>${reports.weekly_reports.length}</strong>`;
+    } catch (e) {
+      showMsg(e.data?.error || 'Failed to load overview', 'error');
+    }
+  }
+
+  async function loadProjects() {
+    const box = document.getElementById('projectsList');
+    if (!box) return;
+    box.textContent = 'Loading...';
+    try {
+      const data = await api('/api/company/projects', { headers: { ...authHeaders() } });
+      if (!data.projects.length) { box.innerHTML = '<span style="color:var(--muted)">No projects yet.</span>'; return; }
+      box.innerHTML = data.projects.map(p => itemCard(
+        `<strong>${p.project_name}</strong> <span class="badge">ID ${p.id}</span><br>
+         <span style="color:var(--muted);font-size:13px">${p.description || ''}<br>
+         Interns: ${p.number_of_interns} &middot; Stipend: ${p.stipend ?? '—'}</span>
+         <div class="row" style="margin-top:8px">
+           <button class="btn-danger btn-sm" onclick="deleteProject(${p.id})">Delete</button>
+         </div>`
+      )).join('');
+    } catch (e) {
+      box.innerHTML = '<span style="color:var(--muted)">Failed to load projects.</span>';
+    }
+  }
+
+  async function deleteProject(id) {
+    if (!confirm('Delete this project?')) return;
+    try {
+      await api('/api/company/projects/' + id, { method: 'DELETE', headers: { ...authHeaders() } });
+      showMsg('Project deleted');
+      loadProjects();
+    } catch (e) {
+      showMsg(e.data?.error || 'Failed to delete project', 'error');
+    }
+  }
+
+  async function loadShortlist() {
+    const box = document.getElementById('shortlistList');
+    if (!box) return;
+    box.textContent = 'Loading...';
+    try {
+      const data = await api('/api/company/shortlist', { headers: { ...authHeaders() } });
+      if (!data.shortlist.length) { box.innerHTML = '<span style="color:var(--muted)">No shortlisted students yet.</span>'; return; }
+      box.innerHTML = data.shortlist.map(s => {
+        const st = s.student || {}, p = s.project || {};
+        return itemCard(
+          `<strong>${st.full_name || 'Student ' + s.student_id}</strong> <span class="badge">${s.status}</span><br>
+           <span style="color:var(--muted);font-size:13px">Project: ${p.project_name || s.project_id}<br>Reason: ${s.match_reason || '—'}</span>
+           <div class="row" style="margin-top:8px">
+             <button class="btn-blue btn-sm" onclick="hireStudent(${s.id})">Hire</button>
+             <button class="btn-ghost btn-sm" onclick="scheduleInterview(${s.id})">Schedule Interview</button>
+             <button class="btn-danger btn-sm" onclick="rejectStudent(${s.id})">Reject</button>
+           </div>`
+        );
+      }).join('');
+    } catch (e) {
+      box.innerHTML = '<span style="color:var(--muted)">Failed to load shortlist.</span>';
+    }
+  }
+
+  async function hireStudent(id) {
+    try {
+      await api(`/api/company/shortlist/${id}/hire`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeaders() }, body: '{}' });
+      showMsg('Student hired'); loadShortlist();
+    } catch (e) { showMsg(e.data?.error || 'Failed to hire student', 'error'); }
+  }
+
+  async function rejectStudent(id) {
+    const reason = prompt('Reason for rejection:') || '';
+    try {
+      await api(`/api/company/shortlist/${id}/reject`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeaders() }, body: JSON.stringify({ reason }) });
+      showMsg('Student rejected'); loadShortlist();
+    } catch (e) { showMsg(e.data?.error || 'Failed to reject student', 'error'); }
+  }
+
+  async function scheduleInterview(id) {
+    const dt = prompt('Interview date/time (YYYY-MM-DDTHH:MM)');
+    if (!dt) return;
+    try {
+      await api(`/api/company/shortlist/${id}/interview`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeaders() }, body: JSON.stringify({ interview_date: dt }) });
+      showMsg('Interview scheduled'); loadShortlist();
+    } catch (e) { showMsg(e.data?.error || 'Failed to schedule interview', 'error'); }
+  }
+
+
+  async function loadReports() {
+    const box = document.getElementById('reportsList');
+    if (!box) return;
+    box.textContent = 'Loading...';
+    try {
+      const data = await api('/api/company/weekly-reports', { headers: { ...authHeaders() } });
+      if (!data.weekly_reports.length) { box.innerHTML = '<span style="color:var(--muted)">No weekly reports yet.</span>'; return; }
+      box.innerHTML = data.weekly_reports.map(r => {
+        const st = r.student || {}, p = r.project || {};
+        return itemCard(
+          `<strong>${st.full_name || 'Student ' + r.student_id}</strong> <span class="badge">${r.status}</span><br>
+           <span style="color:var(--muted);font-size:13px">
+             Project: ${p.project_name || r.project_id} &middot; Week ${r.week_number}<br>
+             ${r.title || '—'} — ${r.description || ''}<br>
+             Hours: ${r.hours_worked ?? '—'} &middot; Submitted: ${r.submission_date ? new Date(r.submission_date).toLocaleString() : '—'}
+           </span>`
+        );
+      }).join('');
+    } catch (e) {
+      box.innerHTML = '<span style="color:var(--muted)">Failed to load reports.</span>';
+    }
+  }
+
+  document.getElementById('projectForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const body = {
+      project_name: document.getElementById('project_name').value,
+      number_of_interns: document.getElementById('number_of_interns').value,
+      stipend: document.getElementById('stipend').value,
+      description: document.getElementById('description').value,
+      details: document.getElementById('details').value,
+      place_of_work: document.getElementById('place_of_work').checked,
+      international_students: document.getElementById('international_students').checked,
+      hired_after: document.getElementById('hired_after').checked,
+      covid_vaccination: document.getElementById('covid_vaccination').checked
+    };
+    try {
+      await api('/api/company/projects', { method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeaders() }, body: JSON.stringify(body) });
+      showMsg('Project created');
+      document.getElementById('projectForm').reset();
+      loadProjects();
+    } catch (e) {
+      showMsg(e.data?.error || 'Failed to create project', 'error');
+    }
+  });
+
+
+  loadOverview();
 </script>
 </body>
 </html>

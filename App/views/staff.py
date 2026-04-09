@@ -14,6 +14,8 @@ from App.models.shortlist import Shortlist
 from App.models.announcement import Announcement
 from App.models.weeklyreport import WeeklyReport
 from App.models.Meeting import Meeting
+from App.models.student_application import Student_application 
+from App.models.transcriptSummary import Transcript_summary
 from App.models.studentevaluation import StudentEvaluation
 
 
@@ -233,7 +235,15 @@ def api_staff_students():
         return err
 
     query = Student.query
+    project_id = request.args.get("project_id")
 
+    if project_id:
+        query = query.join(Student_application).filter(
+            Student_application.project_id == _parse_int(project_id, "project_id")
+        )
+    else:
+        query = query.filter(Student.current_internship_status == 'applied')
+    
     q = request.args.get("q")
     degree = request.args.get("degree")
     status = request.args.get("status")
@@ -295,7 +305,7 @@ def api_staff_students():
     students = query.order_by(Student.last_name.asc(), Student.first_name.asc()).all()
     return jsonify({"students": [_student_payload(s) for s in students]}), 200
 
-
+'''
 @staff_views.get("/students/<int:student_id>")
 @jwt_required()
 def api_staff_student_detail(student_id):
@@ -306,6 +316,13 @@ def api_staff_student_detail(student_id):
     student = db.session.get(Student, student_id)
     if student is None:
         return _json_error("Student not found", 404)
+    
+    summary = Transcript_summary.query.filter_by(student_id=student.id).first()
+
+    return jsonify({
+        'student': student.get_json(),
+        'transcript_summary': summary.get_json() if summary else None
+    }), 200
 
     shortlists = Shortlist.query.filter_by(student_id=student_id).order_by(Shortlist.created_at.desc()).all()
     weekly_reports = WeeklyReport.query.filter_by(student_id=student_id).order_by(WeeklyReport.week_number.asc()).all()
@@ -314,12 +331,43 @@ def api_staff_student_detail(student_id):
 
     return jsonify({
         "student": _student_payload(student),
+        "transcript_summary": transcript_data,
         "shortlists": [_shortlist_payload(s) for s in shortlists],
         "weekly_reports": [_weekly_report_payload(r) for r in weekly_reports],
         "evaluations": [_evaluation_payload(e) for e in evaluations],
         "meetings": [_meeting_payload(m) for m in meetings],
     }), 200
+'''
+@staff_views.get("/students/<int:student_id>")
+@jwt_required()
+def api_staff_student_detail(student_id):
+    _, err = _require_staff()
+    if err:
+        return err
 
+    student = db.session.get(Student, student_id)
+    if student is None:
+        return _json_error("Student not found", 404)
+    
+    
+    summary = Transcript_summary.query.filter_by(student_id=student.id).first()
+    transcript_data = summary.get_json() if summary else None
+
+    
+    shortlists = Shortlist.query.filter_by(student_id=student_id).order_by(Shortlist.created_at.desc()).all()
+    weekly_reports = WeeklyReport.query.filter_by(student_id=student_id).order_by(WeeklyReport.week_number.asc()).all()
+    evaluations = StudentEvaluation.query.filter_by(student_id=student_id).order_by(StudentEvaluation.created_at.desc()).all()
+    meetings = Meeting.query.filter_by(student_id=student_id).order_by(Meeting.scheduled_at.desc()).all()
+
+   
+    return jsonify({
+        "student": _student_payload(student),
+        "transcript_summary": transcript_data,
+        "shortlists": [_shortlist_payload(s) for s in shortlists],
+        "weekly_reports": [_weekly_report_payload(r) for r in weekly_reports],
+        "evaluations": [_evaluation_payload(e) for e in evaluations],
+        "meetings": [_meeting_payload(m) for m in meetings],
+    }), 200
 
 @staff_views.patch("/students/<int:student_id>")
 @jwt_required()
@@ -417,6 +465,17 @@ def api_staff_update_transcript_summary(student_id):
 
     return jsonify({"message": "Transcript summary updated", "student": _student_payload(student)}), 200
 
+@staff_views.get('/download/transcript/<int:student_id>')
+@jwt_required()
+def download_transcript(student_id):
+    student = db.session.get(Student, student_id)
+    if not student or not student.transcript_path:
+        return _json_error('Transcript not found', 404)
+    
+    return send_from_directory(
+        directory=current_app.config['UPLOAD_FOLDER'],
+        path=student.transcript_path
+    )
 
 @staff_views.get("/companies")
 @jwt_required()
@@ -703,13 +762,20 @@ def api_staff_create_shortlist():
         )
         db.session.add(shortlist)
         student.current_internship_status = "shortlisted"
+
         db.session.commit()
-    except Exception:
+        student.current_internship_status = "shortlisted"
+
+        db.session.commit()
+    except Exception as e:
         db.session.rollback()
+        print(f"Shortlist Error: {e}")
         return _json_error("Failed to create shortlist", 500)
 
-    return jsonify({"message": "Student shortlisted", "shortlist": _shortlist_payload(shortlist)}), 201
-
+    return jsonify({
+        "message": "Student successfully matched to project", 
+        "shortlist": _shortlist_payload(shortlist)
+    }), 201
 
 @staff_views.patch("/shortlists/<int:shortlist_id>")
 @jwt_required()

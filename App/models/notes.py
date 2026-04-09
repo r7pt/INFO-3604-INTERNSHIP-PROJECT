@@ -15,10 +15,10 @@ class Notes(db.Model):
     parent_id = db.Column(db.Integer,db.ForeignKey("notes.note_id"),nullable=True)
     created_at= db.Column(db.DateTime,default=datetime.utcnow,nullable=False)
 
-    staff= db.relationship('Staff',foreign_keys=['staff_id'],backref="created_by")
-    student = db.relationship('Student',foreign_keys=['student_id'],backref="notes")
-    parent =db.relationship("Notes",remote_side=['note_id'],backref="children")
-    meeting = db.relationship("Meeting", foreign_keys=['meeting_id'],backref="meeting_notes")
+    staff= db.relationship('Staff',foreign_keys=[staff_id],backref="created_by")
+    student = db.relationship('Student',foreign_keys=[student_id],backref="notes")
+    parent =db.relationship("Notes",remote_side=[note_id],backref="children")
+    meeting = db.relationship("Meeting", foreign_keys=[meeting_id],backref="meeting_notes")
 
 
 

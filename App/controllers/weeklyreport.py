@@ -292,3 +292,4 @@ def get_student_report_summary(student_id, project_id):
         'pending_reviews': len(reports) - reviewed_count,
         'reports': [r.get_json() for r in reports]
     }
+

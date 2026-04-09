@@ -1,15 +1,17 @@
 from sqlalchemy import false
 from App.models import Email, Student_application,Company,Student
 from App.database import db
+from App.controllers import email as email_controller
 #from App.controllers import Email, Student_application,Student
 
 def application_received_notification(Student_application):
     application_subject_template="Internship Application Received"
     application_body_template=("Dear ", Student_application.get_full_name(),"\nThis email is acknowledgement of your internship application. thank you for applying")
     try:
-        Email.send_templated_email(student_email,internship_subject_template,application_body_template,context=None,body_html_template=None,attachments=None,cc=None,bcc=None,reply_to=None)
+        from App.controllers.email import send_email 
+        send_email(Student_application.student.email, application_subject_template, application_body_template)
     except Exception as e:
-        print("the following error has occurred ".e)
+        print(f"the following error has occurred {e}")
 '''
 def projectList_received_notification(Company):
     projectList_subject_template="Internship Project List Received"
@@ -57,5 +59,9 @@ def accepted_student_received_notification(Company):
     except Exception as e:
         print("the following error has occurred: ", e)
 
-def get_announcement_statistics():
-    return {"total_notifications": 0, "delivered": 0}
+def get_announcement_statistics(results):
+    total = len(results)
+    sent = sum(1 for r in results if r.get('status') == 'sent')
+    failed = sum(1 for r in results if r.get('status') == 'failed')
+    errors = sum(1 for r in results if r.get('status') == 'error')
+    return {'total': total, 'sent': sent, 'failed': failed, 'errors': errors}

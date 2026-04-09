@@ -26,6 +26,7 @@ class Email(db.Model):
         self.description=description
         self.graphic=graphic
         self.attachment=attachment
+        self.status = False
 
     #get all email 
     def get_all_emails(self):

@@ -47,7 +47,7 @@ class Student_application(db.Model):
         self.resume=resume
         self.skills=skills
         self.transcript=transcript
-        self.status=status
+        self.status = 'pending'  
 
     def set_status(self,status):
         self.status=status
@@ -98,7 +98,8 @@ class Student_application(db.Model):
             return None
             
     def _validate_contact_number(self,contact_number):
-        contact_Number_Object = phonenumbers.parse(contact_number)
+        
+        contact_Number_Object = phonenumbers.parse(contact_number, None)
         if phonenumbers.is_valid_number(contact_Number_Object):
             return contact_number
         else :
@@ -118,7 +119,7 @@ class Student_application(db.Model):
             'last_name':self.last_name,
             'email':self.email,
             'covid_19_vaccination':self.covid_19_vaccination,
-            'summer_required':self.summer_required,
+            'summer_required': self.summer_requirment,
             'program': self.program,
             'cover_letter':self.cover_letter,
             'internship_credit':self.internship_credits,
@@ -132,6 +133,14 @@ class Student_application(db.Model):
         }
 
         return student_application_json
+    
+    def __new__(cls, *args, **kwargs):
+        instance = super().__new__(cls)
+        from sqlalchemy.orm.instrumentation import manager_of_class
+        manager = manager_of_class(cls)
+        if manager:
+            manager.setup_instance(instance)
+        return instance
 
     def __repr__(self):
         return f'<Student_application {self.application_id}: {self.student_id}-{self.first_name} -{self.last_name} -{self.status}'    

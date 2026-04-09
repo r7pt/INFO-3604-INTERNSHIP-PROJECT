@@ -24,7 +24,7 @@ class Transcript_summary(db.Model):
             "transcript_id": self.transcript_id,
             "student_id": self.student_id,
             "application_id": self.application_id,
-            "report": json.loads(self.report) if self.report else {}
+            "report": json.loads(self.report) if self.report and self.report.startswith('{') else self.report
         }
 
     @staticmethod

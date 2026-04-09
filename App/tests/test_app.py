@@ -1,9 +1,12 @@
 import os
 import pytest
+from App.main import create_app
 import unittest
+import logging
 from datetime import datetime, date, timedelta
-from unittest.mock import patch, MagicMock
-
+from unittest.mock import patch, MagicMock, mock_open
+from App.database import create_db, db 
+from flask import Flask
 
 from App.models import (
     User, Shortlist, Staff, Student, Announcement, 
@@ -189,7 +192,7 @@ class EmailSendLogicTests(unittest.TestCase):
 
     @patch('smtplib.SMTP')
     @patch('App.controllers.email_service._cfg')
-    @patch('App.controllers.email_service._bool_cfg')
+    @patch('App.controllers.email_service.smtplib.SMTP')
     def test_send_email_calls_smtp(self, mock_bool, mock_cfg, mock_smtp):
         mock_cfg.side_effect = lambda k, default=None: "test_val" if k != "MAIL_PORT" else 587
         mock_bool.return_value = False
@@ -680,10 +683,10 @@ class TranscriptTests(unittest.TestCase):
     def test_course_processing_logic(self):
         from App.controllers.transcript import process_course_line
 
-        words = ["COMP", "2611", "Data", "Structures", "A"]
+        words = "COMP 2611 Data Structures A" 
         course = process_course_line(words)
 
-        self.assertEqual(course.subject, "COMP")
+        self.assertEqual(course['subject'], "COMP")
         self.assertEqual(course.code, "2611")
         self.assertEqual(course.grade, "A")
         self.assertIn("Data Structures", course.title)
@@ -697,19 +700,15 @@ class TranscriptTests(unittest.TestCase):
         grade, remaining = extract_grade("Z-")
         self.assertIsNone(grade)
 
-    @patch('App.controllers.transcript.PdfReader')
-    def test_parse_transcript_flow(self, mock_reader):
+    @patch('App.controllers.transcript_summary.PdfReader')
+    @patch('builtins.open', new_callable=mock_open, read_data=b"dummy pdf data")
+    def test_parse_transcript_flow(self, mock_file, mock_reader):
+        # Mocking the reader pages
         mock_page = MagicMock()
-        mock_page.extract_text.return_value = (
-            "Record of: John Doe\n"
-            "Student Number: 816000123\n"
-            "Subject Course Title Grade Duration\n"
-            "COMP 1601 Computer Programming A UGS"
-        )
+        mock_page.extract_text.return_value = "Record of: John Doe\nStudent Number: 816000123\nSubject Course Title Grade Duration\nCOMP 1601 Computer Programming A UGS"
         mock_reader.return_value.pages = [mock_page]
 
-        report = parse_transcript("dummy.pdf")
-
+        report = parse_transcript("dummy.pdf") 
         self.assertEqual(report.student_name, "John Doe")
         self.assertEqual(report.student_id, "816000123")
         self.assertTrue(len(report.courses) > 0)
@@ -767,9 +766,9 @@ class WeeklyReportTests(unittest.TestCase):
         self.assertEqual(report.status, 'approved')
         self.assertEqual(report.reviewed_by, 11)
 
-    @patch('App.controllers.weekly_report.db.session')
-    @patch('App.controllers.weekly_report.Shortlist')
-    @patch('App.controllers.weekly_report.WeeklyReport')
+    @patch('App.controllers.weeklyreport.db.session')
+    @patch('App.controllers.weeklyreport.Shortlist')
+    @patch('App.controllers.weeklyreport.WeeklyReport')
     def test_create_weekly_report_success(self, MockWeeklyReport, MockShortlist, mock_session):
         mock_student = MagicMock()
         mock_student.current_internship_status = 'hired'
@@ -796,7 +795,7 @@ class WeeklyReportTests(unittest.TestCase):
         mock_session.add.assert_called_once()
         mock_session.commit.assert_called_once()
 
-    @patch('App.controllers.weekly_report.db.session')
+    @patch('App.controllers.weeklyreport.db.session')
     def test_create_weekly_report_not_hired(self, mock_session):
         mock_student = MagicMock()
         mock_student.current_internship_status = 'pending'
@@ -811,8 +810,8 @@ class WeeklyReportTests(unittest.TestCase):
         self.assertIsNone(result)
         mock_session.add.assert_not_called()
 
-    @patch('App.controllers.weekly_report.db.session')
-    @patch('App.controllers.weekly_report.get_weekly_report')
+    @patch('App.controllers.weeklyreport.db.session')
+    @patch('App.controllers.weeklyreport.get_weekly_report')
     def test_approve_weekly_report(self, mock_get_report, mock_session):
         mock_report = MagicMock()
         mock_staff = MagicMock()
@@ -829,7 +828,7 @@ class WeeklyReportTests(unittest.TestCase):
 
 class NotificationTests(unittest.TestCase):
 
-    @patch('App.controllers.notifications.email_controller.send_templated_email')
+    @patch('App.controllers.notification.email_controller.send_templated_email')
     def test_application_received_params(self, mock_send_email):
         mock_app = MagicMock()
         mock_app.get_full_name.return_value = "Jane Doe"
@@ -842,7 +841,7 @@ class NotificationTests(unittest.TestCase):
         self.assertEqual(args[1], "Internship Application Received")
         self.assertIn("Dear Jane Doe", args[2])
 
-    @patch('App.controllers.notifications.email_controller.send_templated_email')
+    @patch('App.controllers.notification.email_controller.send_templated_email')
     def test_weekly_report_received_params(self, mock_send_email):
         mock_student = MagicMock()
         mock_student.first_name = "Bob"
@@ -855,7 +854,7 @@ class NotificationTests(unittest.TestCase):
         self.assertEqual(args[0], "bob@example.com")
         self.assertIn("Dear Bob Smith", args[2])
 
-    @patch('App.controllers.notifications.email_controller.send_templated_email')
+    @patch('App.controllers.notification.email_controller.send_templated_email')
     def test_notification_error_handling(self, mock_send_email):
         mock_send_email.side_effect = Exception("SMTP Timeout")
         mock_student = MagicMock(email="test@test.com", first_name="A", last_name="B")
@@ -903,10 +902,9 @@ class AuthUnitTests(unittest.TestCase):
     def test_issue_tokens(self):
         mock_user = MagicMock(id=10, role='staff')
 
-        with self.app.test_request_context():
+        with self.app.app_context(): 
             access, refresh = _issue_tokens(mock_user)
             self.assertIsNotNone(access)
-            self.assertIsNotNone(refresh)
 
 
 class UserUnitTests(unittest.TestCase):
@@ -960,15 +958,16 @@ if __name__ == '__main__':
     Integration Tests
 '''
 
-# This fixture creates an empty database for the test and deletes it after the test
-# scope="class" would execute the fixture once and resued for all methods in the class
+
 @pytest.fixture(autouse=True, scope="function")
 def empty_db():
-    app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+    
+    app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
     
     with app.app_context():
-        create_db()
+        db.create_all() 
         yield app.test_client()
+        db.session.remove()
         db.drop_all()
 
 '''

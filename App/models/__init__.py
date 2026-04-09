@@ -10,6 +10,7 @@ from .Program import Program
 from .project import Project
 from .transcriptSummary import Transcript_summary
 from .student_application import Student_application
+from .notes import Notes
 from .studentevaluation import StudentEvaluation
 from .weeklyreport import WeeklyReport
 from .email import Email

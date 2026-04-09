@@ -28,7 +28,7 @@ class WeeklyReport(db.Model):
     
     
     reviewed = db.Column(db.Boolean, default=False)
-    reviewed_by = db.Column(db.Integer, db.ForeignKey('staff.id'))
+    reviewed_by = db.Column(db.Integer, db.ForeignKey('staff.staff_id'))
     reviewed_at = db.Column(db.DateTime)
     staff_feedback = db.Column(db.Text)
     
@@ -65,6 +65,7 @@ class WeeklyReport(db.Model):
         self.description = description
         self.hours_worked = hours_worked
         self.due_date = due_date
+        self.status = 'submitted'
         
         if due_date and datetime.utcnow() > due_date:
             self.is_late = True

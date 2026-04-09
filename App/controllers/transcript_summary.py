@@ -159,7 +159,7 @@ def edit_transcript_report(transcript_id, new_data_dict):
 
 def delete_transcript_summary(summaryid):
     try:
-        summary = __get_transcript_by_id(summaryid)
+        summary = get_transcript_by_id(summaryid)
         db.session.delete(summary)
         db.session.commit()
     except Exception as e:

@@ -115,11 +115,90 @@
           <div id="shortlistsBox" style="color:var(--muted)">Loading...</div>
         </div>
       </div>
-
+  
     {% elif active_page == 'announcements' %}
-      {% elif active_page == 'meetings' %}
-      {% elif active_page == 'reports' %}
-      {% endif %}
+      <div class="grid">
+        <div class="card">
+          <h3>Post Announcement</h3>
+          <form id="announcementForm">
+            <label>Title</label>
+            <input id="announcement_title" placeholder="Announcement title" required>
+            <label>Message</label>
+            <textarea id="announcement_message" placeholder="Write your message..." required></textarea>
+            <label>Audience</label>
+            <select id="announcement_audience">
+              <option value="all">All</option>
+              <option value="students">Students Only</option>
+              <option value="companies">Companies Only</option>
+            </select>
+            <button type="submit" class="btn-gold" style="width:100%">Post Announcement</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between;margin-bottom:16px">
+            <h3 style="margin:0">Existing Announcements</h3>
+            <button class="btn-ghost btn-sm" onclick="loadAnnouncements()">&#8635; Refresh</button>
+          </div>
+          <div id="announcementsBox" style="color:var(--muted)">Loading...</div>
+        </div>
+      </div>
+
+    {% elif active_page == 'meetings' %}
+      <div class="grid">
+        <div class="card">
+          <h3>Schedule Meeting</h3>
+          <form id="meetingForm">
+            <label>Student</label>
+            <select id="meeting_student_id"></select>
+            <label>Project (optional)</label>
+            <select id="meeting_project_id"></select>
+            <label>Date & Time</label>
+            <input id="meeting_scheduled_at" type="datetime-local" required>
+            <label>Meeting Type</label>
+            <select id="meeting_type">
+              <option value="initial">Initial</option>
+              <option value="weekly" selected>Weekly</option>
+              <option value="midterm">Midterm</option>
+              <option value="final">Final</option>
+              <option value="other">Other</option>
+            </select>
+            <label>Location</label>
+            <input id="meeting_location" placeholder="e.g. Room 204, FST">
+            <label>Meeting Link (optional)</label>
+            <input id="meeting_link" placeholder="https://zoom.us/...">
+            <label>Agenda</label>
+            <textarea id="meeting_agenda" placeholder="Meeting agenda..."></textarea>
+            <button type="submit" class="btn-blue" style="width:100%">Schedule Meeting</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between;margin-bottom:16px">
+            <h3 style="margin:0">Upcoming Meetings</h3>
+            <button class="btn-ghost btn-sm" onclick="loadMeetings()">&#8635; Refresh</button>
+          </div>
+          <div id="meetingsBox" style="color:var(--muted)">Loading...</div>
+        </div>
+      </div>
+
+    {% elif active_page == 'reports' %}
+      <div class="card">
+        <div class="row" style="justify-content:space-between;margin-bottom:16px">
+          <h3 style="margin:0">Student Weekly Reports</h3>
+          <div class="row">
+            <select id="reportStatusFilter" onchange="loadReports()" style="margin-bottom:0;width:auto">
+              <option value="">All Statuses</option>
+              <option value="submitted">Submitted</option>
+              <option value="approved">Approved</option>
+              <option value="needs_revision">Needs Revision</option>
+            </select>
+            <button class="btn-ghost btn-sm" onclick="loadReports()">&#8635; Refresh</button>
+          </div>
+        </div>
+        <div id="reportsBox" style="color:var(--muted)">Loading...</div>
+      </div>
+
+    {% endif %}
+    
   </main>
 </div>
 
@@ -263,12 +342,38 @@ async function quickShortlist(sid) {
     }
 }
 
+
 async function viewTranscript(sid) {
     try {
         const data = await api(`/api/staff/students/${sid}`, {headers:{...authHeaders()}});
-        console.log("Transcript Data:", data.transcript_summary);
-        alert(`Transcript Summary for ${data.student.full_name}:\n\nGPA: ${data.student.gpa}\nParsed Info: ${JSON.stringify(data.transcript_summary || 'No summary available')}`);
-    } catch(e) { showMsg('Failed to load student detail', 'error'); }
+        const student = data.student;
+
+        
+        let summary = student.transcript_summary;
+        let displayText = 'No summary available';
+
+        if (summary) {
+            try {
+                const parsed = typeof summary === 'string' ? JSON.parse(summary) : summary;
+                const courses = parsed.courses || [];
+                const courseLines = courses.map(c =>
+                    `  ${c.subject} ${c.code} — ${c.title?.trim() || '—'} | Grade: ${c.grade || 'TBA'}`
+                ).join('\n');
+                displayText = `Student: ${parsed.student_name || student.full_name}
+Student ID: ${parsed.student_id || student.student_id}
+Total Courses: ${courses.length}
+
+COURSES:
+${courseLines || '  No courses parsed'}`;
+            } catch {
+                displayText = summary;
+            }
+        }
+
+        alert(`Transcript Summary for ${student.full_name}:\n\nGPA: ${student.gpa || 'N/A'}\n\n${displayText}`);
+    } catch(e) {
+        showMsg('Failed to load student detail', 'error');
+    }
 }
 
 async function loadAnnouncements(){ 

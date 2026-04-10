@@ -4,7 +4,7 @@ from App.models.user import User
 class Staff(User):
     __tablename__ = 'staff'
 
-    staff_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
 
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
@@ -33,7 +33,6 @@ class Staff(User):
         self.first_name = first_name
         self.last_name = last_name
         self.department = department
-
 
     @property
     def staffID(self):

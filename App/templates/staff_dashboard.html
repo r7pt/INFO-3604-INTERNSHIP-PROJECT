@@ -303,6 +303,10 @@ async function loadShortlistPage() {
             <strong>${s.student?.full_name || ('Student ' + s.student_id)}</strong> 
             <span class="badge">${s.status}</span><br>
             <span style="color:var(--muted);font-size:13px">Project: ${s.project?.project_name || s.project_id}</span>
+            <div class="row" style="margin-top:8px">
+              <button class="btn-danger btn-sm" onclick="deleteShortlist(${s.id})">Remove</button>
+              <button class="btn-ghost btn-sm" onclick="updateShortlistStatus(${s.id},'hire')">Hire</button>
+            </div>
         `)).join('') : '<span>No shortlists found.</span>';
     }
 }
@@ -374,6 +378,27 @@ ${courseLines || '  No courses parsed'}`;
     } catch(e) {
         showMsg('Failed to load student detail', 'error');
     }
+}
+async function deleteShortlist(id) {
+    if (!confirm('Remove this student from the shortlist?')) return;
+    try {
+        await api('/api/staff/shortlists/' + id, { method: 'DELETE', headers: { ...authHeaders() } });
+        showMsg('Shortlist entry removed');
+        loadShortlistPage();
+        loadOverview();
+    } catch(e) { showMsg(e.data?.error || 'Failed to remove shortlist', 'error'); }
+}
+
+async function updateShortlistStatus(id, action) {
+    try {
+        await api('/api/staff/shortlists/' + id, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', ...authHeaders() },
+          body: JSON.stringify({ action })
+        });
+        showMsg('Shortlist updated');
+        loadShortlistPage();
+    } catch(e) { showMsg(e.data?.error || 'Failed to update shortlist', 'error'); }
 }
 
 async function loadAnnouncements(){ 

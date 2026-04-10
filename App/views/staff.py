@@ -238,11 +238,11 @@ def api_staff_students():
     project_id = request.args.get("project_id")
 
     if project_id:
-        query = query.join(Student_application).filter(
-            Student_application.project_id == _parse_int(project_id, "project_id")
-        )
-    else:
-        query = query.filter(Student.current_internship_status == 'applied')
+    
+        from App.models.shortlist import Shortlist
+        query = query.join(Shortlist, Shortlist.student_id == Student.id).filter(
+            Shortlist.project_id == _parse_int(project_id, "project_id")
+    )
     
     q = request.args.get("q")
     degree = request.args.get("degree")

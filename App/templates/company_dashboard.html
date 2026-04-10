@@ -60,7 +60,7 @@
       <a onclick="navigate('overview')" id="nav-overview" class="active">Overview</a>
       <a onclick="navigate('projects')" id="nav-projects">Projects</a>
       <a onclick="navigate('shortlist')" id="nav-shortlist">Shortlist</a>
-      <a onclick="navigate('reports')" id="nav-reports">Weekly Reports</a>
+      <a onclick="navigate('evaluations')" id="nav-evaluations">Submit Evaluation</a>
     </div>
     <div class="sidebar-foot">
       <button class="btn-ghost btn-sm" onclick="toggleTheme()" id="themeBtn">&#9728; Light mode</button>
@@ -127,13 +127,56 @@
     </div>
 
    
-    <div id="page-reports" class="page">
-      <div class="card">
-        <div class="row" style="justify-content:space-between;margin-bottom:16px">
-          <h3 style="margin:0">Weekly Reports</h3>
-          <button class="btn-ghost btn-sm" onclick="loadReports()">&#8635; Refresh</button>
+    <div id="page-evaluations" class="page">
+      <div class="grid">
+        <div class="card">
+          <h3>Submit Student Evaluation</h3>
+          <form id="evaluationForm">
+            <label>Student Shortlist</label>
+            <select id="eval_shortlist_id" onchange="prefillEvalStudent(this)"></select>
+            <input type="hidden" id="eval_student_id">
+            <input type="hidden" id="eval_project_id">
+            <label>Evaluation Period</label>
+            <select id="eval_period">
+              <option value="midterm">Mid-term</option>
+              <option value="final">Final</option>
+            </select>
+            <label>Evaluator Name</label>
+            <input id="eval_name" placeholder="John Smith">
+            <label>Evaluator Title</label>
+            <input id="eval_title" placeholder="Supervisor / Manager">
+            <label>Evaluator Email</label>
+            <input id="eval_email" type="email" placeholder="supervisor@company.com">
+            <label>Ratings (1–5)</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div><label>Overall</label><input id="eval_overall" type="number" min="1" max="5" step="0.1"></div>
+              <div><label>Technical</label><input id="eval_technical" type="number" min="1" max="5" step="0.1"></div>
+              <div><label>Communication</label><input id="eval_communication" type="number" min="1" max="5" step="0.1"></div>
+              <div><label>Professionalism</label><input id="eval_professionalism" type="number" min="1" max="5" step="0.1"></div>
+              <div><label>Teamwork</label><input id="eval_teamwork" type="number" min="1" max="5" step="0.1"></div>
+              <div><label>Problem Solving</label><input id="eval_problem_solving" type="number" min="1" max="5" step="0.1"></div>
+            </div>
+            <label>Strengths</label><textarea id="eval_strengths" placeholder="Student's key strengths..."></textarea>
+            <label>Areas for Improvement</label><textarea id="eval_improvements" placeholder="Areas to work on..."></textarea>
+            <label>Additional Comments</label><textarea id="eval_comments"></textarea>
+            <div style="display:flex;gap:16px;margin-bottom:12px">
+              <label class="cb-label"><input type="checkbox" id="eval_recommend"> Recommend for future employment</label>
+              <label class="cb-label"><input type="checkbox" id="eval_hire_again"> Would hire again</label>
+              <label class="cb-label" id="eval_completed_label"><input type="checkbox" id="eval_completed" checked> Internship completed</label>
+            </div>
+            <label>Evaluation Form (PDF)</label>
+            <input type="file" id="eval_file" accept="application/pdf" style="margin-bottom:12px">
+            <button type="submit" class="btn-gold" style="width:100%">Submit Evaluation</button>
+          </form>
+          <div id="eval_msg" class="msg" style="margin-top:12px"></div>
         </div>
-        <div id="reportsList" style="color:var(--muted)">Loading...</div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between;margin-bottom:16px">
+            <h3 style="margin:0">Submitted Evaluations</h3>
+            <button class="btn-ghost btn-sm" onclick="loadEvaluations()">&#8635; Refresh</button>
+          </div>
+          <div id="evaluationsList" style="color:var(--muted)">Loading...</div>
+        </div>
       </div>
     </div>
   </main>
@@ -188,7 +231,7 @@
     overview: { title: 'Overview', subtitle: 'Your company at a glance.' },
     projects: { title: 'Projects', subtitle: 'Create and manage your internship projects.' },
     shortlist: { title: 'Shortlist', subtitle: 'Review and act on shortlisted students.' },
-    reports:  { title: 'Weekly Reports', subtitle: 'View intern progress reports.' }
+    evaluations: { title: 'Evaluations', subtitle: 'Submit performance evaluations for your hired interns.' }
   };
 
   function navigate(page) {
@@ -201,7 +244,7 @@
     if (page === 'overview') loadOverview();
     if (page === 'projects') loadProjects();
     if (page === 'shortlist') loadShortlist();
-    if (page === 'reports') loadReports();
+    if (page === 'evaluations') { loadEvaluations(); loadShortlistForEval(); }
   }
 
   async function loadOverview() {
@@ -213,15 +256,13 @@
          Email: ${me.company.email || '—'}<br>
          Website: ${me.company.website || '—'}<br>
          Category: ${me.company.category || '—'}`;
-      const [projects, shortlist, reports] = await Promise.all([
+      const [projects, shortlist] = await Promise.all([
         api('/api/company/projects', { headers: { ...authHeaders() } }),
-        api('/api/company/shortlist', { headers: { ...authHeaders() } }),
-        api('/api/company/weekly-reports', { headers: { ...authHeaders() } })
+        api('/api/company/shortlist', { headers: { ...authHeaders() } })
       ]);
       document.getElementById('countBox').innerHTML =
         `Projects: <strong>${projects.projects.length}</strong><br>
-         Shortlists: <strong>${shortlist.shortlist.length}</strong><br>
-         Weekly Reports: <strong>${reports.weekly_reports.length}</strong>`;
+        Shortlists: <strong>${shortlist.shortlist.length}</strong>`;
     } catch (e) {
       showMsg(e.data?.error || 'Failed to load overview', 'error');
     }
@@ -307,28 +348,94 @@
   }
 
 
-  async function loadReports() {
-    const box = document.getElementById('reportsList');
-    if (!box) return;
-    box.textContent = 'Loading...';
+  async function loadShortlistForEval() {
     try {
-      const data = await api('/api/company/weekly-reports', { headers: { ...authHeaders() } });
-      if (!data.weekly_reports.length) { box.innerHTML = '<span style="color:var(--muted)">No weekly reports yet.</span>'; return; }
-      box.innerHTML = data.weekly_reports.map(r => {
-        const st = r.student || {}, p = r.project || {};
-        return itemCard(
-          `<strong>${st.full_name || 'Student ' + r.student_id}</strong> <span class="badge">${r.status}</span><br>
-           <span style="color:var(--muted);font-size:13px">
-             Project: ${p.project_name || r.project_id} &middot; Week ${r.week_number}<br>
-             ${r.title || '—'} — ${r.description || ''}<br>
-             Hours: ${r.hours_worked ?? '—'} &middot; Submitted: ${r.submission_date ? new Date(r.submission_date).toLocaleString() : '—'}
-           </span>`
-        );
-      }).join('');
-    } catch (e) {
-      box.innerHTML = '<span style="color:var(--muted)">Failed to load reports.</span>';
+        const data = await api('/api/company/shortlist', { headers: { ...authHeaders() } });
+        const hired = data.shortlist.filter(s => s.status === 'hired');
+        const sel = document.getElementById('eval_shortlist_id');
+        sel.innerHTML = hired.length
+            ? hired.map(s => `<option value="${s.id}" data-student="${s.student_id}" data-project="${s.project_id}">
+                ${s.student?.full_name || 'Student ' + s.student_id} — ${s.project?.project_name || 'Project ' + s.project_id}
+              </option>`).join('')
+            : '<option value="">No hired interns yet</option>';
+        if (hired.length) prefillEvalStudent(sel);
+    } catch(e) {}
+}
+
+function prefillEvalStudent(sel) {
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt) return;
+    document.getElementById('eval_student_id').value = opt.getAttribute('data-student') || '';
+    document.getElementById('eval_project_id').value = opt.getAttribute('data-project') || '';
+}
+
+async function loadEvaluations() {
+    const box = document.getElementById('evaluationsList');
+    if (!box) return;
+    try {
+        const data = await api('/api/evaluations/company/my-submissions', { headers: { ...authHeaders() } });
+        if (!data.evaluations.length) { box.innerHTML = '<span style="color:var(--muted)">No evaluations submitted yet.</span>'; return; }
+        box.innerHTML = data.evaluations.map(e => itemCard(
+            `<strong>Student ${e.student_id}</strong> <span class="badge">${e.evaluation_period}</span>
+             <span class="badge" style="margin-left:4px">${e.status}</span><br>
+             <span style="color:var(--muted);font-size:13px">
+               Project: ${e.project_id}<br>
+               Overall: ${e.ratings?.overall ?? '—'} &middot; 
+               Avg: ${e.ratings?.average ? e.ratings.average.toFixed(2) : '—'}<br>
+               Submitted: ${e.submitted_at ? new Date(e.submitted_at).toLocaleDateString() : '—'}
+             </span>`
+        )).join('');
+    } catch(e) {
+        box.innerHTML = '<span style="color:var(--muted)">Failed to load evaluations.</span>';
     }
-  }
+}
+
+function evalMsg(text, type) {
+    const el = document.getElementById('eval_msg');
+    el.textContent = text;
+    el.className = 'msg show ' + type;
+    setTimeout(() => el.className = 'msg', 4000);
+}
+
+document.getElementById('evaluationForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const studentId = document.getElementById('eval_student_id').value;
+    const projectId = document.getElementById('eval_project_id').value;
+    const file = document.getElementById('eval_file').files[0];
+
+    if (!studentId || !projectId) { evalMsg('Please select a hired intern first.', 'error'); return; }
+    if (!file) { evalMsg('Please attach a PDF evaluation form.', 'error'); return; }
+
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('student_id', studentId);
+    fd.append('project_id', projectId);
+    fd.append('evaluation_period', document.getElementById('eval_period').value);
+    fd.append('evaluator_name', document.getElementById('eval_name').value);
+    fd.append('evaluator_title', document.getElementById('eval_title').value);
+    fd.append('evaluator_email', document.getElementById('eval_email').value);
+    fd.append('overall_rating', document.getElementById('eval_overall').value);
+    fd.append('technical_skills_rating', document.getElementById('eval_technical').value);
+    fd.append('communication_rating', document.getElementById('eval_communication').value);
+    fd.append('professionalism_rating', document.getElementById('eval_professionalism').value);
+    fd.append('teamwork_rating', document.getElementById('eval_teamwork').value);
+    fd.append('problem_solving_rating', document.getElementById('eval_problem_solving').value);
+    fd.append('strengths', document.getElementById('eval_strengths').value);
+    fd.append('areas_for_improvement', document.getElementById('eval_improvements').value);
+    fd.append('comments', document.getElementById('eval_comments').value);
+    fd.append('recommend_for_future_employment', document.getElementById('eval_recommend').checked);
+    fd.append('would_hire_again', document.getElementById('eval_hire_again').checked);
+    fd.append('internship_completed', document.getElementById('eval_completed').checked);
+
+    try {
+        await api('/api/evaluations/submit', { method: 'POST', headers: { ...authHeaders() }, body: fd });
+        evalMsg('Evaluation submitted successfully!', 'success');
+        document.getElementById('evaluationForm').reset();
+        loadEvaluations();
+    } catch(e) {
+        evalMsg(e.data?.error || 'Submission failed.', 'error');
+    }
+});
 
   document.getElementById('projectForm').addEventListener('submit', async (e) => {
     e.preventDefault();

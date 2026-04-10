@@ -238,11 +238,11 @@ def api_staff_students():
     project_id = request.args.get("project_id")
 
     if project_id:
-        query = query.join(Student_application).filter(
-            Student_application.project_id == _parse_int(project_id, "project_id")
-        )
-    else:
-        query = query.filter(Student.current_internship_status == 'applied')
+    
+        from App.models.shortlist import Shortlist
+        query = query.join(Shortlist, Shortlist.student_id == Student.id).filter(
+            Shortlist.project_id == _parse_int(project_id, "project_id")
+    )
     
     q = request.args.get("q")
     degree = request.args.get("degree")
@@ -464,7 +464,7 @@ def api_staff_update_transcript_summary(student_id):
         return _json_error("Failed to update transcript summary", 500)
 
     return jsonify({"message": "Transcript summary updated", "student": _student_payload(student)}), 200
-
+'''
 @staff_views.get('/download/transcript/<int:student_id>')
 @jwt_required()
 def download_transcript(student_id):
@@ -476,6 +476,75 @@ def download_transcript(student_id):
         directory=current_app.config['UPLOAD_FOLDER'],
         path=student.transcript_path
     )
+'''
+
+@staff_views.get('/download/transcript/<int:student_id>')
+@jwt_required()
+def download_transcript(student_id):
+    import os
+    from flask import send_file, current_app
+    
+    _, err = _require_staff()
+    if err:
+        return err
+
+    student = db.session.get(Student, student_id)
+    if not student or not student.transcript_path:
+        return _json_error('Transcript not found', 404)
+
+    abs_path = os.path.abspath(
+        os.path.join(current_app.root_path, student.transcript_path)
+    )
+    if not os.path.exists(abs_path):
+        return _json_error('Transcript file not found on server', 404)
+
+    return send_file(
+        abs_path,
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name=f'transcript_{student.student_id}.pdf'
+    )
+
+@staff_views.post('/students/<int:student_id>/generate-transcript-summary')
+@jwt_required()
+def generate_transcript_summary(student_id):
+    import os, json
+    from dataclasses import asdict
+    from flask import current_app
+    from App.controllers.transcript_summary import parse_transcript, create_transcript_report
+
+    _, err = _require_staff()
+    if err:
+        return err
+
+    student = db.session.get(Student, student_id)
+    if not student or not student.transcript_path:
+        return _json_error('Student has no transcript uploaded', 404)
+
+    abs_path = os.path.abspath(
+        os.path.join(current_app.root_path, student.transcript_path)
+    )
+    if not os.path.exists(abs_path):
+        return _json_error('Transcript file not found on server', 404)
+
+    try:
+        parsed = parse_transcript(abs_path)
+    except Exception as e:
+        return _json_error(f'Failed to parse transcript: {str(e)}', 500)
+
+    student.transcript_summary = json.dumps(asdict(parsed))
+    db.session.commit()
+
+    create_transcript_report(
+        student_id=student_id,
+        application_id=None,
+        parsed_report_obj=parsed
+    )
+
+    return jsonify({
+        'message': 'Transcript summary generated',
+        'summary': asdict(parsed)
+    }), 200
 
 @staff_views.get("/companies")
 @jwt_required()

@@ -119,8 +119,13 @@ def api_upload_transcript():
 
     student = upload_student_transcript(current_user.id, rel_path)
     try:
-        from App.controllers.transcript_parser import parse_and_save_transcript
-        parse_and_save_transcript(student.id, rel_path)
+        import os, json
+        from dataclasses import asdict
+        from App.controllers.transcript_summary import parse_transcript
+        abs_path = os.path.abspath(os.path.join(current_app.root_path, rel_path))
+        parsed = parse_transcript(abs_path)
+        student.transcript_summary = json.dumps(asdict(parsed))
+        db.session.commit()
     except Exception as e:
         print(f"Summary parsing failed: {e}")
 

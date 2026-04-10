@@ -115,11 +115,90 @@
           <div id="shortlistsBox" style="color:var(--muted)">Loading...</div>
         </div>
       </div>
-
+  
     {% elif active_page == 'announcements' %}
-      {% elif active_page == 'meetings' %}
-      {% elif active_page == 'reports' %}
-      {% endif %}
+      <div class="grid">
+        <div class="card">
+          <h3>Post Announcement</h3>
+          <form id="announcementForm">
+            <label>Title</label>
+            <input id="announcement_title" placeholder="Announcement title" required>
+            <label>Message</label>
+            <textarea id="announcement_message" placeholder="Write your message..." required></textarea>
+            <label>Audience</label>
+            <select id="announcement_audience">
+              <option value="all">All</option>
+              <option value="students">Students Only</option>
+              <option value="companies">Companies Only</option>
+            </select>
+            <button type="submit" class="btn-gold" style="width:100%">Post Announcement</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between;margin-bottom:16px">
+            <h3 style="margin:0">Existing Announcements</h3>
+            <button class="btn-ghost btn-sm" onclick="loadAnnouncements()">&#8635; Refresh</button>
+          </div>
+          <div id="announcementsBox" style="color:var(--muted)">Loading...</div>
+        </div>
+      </div>
+
+    {% elif active_page == 'meetings' %}
+      <div class="grid">
+        <div class="card">
+          <h3>Schedule Meeting</h3>
+          <form id="meetingForm">
+            <label>Student</label>
+            <select id="meeting_student_id"></select>
+            <label>Project (optional)</label>
+            <select id="meeting_project_id"></select>
+            <label>Date & Time</label>
+            <input id="meeting_scheduled_at" type="datetime-local" required>
+            <label>Meeting Type</label>
+            <select id="meeting_type">
+              <option value="initial">Initial</option>
+              <option value="weekly" selected>Weekly</option>
+              <option value="midterm">Midterm</option>
+              <option value="final">Final</option>
+              <option value="other">Other</option>
+            </select>
+            <label>Location</label>
+            <input id="meeting_location" placeholder="e.g. Room 204, FST">
+            <label>Meeting Link (optional)</label>
+            <input id="meeting_link" placeholder="https://zoom.us/...">
+            <label>Agenda</label>
+            <textarea id="meeting_agenda" placeholder="Meeting agenda..."></textarea>
+            <button type="submit" class="btn-blue" style="width:100%">Schedule Meeting</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between;margin-bottom:16px">
+            <h3 style="margin:0">Upcoming Meetings</h3>
+            <button class="btn-ghost btn-sm" onclick="loadMeetings()">&#8635; Refresh</button>
+          </div>
+          <div id="meetingsBox" style="color:var(--muted)">Loading...</div>
+        </div>
+      </div>
+
+    {% elif active_page == 'reports' %}
+      <div class="card">
+        <div class="row" style="justify-content:space-between;margin-bottom:16px">
+          <h3 style="margin:0">Student Weekly Reports</h3>
+          <div class="row">
+            <select id="reportStatusFilter" onchange="loadReports()" style="margin-bottom:0;width:auto">
+              <option value="">All Statuses</option>
+              <option value="submitted">Submitted</option>
+              <option value="approved">Approved</option>
+              <option value="needs_revision">Needs Revision</option>
+            </select>
+            <button class="btn-ghost btn-sm" onclick="loadReports()">&#8635; Refresh</button>
+          </div>
+        </div>
+        <div id="reportsBox" style="color:var(--muted)">Loading...</div>
+      </div>
+
+    {% endif %}
+    
   </main>
 </div>
 
@@ -224,6 +303,10 @@ async function loadShortlistPage() {
             <strong>${s.student?.full_name || ('Student ' + s.student_id)}</strong> 
             <span class="badge">${s.status}</span><br>
             <span style="color:var(--muted);font-size:13px">Project: ${s.project?.project_name || s.project_id}</span>
+            <div class="row" style="margin-top:8px">
+              <button class="btn-danger btn-sm" onclick="deleteShortlist(${s.id})">Remove</button>
+              <button class="btn-ghost btn-sm" onclick="updateShortlistStatus(${s.id},'hire')">Hire</button>
+            </div>
         `)).join('') : '<span>No shortlists found.</span>';
     }
 }
@@ -263,12 +346,59 @@ async function quickShortlist(sid) {
     }
 }
 
+
 async function viewTranscript(sid) {
     try {
         const data = await api(`/api/staff/students/${sid}`, {headers:{...authHeaders()}});
-        console.log("Transcript Data:", data.transcript_summary);
-        alert(`Transcript Summary for ${data.student.full_name}:\n\nGPA: ${data.student.gpa}\nParsed Info: ${JSON.stringify(data.transcript_summary || 'No summary available')}`);
-    } catch(e) { showMsg('Failed to load student detail', 'error'); }
+        const student = data.student;
+
+        
+        let summary = student.transcript_summary;
+        let displayText = 'No summary available';
+
+        if (summary) {
+            try {
+                const parsed = typeof summary === 'string' ? JSON.parse(summary) : summary;
+                const courses = parsed.courses || [];
+                const courseLines = courses.map(c =>
+                    `  ${c.subject} ${c.code} — ${c.title?.trim() || '—'} | Grade: ${c.grade || 'TBA'}`
+                ).join('\n');
+                displayText = `Student: ${parsed.student_name || student.full_name}
+Student ID: ${parsed.student_id || student.student_id}
+Total Courses: ${courses.length}
+
+COURSES:
+${courseLines || '  No courses parsed'}`;
+            } catch {
+                displayText = summary;
+            }
+        }
+
+        alert(`Transcript Summary for ${student.full_name}:\n\nGPA: ${student.gpa || 'N/A'}\n\n${displayText}`);
+    } catch(e) {
+        showMsg('Failed to load student detail', 'error');
+    }
+}
+async function deleteShortlist(id) {
+    if (!confirm('Remove this student from the shortlist?')) return;
+    try {
+        await api('/api/staff/shortlists/' + id, { method: 'DELETE', headers: { ...authHeaders() } });
+        showMsg('Shortlist entry removed');
+        loadShortlistPage();
+        loadOverview();
+    } catch(e) { showMsg(e.data?.error || 'Failed to remove shortlist', 'error'); }
+}
+
+async function updateShortlistStatus(id, action) {
+    try {
+        await api('/api/staff/shortlists/' + id, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', ...authHeaders() },
+          body: JSON.stringify({ action })
+        });
+        showMsg('Shortlist updated');
+        loadShortlistPage();
+    } catch(e) { showMsg(e.data?.error || 'Failed to update shortlist', 'error'); }
 }
 
 async function loadAnnouncements(){ 
@@ -292,10 +422,33 @@ async function loadMeetings(){
   box.innerHTML = data.meetings.length ? data.meetings.map(m=>itemCard(`<strong>${m.student?.full_name||('Student '+m.student_id)}</strong> <span class="badge">${m.status}</span><br><span style="color:var(--muted);font-size:13px">When: ${m.scheduled_at ? new Date(m.scheduled_at).toLocaleString() : '—'}<br>Type: ${m.meeting_type||'—'}<br>Project: ${m.project?.project_name||'—'}<br>Location: ${m.location||'—'}</span>`)).join('') : '<span>No meetings yet.</span>'; 
 }
 
-async function loadReports(){ 
-  const data=await api('/api/staff/weekly-reports',{headers:{...authHeaders()}}); 
-  const box=document.getElementById('reportsBox'); 
-  box.innerHTML = data.weekly_reports.length ? data.weekly_reports.map(r=>itemCard(`<strong>${r.student?.full_name||('Student '+r.student_id)}</strong> <span class="badge">${r.status}</span><br><span style="color:var(--muted);font-size:13px">Project: ${r.project?.project_name||r.project_id}<br>Week: ${r.week_number}<br>Title: ${r.title||'—'}<br>Description: ${r.description||'—'}<br>Hours: ${r.hours_worked ?? '—'} &middot; Submitted: ${r.submission_date ? new Date(r.submission_date).toLocaleString() : '—'}</span><div class="row" style="margin-top:12px"><button class="btn-blue btn-sm" onclick="approveReport(${r.id})">Approve</button><button class="btn-ghost btn-sm" onclick="requestRevision(${r.id})">Needs Revision</button></div>`)).join('') : '<span>No weekly reports found.</span>'; 
+
+
+async function loadReports(){
+  const status = document.getElementById('reportStatusFilter')?.value || '';
+  const url = status ? `/api/staff/weekly-reports?status=${status}` : '/api/staff/weekly-reports';
+  const data = await api(url, {headers:{...authHeaders()}});
+  const box = document.getElementById('reportsBox');
+  box.innerHTML = data.weekly_reports.length ? data.weekly_reports.map(r => itemCard(`
+    <div class="row" style="justify-content:space-between">
+      <strong>${r.student?.full_name || ('Student ' + r.student_id)}</strong>
+      <span class="badge">${r.status}</span>
+    </div>
+    <span style="color:var(--muted);font-size:13px">
+      Project: ${r.project?.project_name || r.project_id} &middot;
+      Week ${r.week_number} &middot;
+      ${r.hours_worked != null ? r.hours_worked + ' hrs' : '—'}
+    </span><br>
+    <span style="font-size:13px">${r.title || '—'}</span><br>
+    <span style="color:var(--muted);font-size:12px">
+      Submitted: ${r.submission_date ? new Date(r.submission_date).toLocaleString() : '—'}
+      ${r.is_late ? ' <span style="color:#e05252">⚠ Late</span>' : ''}
+    </span>
+    <div class="row" style="margin-top:10px">
+      <button class="btn-blue btn-sm" onclick="approveReport(${r.id})">✓ Approve</button>
+      <button class="btn-ghost btn-sm" onclick="requestRevision(${r.id})">↩ Needs Revision</button>
+    </div>
+  `)).join('') : '<span>No weekly reports found.</span>';
 }
 
 async function approveReport(id){ 
@@ -370,7 +523,15 @@ if(meetingForm){
     if(page === 'overview') await loadOverview();
     else if(page === 'shortlists') await loadShortlistPage();
     else if(page === 'announcements') await loadAnnouncements();
-    else if(page === 'meetings') { await loadShortlistPage(); await loadMeetings(); }
+    else if(page === 'meetings') {
+      const [sd, pd] = await Promise.all([
+        api('/api/staff/students?status=hired', {headers:{...authHeaders()}}),
+        api('/api/staff/projects', {headers:{...authHeaders()}})
+      ]);
+      fillSelect(document.getElementById('meeting_student_id'), sd.students, s => `${s.full_name} (${s.student_id})`);
+      fillSelect(document.getElementById('meeting_project_id'), pd.projects, p => p.project_name, true, '-- No Project --');
+      await loadMeetings();
+    } 
     else if(page === 'reports') await loadReports();
   }catch(e){
     console.error(e);

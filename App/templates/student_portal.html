@@ -406,9 +406,10 @@
       </div>
     </div>
 
+    
   
     <div class="page" id="page-documents">
-      <div class="page-hd"><div class="page-title">Documents</div><div class="page-sub">Upload your CV and official transcript — PDF files only</div></div>
+      <div class="page-hd"><div class="page-title">Documents</div><div class="page-sub">Upload your CV and official transcript - PDF files only</div></div>
       <div class="g2">
         <div class="card">
           <div class="card-hd">📄 Resume / CV</div>
@@ -457,9 +458,11 @@
       </div>
     </div>
 
+    <div class="sb-section">Notifications</div>
+    <button class="nav-btn" onclick="showPage('announcements',this)"><span class="ni">📢</span> Announcements</button>
     
     <div class="page" id="page-reports">
-      <div class="page-hd"><div class="page-title">Weekly Reports</div><div class="page-sub">Submit progress reports — available once you are placed</div></div>
+      <div class="page-hd"><div class="page-title">Weekly Reports</div><div class="page-sub">Submit progress reports, available once you are placed</div></div>
       <div class="card">
         <div class="card-hd">Submit New Report</div>
         <div class="g2">
@@ -533,6 +536,15 @@
       </div>
     </div>
 
+    <div class="page" id="page-announcements">
+      <div class="page-hd">
+        <div class="page-title">Announcements</div>
+        <div class="page-sub">Messages from the department</div>
+      </div>
+      <div class="card" id="announcements_list">
+        <div style="color:var(--text-muted);font-size:0.88rem;">Loading announcements...</div>
+      </div>
+    </div>
   </main>
 </div>
 
@@ -578,6 +590,7 @@
     if(name==='status')  loadStatus();
     if(name==='reports') loadReports();
     if(name==='overview') loadOverview();
+    if(name==='announcements') loadAnnouncements();
   }
 
   function updateNav(user){
@@ -612,6 +625,18 @@
       const r=await api('/api/student/weekly-reports',{headers:{...authHeaders()}});
       document.getElementById('stat_reports').textContent=(r.weekly_reports||[]).length;
     }catch(e){}
+
+    try {
+        const {status: s} = await api('/api/student/status', {headers: {...authHeaders()}});
+        if (s.status === 'interview_scheduled' || s.status === 'shortlisted') {
+            const noticeEl = document.querySelector('.notice div:last-child');
+            if (noticeEl) {
+                noticeEl.innerHTML = s.status === 'interview_scheduled'
+                    ? '🎉 <strong>Congratulations!</strong> You have been selected for an interview. Please check with the department for details.'
+                    : '⭐ <strong>You have been shortlisted!</strong> Staff are reviewing your profile for available positions.';
+            }
+        }
+    } catch(e) {}
   }
 
   async function loadProfile(){
@@ -718,13 +743,31 @@
   document.getElementById('token_box').value = getToken();
   loadOverview();
 
-  /* ... existing code (uploadResume, etc.) ... */
+async function loadAnnouncements() {
+    const box = document.getElementById('announcements_list');
+    try {
+        const data = await api('/api/staff/announcements', { headers: { ...authHeaders() } });
+        const items = (data.announcements || []).filter(a => a.audience === 'all' || a.audience === 'students');
+        if (!items.length) {
+            box.innerHTML = '<div style="color:var(--text-muted)">No announcements at this time.</div>';
+            return;
+        }
+        box.innerHTML = items.map(a => `
+            <div class="card" style="margin-bottom:12px">
+                <div style="font-weight:600;margin-bottom:6px">${a.title}</div>
+                <div style="color:var(--text-muted);font-size:0.85rem;line-height:1.6">${a.message}</div>
+                <div style="font-size:0.72rem;color:var(--text-dim);margin-top:8px">${a.created_at ? new Date(a.created_at).toLocaleDateString() : ''}</div>
+            </div>`).join('');
+    } catch(e) {
+        box.innerHTML = '<div style="color:var(--error)">Could not load announcements.</div>';
+    }
+}
 
 async function submitGeneralApplication() {
     const btn = document.getElementById('btn-apply');
     const msgArea = document.getElementById('apply-status-msg');
     
-    // Disable button to prevent double-clicks
+    
     btn.disabled = true;
     btn.innerText = "Submitting...";
 

@@ -397,10 +397,33 @@ async function loadMeetings(){
   box.innerHTML = data.meetings.length ? data.meetings.map(m=>itemCard(`<strong>${m.student?.full_name||('Student '+m.student_id)}</strong> <span class="badge">${m.status}</span><br><span style="color:var(--muted);font-size:13px">When: ${m.scheduled_at ? new Date(m.scheduled_at).toLocaleString() : '—'}<br>Type: ${m.meeting_type||'—'}<br>Project: ${m.project?.project_name||'—'}<br>Location: ${m.location||'—'}</span>`)).join('') : '<span>No meetings yet.</span>'; 
 }
 
-async function loadReports(){ 
-  const data=await api('/api/staff/weekly-reports',{headers:{...authHeaders()}}); 
-  const box=document.getElementById('reportsBox'); 
-  box.innerHTML = data.weekly_reports.length ? data.weekly_reports.map(r=>itemCard(`<strong>${r.student?.full_name||('Student '+r.student_id)}</strong> <span class="badge">${r.status}</span><br><span style="color:var(--muted);font-size:13px">Project: ${r.project?.project_name||r.project_id}<br>Week: ${r.week_number}<br>Title: ${r.title||'—'}<br>Description: ${r.description||'—'}<br>Hours: ${r.hours_worked ?? '—'} &middot; Submitted: ${r.submission_date ? new Date(r.submission_date).toLocaleString() : '—'}</span><div class="row" style="margin-top:12px"><button class="btn-blue btn-sm" onclick="approveReport(${r.id})">Approve</button><button class="btn-ghost btn-sm" onclick="requestRevision(${r.id})">Needs Revision</button></div>`)).join('') : '<span>No weekly reports found.</span>'; 
+
+
+async function loadReports(){
+  const status = document.getElementById('reportStatusFilter')?.value || '';
+  const url = status ? `/api/staff/weekly-reports?status=${status}` : '/api/staff/weekly-reports';
+  const data = await api(url, {headers:{...authHeaders()}});
+  const box = document.getElementById('reportsBox');
+  box.innerHTML = data.weekly_reports.length ? data.weekly_reports.map(r => itemCard(`
+    <div class="row" style="justify-content:space-between">
+      <strong>${r.student?.full_name || ('Student ' + r.student_id)}</strong>
+      <span class="badge">${r.status}</span>
+    </div>
+    <span style="color:var(--muted);font-size:13px">
+      Project: ${r.project?.project_name || r.project_id} &middot;
+      Week ${r.week_number} &middot;
+      ${r.hours_worked != null ? r.hours_worked + ' hrs' : '—'}
+    </span><br>
+    <span style="font-size:13px">${r.title || '—'}</span><br>
+    <span style="color:var(--muted);font-size:12px">
+      Submitted: ${r.submission_date ? new Date(r.submission_date).toLocaleString() : '—'}
+      ${r.is_late ? ' <span style="color:#e05252">⚠ Late</span>' : ''}
+    </span>
+    <div class="row" style="margin-top:10px">
+      <button class="btn-blue btn-sm" onclick="approveReport(${r.id})">✓ Approve</button>
+      <button class="btn-ghost btn-sm" onclick="requestRevision(${r.id})">↩ Needs Revision</button>
+    </div>
+  `)).join('') : '<span>No weekly reports found.</span>';
 }
 
 async function approveReport(id){ 
@@ -475,7 +498,15 @@ if(meetingForm){
     if(page === 'overview') await loadOverview();
     else if(page === 'shortlists') await loadShortlistPage();
     else if(page === 'announcements') await loadAnnouncements();
-    else if(page === 'meetings') { await loadShortlistPage(); await loadMeetings(); }
+    else if(page === 'meetings') {
+      const [sd, pd] = await Promise.all([
+        api('/api/staff/students?status=hired', {headers:{...authHeaders()}}),
+        api('/api/staff/projects', {headers:{...authHeaders()}})
+      ]);
+      fillSelect(document.getElementById('meeting_student_id'), sd.students, s => `${s.full_name} (${s.student_id})`);
+      fillSelect(document.getElementById('meeting_project_id'), pd.projects, p => p.project_name, true, '-- No Project --');
+      await loadMeetings();
+    } 
     else if(page === 'reports') await loadReports();
   }catch(e){
     console.error(e);

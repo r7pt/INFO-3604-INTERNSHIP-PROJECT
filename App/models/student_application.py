@@ -1,6 +1,6 @@
 from App.database import db
 from App.models.user import User
-from datetime import date
+from datetime import datetime
 import phonenumbers
 
 class Student_application(db.Model):
@@ -18,18 +18,18 @@ class Student_application(db.Model):
     profile_picture = db.Column(db.String,nullable=False)
     returning_intern = db.Column(db.Boolean,nullable=False)
     year_of_study= db.Column(db.Integer,nullable=False)
-    created_on = db.Column(db.Date,nullable=False,default =date.utcnow)
+    created_on = db.Column(db.Date,nullable=False,default=datetime.utcnow)
     resume = db.Column(db.String,nullable=False)
-    skills =db.db.Column(db.String,nullable=True)
+    skills =db.Column(db.String,nullable=True)
     transcript = db.Column(db.String,nullable =False)
     status = db.Column(db.String,nullable=False,default="pending")
-    created_at= db.Column(db.DateTime,default=db.DateTime.utcnow,nullable=False)
-
-    transcript_summary = db.relationship("Transcript_summary",uselist=False,back_populates="student_application",lazy=True)
+    created_at= db.Column(db.DateTime,default=datetime.utcnow,nullable=False)
+    
+    transcript_summary = db.relationship("Transcript_summary",uselist=False,back_populates="application",lazy=True)
     __tablename__ ="student_application"
 
 
-    def __init__ (self,student_id,first_name,last_name,email,contact_number,covid_19_vaccination,summer_requirment,program,cover_letter,internship_credits,citizenship,profile_picture,returning_intern,year_of_study,resume,skills=None,transcript):
+    def __init__ (self,student_id,first_name,last_name,email,contact_number,covid_19_vaccination,summer_requirment,program,cover_letter,internship_credits,citizenship,profile_picture,returning_intern,year_of_study,resume,transcript,skills=None):
         self.first_name = first_name
         self.student_id = student_id
         self.last_name=last_name
@@ -47,7 +47,7 @@ class Student_application(db.Model):
         self.resume=resume
         self.skills=skills
         self.transcript=transcript
-        self.status=status
+        self.status = 'pending'  
 
     def set_status(self,status):
         self.status=status
@@ -98,7 +98,8 @@ class Student_application(db.Model):
             return None
             
     def _validate_contact_number(self,contact_number):
-        contact_Number_Object = phonenumbers.parse(contact_number)
+        
+        contact_Number_Object = phonenumbers.parse(contact_number, None)
         if phonenumbers.is_valid_number(contact_Number_Object):
             return contact_number
         else :
@@ -118,7 +119,7 @@ class Student_application(db.Model):
             'last_name':self.last_name,
             'email':self.email,
             'covid_19_vaccination':self.covid_19_vaccination,
-            'summer_required':self.summer_required,
+            'summer_required': self.summer_requirment,
             'program': self.program,
             'cover_letter':self.cover_letter,
             'internship_credit':self.internship_credits,
@@ -127,11 +128,19 @@ class Student_application(db.Model):
             'returning_intern':self.returning_intern,
             'year_of_study':self.year_of_study,
             'resume':self.resume,
-            'transcript':self.transcript
+            'transcript':self.transcript,
             'status':self.status
         }
 
         return student_application_json
+    
+    def __new__(cls, *args, **kwargs):
+        instance = super().__new__(cls)
+        from sqlalchemy.orm.instrumentation import manager_of_class
+        manager = manager_of_class(cls)
+        if manager:
+            manager.setup_instance(instance)
+        return instance
 
     def __repr__(self):
         return f'<Student_application {self.application_id}: {self.student_id}-{self.first_name} -{self.last_name} -{self.status}'    

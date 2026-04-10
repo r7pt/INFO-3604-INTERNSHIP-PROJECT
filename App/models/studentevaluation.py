@@ -40,7 +40,7 @@ class StudentEvaluation(db.Model):
     status = db.Column(db.String(50), default='submitted') 
     
     reviewed_by_staff = db.Column(db.Boolean, default=False)
-    staff_reviewer_id = db.Column(db.Integer, db.ForeignKey('staff.id'))
+    staff_reviewer_id = db.Column(db.Integer, db.ForeignKey('staff.staff_id'))
     staff_notes = db.Column(db.Text)
     staff_review_date = db.Column(db.DateTime)
     
@@ -74,6 +74,7 @@ class StudentEvaluation(db.Model):
         self.evaluator_title = evaluator_title
         self.evaluator_email = evaluator_email
         self.submitted_at = datetime.utcnow()
+        self.status = 'submitted'
     
     def upload_evaluation_form(self, file_path):
         if not file_path.lower().endswith('.pdf'):

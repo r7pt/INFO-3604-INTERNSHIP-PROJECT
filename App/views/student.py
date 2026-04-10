@@ -14,6 +14,7 @@ from App.models.project import Project
 from App.models.weeklyreport import WeeklyReport
 from App.models.shortlist import Shortlist
 from App.models.Meeting import Meeting
+from App.models.student_application import Student_application
 from App.controllers.weeklyreport import create_weekly_report
 
 student_views = Blueprint('student_views', __name__, url_prefix='/api/student')
@@ -117,12 +118,20 @@ def api_upload_transcript():
         return _json_error('Failed to save transcript file', 500)
 
     student = upload_student_transcript(current_user.id, rel_path)
-    if student is None:
-        return _json_error('Failed to save transcript', 500)
+    try:
+        import os, json
+        from dataclasses import asdict
+        from App.controllers.transcript_summary import parse_transcript
+        abs_path = os.path.abspath(os.path.join(current_app.root_path, rel_path))
+        parsed = parse_transcript(abs_path)
+        student.transcript_summary = json.dumps(asdict(parsed))
+        db.session.commit()
+    except Exception as e:
+        print(f"Summary parsing failed: {e}")
 
-    return jsonify({'message': 'Transcript uploaded', 'user': student.get_json()}), 200
+    return jsonify({'message': 'Transcript uploaded and summary generated'}), 200
 
-
+'''
 @student_views.post('/apply')
 @jwt_required()
 def api_apply():
@@ -144,7 +153,24 @@ def api_apply():
     if not current_user.can_apply_to_project(project):
         return _json_error('Upload resume and transcript before applying', 400)
 
+    
+    existing = Student_application.query.filter_by(
+        student_id=current_user.id, 
+        project_id=project.id
+    ).first()
+    
+    if existing:
+        return _json_error('You have already applied for this project', 400)
+
+    new_app = Student_application(
+        student_id=current_user.id,
+        project_id=project.id,
+        status='pending'
+    )
+    db.session.add(new_app)
+
     current_user.current_internship_status = 'applied'
+    
     db.session.commit()
 
     return jsonify({
@@ -152,7 +178,23 @@ def api_apply():
         'project_id': project.id,
         'status': current_user.current_internship_status
     }), 200
+'''
+@student_views.post('/apply')
+@jwt_required()
+def api_apply():
+    if getattr(current_user, 'role', None) != 'student':
+        return _json_error('Forbidden', 403)
 
+    if not current_user.resume_path or not current_user.transcript_path:
+        return _json_error('Please upload your Resume and Transcript before applying.', 400)
+
+    current_user.current_internship_status = 'applied'
+    db.session.commit()
+
+    return jsonify({
+        'message': 'Application submitted successfully! Staff will review your profile.',
+        'status': 'applied'
+    }), 200
 
 @student_views.get('/weekly-reports')
 @jwt_required()

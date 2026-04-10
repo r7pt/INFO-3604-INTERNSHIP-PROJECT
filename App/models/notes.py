@@ -2,23 +2,23 @@ from App.database import db
 from App.models.user import User
 from App.models.student import Student
 from App.models.staff import Staff
-from App.models.meeting import Meeting
+from App.models.Meeting import Meeting
 from sqlalchemy.ext.hybrid import hybrid_property
-from datetime import date
+from datetime import datetime
 
 class Notes(db.Model):
     note_id = db.Column(db.Integer,primary_key=True)
-    student_id = db.Column(db.Integer,db.ForeignKey=("student.id"),nullable=False)
-    staff_id =db.Column(db.Integer,db.ForeignKey=("staff.staff_id"),nullable=False)
-    meeting_id =db.Column(db.Integer,db.ForeignKey=("meeting.id"),nullable=False) 
+    student_id = db.Column(db.Integer,db.ForeignKey("student.id"),nullable=False)
+    staff_id =db.Column(db.Integer,db.ForeignKey("staff.staff_id"),nullable=False)
+    meeting_id =db.Column(db.Integer,db.ForeignKey("meeting.id"),nullable=False) 
     description = db.Column(db.String,nullable=False)
-    parent_id = db.Column(db.Integer,db.ForeignKey=("notes.note_id"),nullable=True)
-    created_at= db.Column(db.DateTime,default=db.DateTime.utcnow,nullable=False)
+    parent_id = db.Column(db.Integer,db.ForeignKey("notes.note_id"),nullable=True)
+    created_at= db.Column(db.DateTime,default=datetime.utcnow,nullable=False)
 
-    staff= db.relationship('Staff',foreign_keys=['staff_id'],backref="created_by")
-    student = db.relationship('Student',foreign_keys=['student_id'],backref="notes")
-    parent =db.relationship("Notes",remote_side=['note_id'],backref="children")
-    meeting = db.relationship("Meeting", foreign_keys=['meeting_id'],backref="meeting_notes")
+    staff= db.relationship('Staff',foreign_keys=[staff_id],backref="created_by")
+    student = db.relationship('Student',foreign_keys=[student_id],backref="notes")
+    parent =db.relationship("Notes",remote_side=[note_id],backref="children")
+    meeting = db.relationship("Meeting", foreign_keys=[meeting_id],backref="meeting_notes")
 
 
 

@@ -1,10 +1,11 @@
 from App.database import db
 from App.models.user import User
 
+
 class Staff(User):
     __tablename__ = 'staff'
 
-    id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    staff_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
 
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
@@ -36,11 +37,11 @@ class Staff(User):
 
     @property
     def staffID(self):
-        return self.id
+        return self.staff_id
 
     @staffID.setter
     def staffID(self, value):
-        self.id = value
+        self.staff_id = value
 
     @property
     def full_name(self):
@@ -57,4 +58,4 @@ class Staff(User):
         return {**base_json, **staff_json}
 
     def __repr__(self):
-        return f"<Staff {self.id}: {self.full_name} ({self.department})>"
+        return f"<Staff {self.staff_id}: {self.full_name} ({self.department})>"

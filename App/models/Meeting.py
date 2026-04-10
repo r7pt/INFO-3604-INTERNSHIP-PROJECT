@@ -6,23 +6,17 @@ class Meeting(db.Model):
     __tablename__ = 'meeting'
 
     id = db.Column(db.Integer, primary_key=True)
-
     program_id = db.Column(db.Integer, db.ForeignKey('program.id'), index=True)
-
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=False, index=True)
-    staff_id = db.Column(db.Integer, db.ForeignKey('staff.id'), nullable=False, index=True)
-
+    staff_id = db.Column(db.Integer, db.ForeignKey('staff.staff_id'), nullable=False, index=True)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'), index=True)
 
     meeting_type = db.Column(db.String(50), nullable=False, default='weekly', index=True)
     scheduled_at = db.Column(db.DateTime, nullable=False, index=True)
-
     location = db.Column(db.String(256))
     meeting_link = db.Column(db.String(512))
-
     agenda = db.Column(db.Text)
     notes = db.Column(db.Text)
-
     status = db.Column(db.String(50), nullable=False, default='scheduled', index=True)
 
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -102,4 +96,4 @@ class Meeting(db.Model):
         }
 
     def __repr__(self):
-        return f"<Meeting {self.id}: Student {self.student_id} @ {self.scheduled_at} ({self.meeting_type})>"
+        return f"<Meeting {self.id}: {self.meeting_type} with Student {self.student_id}>"
